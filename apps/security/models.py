@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.openunited.mixins import TimeStampMixin, UUIDMixin
-from apps.product_management.models import Product
+
 from apps.talent.models import Person
 
 from .constants import DEFAULT_LOGIN_ATTEMPT_BUDGET
@@ -60,6 +60,8 @@ class SignInAttempt(TimeStampMixin):
 
 
 class ProductRoleAssignment(TimeStampMixin, UUIDMixin):
+    from apps.product_management.models import Product
+    
     class ProductRoles(models.TextChoices):
         CONTRIBUTOR = "Contributor"
         MANAGER = "Manager"

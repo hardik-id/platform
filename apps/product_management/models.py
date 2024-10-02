@@ -14,6 +14,10 @@ from apps.common import models as common
 from apps.openunited.mixins import TimeStampMixin, UUIDMixin
 from apps.product_management.mixins import ProductMixin
 
+from django.core.exceptions import ValidationError
+
+from django.db.models import Sum
+
 
 class FileAttachment(models.Model):
     file = models.FileField(upload_to="attachments")
@@ -173,10 +177,6 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         COMPLETED = "Completed"
         CANCELLED = "Cancelled"
 
-    class RewardType(models.TextChoices):
-        LIQUID_POINTS = "Liquid Points"
-        NON_LIQUID_POINTS = "Non-liquid Points"
-
     class ChallengePriority(models.TextChoices):
         HIGH = "High"
         MEDIUM = "Medium"
@@ -231,11 +231,6 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         blank=True,
         on_delete=models.SET_NULL,
     )
-    reward_type = models.CharField(
-        max_length=50,
-        choices=RewardType.choices,
-        default=RewardType.NON_LIQUID_POINTS,
-    )
 
     class Meta:
         verbose_name_plural = "Challenges"
@@ -244,10 +239,11 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         return self.title
 
     def get_absolute_url(self):
-        return reverse(
-            "challenge_detail",
-            kwargs={"product_slug": self.product.slug, "pk": self.pk},
-        )
+        return reverse('challenge_detail', kwargs={'product_slug': self.product.slug, 'pk': self.pk})
+
+    def get_total_reward(self):
+        return self.bounty_set.aggregate(Sum('reward_amount'))['reward_amount__sum'] or 0
+
 
     def can_delete_challenge(self, person):
         from apps.security.models import ProductRoleAssignment
@@ -330,6 +326,34 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
 
         return self.description
 
+class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
+    class CompetitionStatus(models.TextChoices):
+        DRAFT = "Draft"
+        ACTIVE = "Active"
+        ENTRIES_CLOSED = "Entries Closed"
+        JUDGING = "Judging"
+        COMPLETED = "Completed"
+        CANCELLED = "Cancelled"
+
+    product_area = models.ForeignKey('ProductArea', on_delete=models.SET_NULL, blank=True, null=True)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    short_description = models.CharField(max_length=256)
+    status = models.CharField(max_length=20, choices=CompetitionStatus.choices, default=CompetitionStatus.DRAFT)
+    entry_deadline = models.DateTimeField()
+    judging_deadline = models.DateTimeField()
+    max_entries = models.PositiveIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('competition_detail', kwargs={'product_slug': self.product.slug, 'pk': self.pk})
+
+    def get_total_reward(self):
+        return self.bounty_set.aggregate(Sum('reward_amount'))['reward_amount__sum'] or 0
+
 
 class Bounty(TimeStampMixin, common.AttachmentAbstract):
     class BountyStatus(models.TextChoices):
@@ -339,8 +363,13 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         COMPLETED = "Completed"
         CANCELLED = "Cancelled"
 
+    class RewardType(models.TextChoices):
+        POINTS = "Points"
+        USD = "USD"
+
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, null=True, blank=True)
+    competition = models.ForeignKey(Competition, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=400)
-    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
     description = models.TextField()
     skill = models.ForeignKey(
         "talent.Skill",
@@ -357,7 +386,10 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         choices=BountyStatus.choices,
         default=BountyStatus.AVAILABLE,
     )
-    is_active = models.BooleanField(default=True)
+    reward_type = models.CharField(max_length=10, choices=RewardType.choices, default=RewardType.POINTS)
+    reward_amount = models.PositiveIntegerField(default=0, help_text="Amount in points if reward_type is POINTS, or cents if reward_type is USD")
+
+
 
     claimed_by = models.ForeignKey(
         "talent.Person",
@@ -378,16 +410,68 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
             self.BountyStatus.CLAIMED,
         ]
 
+    def get_reward_display(self):
+        if self.reward_type == self.RewardType.POINTS:
+            return f"{self.reward_amount} Points"
+        else:
+            dollars = self.reward_amount // 100
+            cents = self.reward_amount % 100
+            return f"${dollars}.{cents:02d} USD"
+
     def get_expertise_as_str(self):
         return ", ".join([exp.name.title() for exp in self.expertise.all()])
 
     def __str__(self):
         return self.title
+    
+    def clean(self):
+        super().clean()
+        if (self.challenge is None) == (self.competition is None):
+            raise ValidationError("Bounty must be associated with either a Challenge or a Competition, but not both.")
+
 
     @receiver(pre_save, sender="product_management.Bounty")
     def _pre_save(sender, instance, **kwargs):
         if instance.status == Bounty.BountyStatus.AVAILABLE:
             instance.claimed_by = None
+
+class CompetitionEntry(TimeStampMixin, UUIDMixin):
+    from apps.security.models import ProductRoleAssignment
+    class EntryStatus(models.TextChoices):
+        SUBMITTED = "Submitted"
+        FINALIST = "Finalist"
+        WINNER = "Winner"
+        REJECTED = "Rejected"
+
+    bounty = models.ForeignKey(Bounty, on_delete=models.CASCADE, related_name='competition_entries')
+    submitter = models.ForeignKey('talent.Person', on_delete=models.CASCADE, related_name='competition_entries')
+    content = models.TextField()
+    entry_time = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=EntryStatus.choices, default=EntryStatus.SUBMITTED)
+
+    def __str__(self):
+        return f"Entry for {self.bounty.competition.title} - {self.bounty.title} by {self.submitter.name}"
+
+    def can_user_rate(self, user):
+        is_admin_or_judge = ProductRoleAssignment.objects.filter(
+            person=user.person,
+            product=self.bounty.competition.product,
+            role__in=[ProductRoleAssignment.ProductRoles.ADMIN, ProductRoleAssignment.ProductRoles.JUDGE]
+        ).exists()
+        has_rated = self.ratings.filter(rater=user.person).exists()
+        return is_admin_or_judge and not has_rated
+
+class CompetitionEntryRating(TimeStampMixin, UUIDMixin):
+    entry = models.ForeignKey(CompetitionEntry, on_delete=models.CASCADE, related_name='ratings')
+    rater = models.ForeignKey('talent.Person', on_delete=models.CASCADE, related_name='given_ratings')
+    rating = models.PositiveSmallIntegerField(help_text="Rating from 1 to 5")
+    comment = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Rating for {self.entry} by {self.rater.name}"
+
+    class Meta:
+        unique_together = ('entry', 'rater')
 
 
 class ChallengeDependency(models.Model):

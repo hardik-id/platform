@@ -308,25 +308,17 @@ class ChallengeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["reward_type"].help_text = "Liquid points can be redeemed for money, Non-Liquid points cannot."
 
         for key, field in self.fields.items():
             attributes = {"class": self.class_names}
             if key in ["title", "description"]:
                 attributes["cols"] = 40
                 attributes["rows"] = 2
-            if key != "reward_type":
-                field.widget.attrs.update(**attributes)
+            field.widget.attrs.update(**attributes)
 
     class Meta:
         model = Challenge
-        fields = ["title", "description", "reward_type", "priority", "status", "product_area", "initiative"]
-
-        widgets = {
-            "reward_type": forms.RadioSelect(
-                attrs={"class": "h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"}
-            ),
-        }
+        fields = ["title", "description", "priority", "status", "product_area", "initiative"]
 
 
 class BountyForm(forms.ModelForm):
@@ -349,15 +341,11 @@ class BountyForm(forms.ModelForm):
 
     class Meta:
         model = Bounty
-        fields = ["title", "description", "points", "status", "is_active"]
+        fields = ["title", "description", "points", "status"]
 
         widgets = {
             "points": forms.NumberInput(attrs={"class": global_utils.text_field_class_names}),
             "status": forms.Select(attrs={"class": global_utils.text_field_class_names, "id": "id_bounty_status"}),
-        }
-        help_texts = {"is_active": "Display this bounty under the challenge that is created for."}
-        labels = {
-            "is_active": "Is Active",
         }
 
     def __init__(self, *args, **kwargs):
@@ -379,7 +367,7 @@ class BountyForm(forms.ModelForm):
 BountyFormset = modelformset_factory(
     Bounty,
     form=BountyForm,
-    fields=("title", "description", "points", "status", "is_active"),
+    fields=("title", "description", "points", "status"),
     extra=0,
     can_delete=True,
 )
