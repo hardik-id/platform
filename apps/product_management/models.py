@@ -400,7 +400,6 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         default=None,
     )
     expertise = models.ManyToManyField("talent.Expertise", related_name="bounty_expertise")
-    points = models.PositiveIntegerField()
     status = models.CharField(
         max_length=255,
         choices=BountyStatus.choices,
