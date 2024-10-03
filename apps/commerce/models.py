@@ -3,21 +3,96 @@ from django.db import models, transaction
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from apps.openunited.mixins import TimeStampMixin, UUIDMixin
+from apps.product_management.models import Challenge, Competition, Bounty, Product
 
 class Organisation(TimeStampMixin):
     name = models.CharField(max_length=512, unique=True)
-    country = models.CharField(max_length=2, default='US')  # ISO country code with default 'US'
-    vat_number = models.CharField(max_length=20, blank=True, null=True)
+    country = models.CharField(max_length=2, help_text="ISO 3166-1 alpha-2 country code")
+    tax_id = models.CharField(max_length=50, blank=True, null=True, help_text="Tax Identification Number")
+
+    def clean(self):
+        if self.tax_id:
+            self.tax_id = self.tax_id.upper().replace(" ", "")
+            if not self.is_valid_tax_id():
+                raise ValidationError("Invalid Tax Identification Number for the specified country.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def is_valid_tax_id(self):
+        # Implement country-specific validation logic here
+        if self.country == 'US':
+            return self.is_valid_us_ein()
+        elif self.country in ['GB', 'IE']:  # UK and Ireland
+            return self.is_valid_vat_number()
+        # Add more country-specific validations as needed
+        return True  # Default to True if no specific validation is implemented
+
+    def is_valid_us_ein(self):
+        # Basic validation for US Employer Identification Number (EIN)
+        return len(self.tax_id) == 9 and self.tax_id.isdigit()
+
+    def is_valid_vat_number(self):
+        # Basic validation for EU VAT numbers
+        country_prefix = self.tax_id[:2]
+        number = self.tax_id[2:]
+        if country_prefix != self.country:
+            return False
+        # Add more specific VAT number format checks here
+        return len(number) >= 5 and number.isalnum()
+
+    def get_tax_id_display(self):
+        if self.country == 'US':
+            return f"EIN: {self.tax_id}"
+        elif self.country in ['GB', 'IE']:
+            return f"VAT: {self.tax_id}"
+        return f"Tax ID: {self.tax_id}"
 
     def __str__(self):
         return self.name
-
+    
+    
 class OrganisationPointAccount(TimeStampMixin):
     organisation = models.OneToOneField(Organisation, on_delete=models.CASCADE, related_name='point_account')
     balance = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Point Account for {self.organisation.name}"
+
+    def add_points(self, amount):
+        self.balance += amount
+        self.save()
+
+    def use_points(self, amount):
+        if self.balance >= amount:
+            self.balance -= amount
+            self.save()
+            return True
+        return False
+
+    @transaction.atomic
+    def transfer_points_to_product(self, product, amount):
+        if self.use_points(amount):
+            product_account, created = ProductPointAccount.objects.get_or_create(product=product)
+            product_account.add_points(amount)
+            PointTransaction.objects.create(
+                account=self,
+                product_account=product_account,
+                amount=amount,
+                transaction_type='TRANSFER',
+                description=f"Transfer from {self.organisation.name} to {product.name}"
+            )
+            return True
+        return False
+    
+
+class ProductPointAccount(TimeStampMixin):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='product_point_account')
+    balance = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Point Account for {self.product.name}"
 
     def add_points(self, amount):
         self.balance += amount
@@ -45,23 +120,6 @@ class OrganisationPointAccount(TimeStampMixin):
             return True
         return False
 
-class ProductPointAccount(TimeStampMixin):
-    product = models.OneToOneField('product_management.Product', on_delete=models.CASCADE, related_name='product_point_account')
-    balance = models.PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return f"Point Account for {self.product.name}"
-
-    def add_points(self, amount):
-        self.balance += amount
-        self.save()
-
-    def use_points(self, amount):
-        if self.balance >= amount:
-            self.balance -= amount
-            self.save()
-            return True
-        return False
 
 class PointTransaction(TimeStampMixin, UUIDMixin):
     TRANSACTION_TYPES = [
@@ -71,8 +129,8 @@ class PointTransaction(TimeStampMixin, UUIDMixin):
         ('TRANSFER', 'Transfer')
     ]
 
-    account = models.ForeignKey('OrganisationPointAccount', on_delete=models.CASCADE, related_name='org_transactions', null=True, blank=True)
-    product_account = models.ForeignKey('ProductPointAccount', on_delete=models.CASCADE, related_name='product_transactions', null=True, blank=True)
+    account = models.ForeignKey(OrganisationPointAccount, on_delete=models.CASCADE, related_name='org_transactions', null=True, blank=True)
+    product_account = models.ForeignKey(ProductPointAccount, on_delete=models.CASCADE, related_name='product_transactions', null=True, blank=True)
     amount = models.PositiveIntegerField()
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     description = models.TextField(blank=True)
@@ -96,13 +154,12 @@ class BountyCart(TimeStampMixin, UUIDMixin):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     organisation = models.ForeignKey('Organisation', on_delete=models.SET_NULL, null=True, blank=True)
-    product = models.ForeignKey('product_management.Product', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     status = models.CharField(
         max_length=20,
         choices=BountyCartStatus.choices,
         default=BountyCartStatus.OPEN
     )
-
     def __str__(self):
         return f"Bounty Cart for {self.user.username} - {self.product.name} ({self.status})"
 
@@ -126,26 +183,41 @@ class BountyCart(TimeStampMixin, UUIDMixin):
 
 class BountyCartItem(TimeStampMixin, UUIDMixin):
     cart = models.ForeignKey(BountyCart, related_name='items', on_delete=models.CASCADE)
-    bounty = models.ForeignKey('product_management.Bounty', on_delete=models.CASCADE)
-    points = models.PositiveIntegerField(validators=[MinValueValidator(0)], default=0)
-    usd_amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], default=0)
+    bounty = models.ForeignKey(Bounty, on_delete=models.CASCADE)
+    funding_amount = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    funding_type = models.CharField(
+        max_length=10,
+        choices=[('Points', 'Points'), ('USD', 'USD')],
+    )
 
     def __str__(self):
-        return f"{self.bounty.title} in {self.cart}"
+        return f"Funding for {self.bounty.title} in {self.cart}"
 
     def clean(self):
-        if self.bounty.reward_type == 'Points' and self.usd_amount > 0:
-            raise ValidationError("USD amount should be 0 for Points reward type")
-        if self.bounty.reward_type == 'USD' and self.points > 0:
-            raise ValidationError("Points should be 0 for USD reward type")
-        if self.bounty.reward_type == 'Points' and self.points == 0:
-            raise ValidationError("Points should be greater than 0 for Points reward type")
-        if self.bounty.reward_type == 'USD' and self.usd_amount == 0:
-            raise ValidationError("USD amount should be greater than 0 for USD reward type")
+        if not self.bounty:
+            raise ValidationError("A bounty must be associated with this cart item.")
+
+        if self.funding_type != self.bounty.reward_type:
+            raise ValidationError(f"Funding type ({self.funding_type}) must match the bounty's reward type ({self.bounty.reward_type}).")
+
+        if self.funding_amount != self.bounty.reward_amount:
+            raise ValidationError(f"Funding amount ({self.funding_amount}) must match the bounty's reward amount ({self.bounty.reward_amount}).")
+
+        if self.funding_type == 'USD':
+            # TODO: Additional check for USD bounties if needed
+            pass  # Remove this pass statement if specific USD-related checks are added
 
     def save(self, *args, **kwargs):
-        self.clean()
+        self.full_clean()  # This calls clean() and validates model fields
         super().save(*args, **kwargs)
+
+    @property
+    def points(self):
+        return self.funding_amount if self.funding_type == 'Points' else 0
+
+    @property
+    def usd_amount(self):
+        return self.funding_amount / 100 if self.funding_type == 'USD' else 0
 
 
 class SalesOrder(TimeStampMixin, UUIDMixin):
@@ -156,13 +228,39 @@ class SalesOrder(TimeStampMixin, UUIDMixin):
         PAYMENT_FAILED = "Payment Failed", "Payment Failed"
         REFUNDED = "Refunded", "Refunded"
 
-    bounty_cart = models.OneToOneField('BountyCart', on_delete=models.PROTECT, related_name='sales_order')
+    bounty_cart = models.OneToOneField(BountyCart, on_delete=models.PROTECT, related_name='sales_order')
     status = models.CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
     total_points = models.PositiveIntegerField(default=0)
-    total_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_usd_cents = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Order {self.id} for Cart {self.bounty_cart.id}"
+
+    def clean(self):
+        calculated_total_points = self.calculate_total_points()
+        calculated_total_usd_cents = self.calculate_total_usd_cents()
+        
+        if self.total_points != calculated_total_points:
+            raise ValidationError(f"Total points mismatch. Expected: {calculated_total_points}, Got: {self.total_points}")
+        
+        if self.total_usd_cents != calculated_total_usd_cents:
+            raise ValidationError(f"Total USD cents mismatch. Expected: {calculated_total_usd_cents}, Got: {self.total_usd_cents}")
+
+    def save(self, *args, **kwargs):
+        self.total_points = self.calculate_total_points()
+        self.total_usd_cents = self.calculate_total_usd_cents()
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def calculate_total_points(self):
+        return self.bounty_cart.items.filter(funding_type='Points').aggregate(Sum('funding_amount'))['funding_amount__sum'] or 0
+
+    def calculate_total_usd_cents(self):
+        return self.bounty_cart.items.filter(funding_type='USD').aggregate(Sum('funding_amount'))['funding_amount__sum'] or 0
+
+    @property
+    def total_usd(self):
+        return self.total_usd_cents / 100
 
     @transaction.atomic
     def process_payment(self):
@@ -184,11 +282,11 @@ class SalesOrder(TimeStampMixin, UUIDMixin):
                     amount=self.total_points,
                     transaction_type='USE',
                     description=f"Points used for Order {self.id}",
-                    bounty_cart=self.bounty_cart
+                    sales_order=self
                 )
 
             # Process USD payment
-            if self.total_usd > 0:
+            if self.total_usd_cents > 0:
                 if not self._process_usd_payment():
                     raise ValueError("USD payment failed")
 
@@ -211,7 +309,75 @@ class SalesOrder(TimeStampMixin, UUIDMixin):
 
     def activate_purchases(self):
         for item in self.bounty_cart.items.all():
-            if item.bounty.challenge:
-                item.bounty.challenge.status = 'ACTIVE'
-                item.bounty.challenge.save()
-            # Add similar logic for competitions if needed
+            bounty = item.bounty
+            if bounty.challenge:
+                self._activate_challenge(bounty.challenge)
+            elif bounty.competition:
+                self._activate_competition(bounty.competition)
+
+    def _activate_challenge(self, challenge):
+        if challenge.status != Challenge.ChallengeStatus.ACTIVE:
+            challenge.status = Challenge.ChallengeStatus.ACTIVE
+            challenge.save()
+
+    def _activate_competition(self, competition):
+        if competition.status == Competition.CompetitionStatus.DRAFT:
+            competition.status = Competition.CompetitionStatus.ACTIVE
+            competition.save()
+        # TODO: refine with steps such as:
+        # - Setting the start date if it's not already set
+        # - Notifications
+        # - Creating any additional objects
+
+    def refund(self):
+        if self.status != self.OrderStatus.COMPLETED:
+            return False
+
+        try:
+            with transaction.atomic():
+                # Refund points
+                if self.total_points > 0:
+                    product_account = self.bounty_cart.product.product_point_account
+                    product_account.add_points(self.total_points)
+                    PointTransaction.objects.create(
+                        product_account=product_account,
+                        amount=self.total_points,
+                        transaction_type='REFUND',
+                        description=f"Points refunded for Order {self.id}",
+                        sales_order=self
+                    )
+
+                # Refund USD (implement actual refund logic here)
+                if self.total_usd_cents > 0:
+                    # Implement USD refund logic
+                    pass
+
+                self.status = self.OrderStatus.REFUNDED
+                self.save()
+
+                # Deactivate purchases
+                self._deactivate_purchases()
+
+                return True
+        except Exception as e:
+            # Log the error
+            return False
+
+    def _deactivate_purchases(self):
+        for item in self.bounty_cart.items.all():
+            bounty = item.bounty
+            if bounty.challenge:
+                self._deactivate_challenge(bounty.challenge)
+            elif bounty.competition:
+                self._deactivate_competition(bounty.competition)
+
+    def _deactivate_challenge(self, challenge):
+        if challenge.status == Challenge.ChallengeStatus.ACTIVE:
+            challenge.status = Challenge.ChallengeStatus.DRAFT
+            challenge.save()
+
+    def _deactivate_competition(self, competition):
+        if competition.status == Competition.CompetitionStatus.ACTIVE:
+            competition.status = Competition.CompetitionStatus.DRAFT
+            competition.save()
+        # Add any additional logic needed for deactivating a competition

@@ -220,7 +220,7 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         default=ChallengePriority.HIGH,
     )
     published_id = models.IntegerField(default=0, blank=True, editable=False)
-    auto_approve_task_claims = models.BooleanField(default=True)
+    auto_bounty_claims = models.BooleanField(default=False)
     created_by = models.ForeignKey(
         "talent.Person",
         on_delete=models.CASCADE,
@@ -499,22 +499,6 @@ class ChallengeDependency(models.Model):
 
     class Meta:
         db_table = "product_management_challenge_dependencies"
-
-
-class ProductChallenge(TimeStampMixin, UUIDMixin):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
-
-
-@receiver(post_save, sender=ProductChallenge)
-def save_product_task(sender, instance, created, **kwargs):
-    if created:
-        challenge = instance.challenge
-        last_product_challenge = (
-            Challenge.objects.filter(productchallenge__product=instance.product).order_by("-published_id").first()
-        )
-        challenge.published_id = last_product_challenge.published_id + 1 if last_product_challenge else 1
-        challenge.save()
 
 
 class ContributorGuide(models.Model):
