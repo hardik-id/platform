@@ -341,10 +341,9 @@ class BountyForm(forms.ModelForm):
 
     class Meta:
         model = Bounty
-        fields = ["title", "description", "points", "status"]
+        fields = ["title", "description", "status"]
 
         widgets = {
-            "points": forms.NumberInput(attrs={"class": global_utils.text_field_class_names}),
             "status": forms.Select(attrs={"class": global_utils.text_field_class_names, "id": "id_bounty_status"}),
         }
 
@@ -360,14 +359,14 @@ class BountyForm(forms.ModelForm):
                 attributes["cols"] = 40
                 attributes["rows"] = 2
 
-            if key not in ["status", "points"]:
+            if key not in ["status"]:
                 field.widget.attrs.update(**attributes)
 
 
 BountyFormset = modelformset_factory(
     Bounty,
     form=BountyForm,
-    fields=("title", "description", "points", "status"),
+    fields=("title", "description", "status"),
     extra=0,
     can_delete=True,
 )
