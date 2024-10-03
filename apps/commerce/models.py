@@ -1,229 +1,122 @@
-from django.contrib.contenttypes.fields import GenericRelation
-from django.core.validators import RegexValidator
+from django.conf import settings
 from django.db import models
-
+from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 from apps.openunited.mixins import TimeStampMixin, UUIDMixin
-from apps.product_management.models import Product
-
-from . import utils
-
 
 class Organisation(TimeStampMixin):
-    username = models.CharField(
-        max_length=39,
-        unique=True,
-        default="",
-        validators=[
-            RegexValidator(
-                regex="^[a-z0-9]*$",
-                message="Username may only contain letters and numbers",
-                code="invalid_username",
-            )
-        ],
-    )
     name = models.CharField(max_length=512, unique=True)
-    products = GenericRelation(Product)
-    photo = models.ImageField(upload_to="avatars/", null=True, blank=True)
-
-    class Meta:
-        verbose_name_plural = "Organisations"
-
-    def get_username(self):
-        return self.username
+    country = models.CharField(max_length=2, default='US')  # ISO country code with default 'US'
+    vat_number = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.name
 
+class OrganisationPointAccount(TimeStampMixin):
+    organisation = models.OneToOneField(Organisation, on_delete=models.CASCADE, related_name='point_account')
+    balance = models.PositiveIntegerField(default=0)
 
-class OrganisationAccountCredit(TimeStampMixin, UUIDMixin):
-    organisation_account = models.ForeignKey(to="OrganisationAccount", on_delete=models.CASCADE)
-    number_of_points = models.PositiveIntegerField()
-    type_of_points = models.IntegerField(choices=utils.PointTypes.choices(), default=utils.PointTypes.NONLIQUID)
-    credit_reason = models.IntegerField(
-        choices=utils.OrganisationAccountCreditReasons.choices(),
-        default=utils.OrganisationAccountCreditReasons.GRANT,
-    )
+    def __str__(self):
+        return f"Point Account for {self.organisation.name}"
 
-
-class OrganisationAccount(models.Model):
-    organisation = models.ForeignKey(to="Organisation", on_delete=models.CASCADE)
-    liquid_points_balance = models.PositiveBigIntegerField()
-    nonliquid_points_balance = models.PositiveBigIntegerField()
-
-
-class Cart(TimeStampMixin, UUIDMixin):
-    organisation_account = models.ForeignKey(OrganisationAccount, on_delete=models.CASCADE)
-    creator = models.ForeignKey(to="talent.Person", on_delete=models.CASCADE)
-    number_of_points = models.IntegerField(default=500)
-    currency_of_payment = models.IntegerField(choices=utils.CurrencyTypes.choices(), default=utils.CurrencyTypes.USD)
-    price_per_point_in_cents = models.IntegerField()
-    subtotal_in_cents = models.PositiveBigIntegerField()
-    sales_tax_in_cents = models.PositiveBigIntegerField()
-    total_payable_in_cents = models.PositiveBigIntegerField()
-    payment_type = models.IntegerField(choices=utils.PaymentTypes.choices(), default=utils.PaymentTypes.ONLINE)
-
-
-class Grant(models.Model):
-    organisation_account = models.ForeignKey(OrganisationAccount, on_delete=models.CASCADE)
-    nominating_bee_keeper = models.ForeignKey(to="talent.Person", on_delete=models.CASCADE, related_name="nominator")
-    approving_bee_keeper = models.ForeignKey(to="talent.Person", on_delete=models.CASCADE, related_name="approver")
-    description = models.TextField(max_length=1024)
-    number_of_points = models.IntegerField(default=500)
-    status = models.IntegerField(
-        choices=utils.LifecycleStatusOptions.choices(),
-        default=utils.LifecycleStatusOptions.NEW,
-    )
-    organisation_account_credit = models.ForeignKey(
-        to="OrganisationAccountCredit", on_delete=models.CASCADE, null=True
-    )
-
-    def mark_points_as_granted(self, credit):
-        self.organisation_account_credit = credit
-        self.status = utils.LifecycleStatusOptions.COMPLETE
+    def add_points(self, amount):
+        self.balance += amount
         self.save()
 
+    def use_points(self, amount):
+        if self.balance >= amount:
+            self.balance -= amount
+            self.save()
+            return True
+        return False
 
-class SalesOrder(TimeStampMixin, UUIDMixin):
-    organisation_account = models.ForeignKey(OrganisationAccount, on_delete=models.CASCADE)
-    organisation_account_credit = models.ForeignKey(
-        to="OrganisationAccountCredit", on_delete=models.CASCADE, null=True
+class PointTransaction(TimeStampMixin, UUIDMixin):
+    TRANSACTION_TYPES = [
+        ('GRANT', 'Grant'),
+        ('USE', 'Use'),
+    ]
+
+    account = models.ForeignKey(OrganisationPointAccount, on_delete=models.CASCADE, related_name='transactions')
+    amount = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    transaction_type = models.CharField(max_length=5, choices=TRANSACTION_TYPES)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.get_transaction_type_display()} of {self.amount} points for {self.account.organisation.name}"
+
+class BountyCart(TimeStampMixin, UUIDMixin):
+    class BountyCartStatus(models.TextChoices):
+        CREATED = "Created", "Created"
+        PENDING = "Pending", "Pending Admin Action"
+        COMPLETED = "Completed", "Completed"
+        CANCELLED = "Cancelled", "Cancelled"
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    organisation = models.ForeignKey('Organisation', on_delete=models.SET_NULL, null=True, blank=True)
+    product = models.ForeignKey('product_management.Product', on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=20,
+        choices=BountyCartStatus.choices,
+        default=BountyCartStatus.CREATED
     )
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    number_of_points = models.IntegerField()
-    currency_of_payment = models.IntegerField(choices=utils.CurrencyTypes.choices(), default=utils.CurrencyTypes.USD)
-    price_per_point_in_cents = models.IntegerField()
-    subtotal_in_cents = models.PositiveBigIntegerField()
-    sales_tax_in_cents = models.PositiveBigIntegerField()
-    total_payable_in_cents = models.PositiveBigIntegerField()
-    payment_type = models.IntegerField(choices=utils.PaymentTypes.choices(), default=utils.PaymentTypes.ONLINE)
-    payment_status = models.IntegerField(
-        choices=utils.PaymentStatusOptions.choices(),
-        default=utils.PaymentStatusOptions.PENDING,
-    )
-    process_status = models.IntegerField(
-        choices=utils.LifecycleStatusOptions.choices(),
-        default=utils.LifecycleStatusOptions.NEW,
-    )
+    requires_admin_approval = models.BooleanField(default=False)
 
 
-class InboundPayment(TimeStampMixin, UUIDMixin):
-    sales_order = models.ForeignKey(SalesOrder, on_delete=models.CASCADE)
-    payment_type = models.IntegerField(choices=utils.PaymentTypes.choices(), default=utils.PaymentTypes.ONLINE)
-    currency_of_payment = models.IntegerField(choices=utils.CurrencyTypes.choices(), default=utils.CurrencyTypes.USD)
-    amount_paid_in_cents = models.PositiveBigIntegerField()
-    transaction_detail = models.TextField(max_length=1024)
+    def __str__(self):
+        return f"Bounty Cart for {self.user.username} - {self.product.name} ({self.status})"
 
+    def total_points(self):
+        return sum(item.points for item in self.items.all() if item.bounty.reward_type == 'Points')
 
-class OrganisationAccountDebit(TimeStampMixin, UUIDMixin):
-    DebitReason = (
-        (1, "TRANSFER"),
-        (2, "EXPIRY"),
-    )
-    organisation_account = models.ForeignKey(to="OrganisationAccount", on_delete=models.CASCADE)
-    number_of_points = models.PositiveIntegerField
-    type_of_points = models.IntegerField(choices=utils.PointTypes.choices(), default=utils.PointTypes.NONLIQUID)
-    debit_reason = models.IntegerField(choices=DebitReason, default=0)
+    def total_usd(self):
+        return sum(item.usd_amount for item in self.items.all() if item.bounty.reward_type == 'USD')
 
+    def process_cart(self):
+        if self.status in [self.BountyCartStatus.CREATED, self.BountyCartStatus.PENDING]:
+            total_points = self.total_points()
+            total_usd = self.total_usd()
 
-class ProductAccount(models.Model):
-    product = models.ForeignKey(to="product_management.Product", on_delete=models.CASCADE)
-    liquid_points_balance = models.PositiveBigIntegerField()
-    nonliquid_points_balance = models.PositiveBigIntegerField()
+            if total_points > 0 and self.organisation:
+                if not self.organisation.point_account.use_points(total_points):
+                    return False  # Not enough points
 
+            if total_usd > 0:
+                # Process USD payment here
+                # If payment fails, return False
+                pass
 
-class ProductAccountCredit(TimeStampMixin, UUIDMixin):
-    # each product account credit has a matching organisation account debit
-    organisation_account_debit = models.ForeignKey(OrganisationAccountDebit, on_delete=models.CASCADE)
-    product_account = models.ForeignKey(ProductAccount, on_delete=models.CASCADE)
-    number_of_points = models.PositiveIntegerField()
-    type_of_points = models.IntegerField(choices=utils.PointTypes.choices(), default=utils.PointTypes.NONLIQUID)
-    actioned_by = models.ForeignKey(to="talent.Person", on_delete=models.CASCADE)
+            # If we've reached here, both point deduction and USD payment (if applicable) were successful
+            for item in self.items.all():
+                if item.bounty.challenge:
+                    item.bounty.challenge.status = 'ACTIVE'
+                    item.bounty.challenge.save()
+                # Add similar logic for competitions if needed
 
+            self.status = self.BountyCartStatus.COMPLETED
+            self.save()
+            return True
 
-class ProductAccountReservation(TimeStampMixin, UUIDMixin):
-    bounty_claim = models.ForeignKey(to="talent.BountyClaim", on_delete=models.CASCADE)
-    number_of_points = models.PositiveIntegerField()
-    type_of_points = models.IntegerField(choices=utils.PointTypes.choices(), default=utils.PointTypes.NONLIQUID)
+        return False
 
+class BountyCartItem(TimeStampMixin, UUIDMixin):
+    cart = models.ForeignKey(BountyCart, related_name='items', on_delete=models.CASCADE)
+    bounty = models.ForeignKey('product_management.Bounty', on_delete=models.CASCADE)
+    points = models.PositiveIntegerField(validators=[MinValueValidator(0)], default=0)
+    usd_amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], default=0)
 
-class ProductAccountDebit(TimeStampMixin, UUIDMixin):
-    bounty_claim = models.ForeignKey(to="talent.BountyClaim", on_delete=models.CASCADE)
-    number_of_points = models.PositiveIntegerField()
-    type_of_points = models.IntegerField(choices=utils.PointTypes.choices(), default=utils.PointTypes.NONLIQUID)
+    def __str__(self):
+        return f"{self.bounty.title} in {self.cart}"
 
+    def clean(self):
+        if self.bounty.reward_type == 'Points' and self.usd_amount > 0:
+            raise ValidationError("USD amount should be 0 for Points reward type")
+        if self.bounty.reward_type == 'USD' and self.points > 0:
+            raise ValidationError("Points should be 0 for USD reward type")
+        if self.bounty.reward_type == 'Points' and self.points == 0:
+            raise ValidationError("Points should be greater than 0 for Points reward type")
+        if self.bounty.reward_type == 'USD' and self.usd_amount == 0:
+            raise ValidationError("USD amount should be greater than 0 for USD reward type")
 
-class ContributorAccount(models.Model):
-    owner = models.ForeignKey(to="talent.Person", on_delete=models.CASCADE)
-    community_status = models.IntegerField(
-        choices=utils.CommunityStatusOptions.choices(),
-        default=utils.CommunityStatusOptions.DRONE,
-    )
-    liquid_points_balance = models.PositiveBigIntegerField(default=0)
-    nonliquid_points_balance = models.PositiveBigIntegerField(default=0)
-
-
-class PaymentOrder(TimeStampMixin, UUIDMixin):
-    contributor_account = models.ForeignKey(ContributorAccount, on_delete=models.CASCADE)
-    currency_of_payment = models.IntegerField(choices=utils.CurrencyTypes.choices(), default=utils.CurrencyTypes.USD)
-    subtotal_in_cents = models.PositiveBigIntegerField()
-    sales_tax_in_cents = models.PositiveBigIntegerField()
-    total_payable_in_cents = models.PositiveBigIntegerField()
-    PaymentType = (
-        (1, "PARTNER"),
-        (2, "BANK TRANSFER"),
-    )
-    payment_type = models.IntegerField(choices=PaymentType, default=0)
-    status = models.IntegerField(
-        choices=utils.LifecycleStatusOptions.choices(),
-        default=utils.LifecycleStatusOptions.NEW,
-    )
-
-
-class OutboundPayment(TimeStampMixin, UUIDMixin):
-    payment_order = models.ForeignKey(PaymentOrder, on_delete=models.CASCADE)
-    details = models.TextField(max_length=1024)
-
-
-class ContributorReward(TimeStampMixin, UUIDMixin):
-    RewardedActions = (
-        (1, "INVITED FRIENDS"),
-        (2, "VERIFIED IDENTITY"),
-    )
-    contributor_account = models.ForeignKey(ContributorAccount, on_delete=models.CASCADE)
-    action = models.IntegerField(choices=RewardedActions, default=0)
-    points = models.IntegerField(default=10)
-
-
-class ContributorAccountCredit(TimeStampMixin, UUIDMixin):
-    CreditReason = ((1, "BOUNTY"), (2, "LIQUIDATION"), (3, "REWARD"))
-    reason = models.IntegerField(choices=CreditReason, default=0)
-    bounty_claim = models.ForeignKey(to="talent.BountyClaim", on_delete=models.CASCADE)
-    contributor_account = models.ForeignKey(ContributorAccount, on_delete=models.CASCADE)
-    number_of_points = models.PositiveIntegerField()
-    type_of_points = models.IntegerField(choices=utils.PointTypes.choices(), default=utils.PointTypes.NONLIQUID)
-    # when liquid points are cashed out, then an equivalent credit of nonliquid points is granted
-    payment_order = models.ForeignKey(PaymentOrder, on_delete=models.CASCADE)
-    # only applicable if credit is a reward
-    contributor_reward = models.ForeignKey(ContributorReward, on_delete=models.CASCADE)
-
-
-class ContributorAccountDebit(TimeStampMixin, UUIDMixin):
-    DebitReason = (
-        (1, "LIQUIDATION"),
-        (2, "PUNISHMENT"),
-    )
-    reason = models.IntegerField(choices=DebitReason, default=0)
-    contributor_account = models.ForeignKey(ContributorAccount, on_delete=models.CASCADE)
-    number_of_points = models.PositiveIntegerField()
-    type_of_points = models.IntegerField(choices=utils.PointTypes.choices(), default=utils.PointTypes.NONLIQUID)
-    payment_order = models.ForeignKey(PaymentOrder, on_delete=models.CASCADE)
-
-
-class PointPriceConfiguration(TimeStampMixin, UUIDMixin):
-    applicable_from_date = models.DateField()
-    usd_point_inbound_price_in_cents = models.IntegerField()
-    eur_point_inbound_price_in_cents = models.IntegerField()
-    gbp_point_inbound_price_in_cents = models.IntegerField()
-    usd_point_outbound_price_in_cents = models.IntegerField()
-    eur_point_outbound_price_in_cents = models.IntegerField()
-    gbp_point_outbound_price_in_cents = models.IntegerField()
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
