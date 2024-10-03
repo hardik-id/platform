@@ -29,22 +29,62 @@ class OrganisationPointAccount(TimeStampMixin):
             self.save()
             return True
         return False
+    
+    @transaction.atomic
+    def transfer_points_to_product(self, product, amount):
+        if self.use_points(amount):
+            product_account, created = ProductPointAccount.objects.get_or_create(product=product)
+            product_account.add_points(amount)
+            PointTransaction.objects.create(
+                account=self,
+                product_account=product_account,
+                amount=amount,
+                transaction_type='TRANSFER',
+                description=f"Transfer from {self.organisation.name} to {product.name}"
+            )
+            return True
+        return False
+
+class ProductPointAccount(TimeStampMixin):
+    product = models.OneToOneField('product_management.Product', on_delete=models.CASCADE, related_name='point_account')
+    balance = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Point Account for {self.product.name}"
+
+    def add_points(self, amount):
+        self.balance += amount
+        self.save()
+
+    def use_points(self, amount):
+        if self.balance >= amount:
+            self.balance -= amount
+            self.save()
+            return True
+        return False
 
 class PointTransaction(TimeStampMixin, UUIDMixin):
     TRANSACTION_TYPES = [
         ('GRANT', 'Grant'),
         ('USE', 'Use'),
         ('REFUND', 'Refund'),
+        ('TRANSFER', 'Transfer'),  # New type for org to product transfers
     ]
 
-    account = models.ForeignKey('OrganisationPointAccount', on_delete=models.CASCADE, related_name='transactions')
+    account = models.ForeignKey('OrganisationPointAccount', on_delete=models.CASCADE, related_name='org_transactions', null=True, blank=True)
+    product_account = models.ForeignKey('ProductPointAccount', on_delete=models.CASCADE, related_name='product_transactions', null=True, blank=True)
     amount = models.PositiveIntegerField()
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     description = models.TextField(blank=True)
     bounty_cart = models.ForeignKey('BountyCart', on_delete=models.SET_NULL, null=True, blank=True, related_name='point_transactions')
 
     def __str__(self):
-        return f"{self.get_transaction_type_display()} of {self.amount} points for {self.account.organisation.name}"
+        account_name = self.account.organisation.name if self.account else self.product_account.product.name
+        return f"{self.get_transaction_type_display()} of {self.amount} points for {account_name}"
+
+    def clean(self):
+        if (self.account is None) == (self.product_account is None):
+            raise ValidationError("Transaction must be associated with either an OrganisationPointAccount or a ProductPointAccount, but not both.")
 
 class BountyCart(TimeStampMixin, UUIDMixin):
     class BountyCartStatus(models.TextChoices):
@@ -79,13 +119,13 @@ class BountyCart(TimeStampMixin, UUIDMixin):
             total_points = self.total_points()
             total_usd = self.total_usd()
 
-            if total_points > 0 and self.organisation:
-                if not self.organisation.point_account.use_points(total_points):
+            if total_points > 0:
+                product_account, created = ProductPointAccount.objects.get_or_create(product=self.product)
+                if not product_account.use_points(total_points):
                     return False  # Not enough points
                 
-                # Create PointTransaction for points used
                 PointTransaction.objects.create(
-                    account=self.organisation.point_account,
+                    product_account=product_account,
                     amount=total_points,
                     transaction_type='USE',
                     description=f"Points used for Bounty Cart {self.id}",

@@ -71,6 +71,9 @@ class Product(ProductMixin, common.AttachmentAbstract):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
+    point_account = models.OneToOneField('commerce.ProductPointAccount', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+
+
     def make_private(self):
         self.is_private = True
         self.save()
@@ -101,6 +104,22 @@ class Product(ProductMixin, common.AttachmentAbstract):
 
     def __str__(self):
         return self.name
+
+    @property
+    def point_balance(self):
+        return self.point_account.balance if self.point_account else 0
+
+    def ensure_point_account(self):
+        if not self.point_account:
+            ProductPointAccount = self.point_account.field.related_model
+            self.point_account, created = ProductPointAccount.objects.get_or_create(product=self)
+            if created:
+                self.save()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.ensure_point_account()
+
 
 
 class Initiative(TimeStampMixin, UUIDMixin):
