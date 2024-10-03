@@ -6,6 +6,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
+from django.apps import apps
 
 from model_utils import FieldTracker
 from treebeard.mp_tree import MP_Node
@@ -71,9 +72,6 @@ class Product(ProductMixin, common.AttachmentAbstract):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
-    point_account = models.OneToOneField('commerce.ProductPointAccount', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-
-
     def make_private(self):
         self.is_private = True
         self.save()
@@ -106,20 +104,23 @@ class Product(ProductMixin, common.AttachmentAbstract):
         return self.name
 
     @property
+    def point_account(self):
+        return self.product_point_account
+
+    @property
     def point_balance(self):
-        return self.point_account.balance if self.point_account else 0
+        try:
+            return self.product_point_account.balance
+        except AttributeError:
+            return 0
 
     def ensure_point_account(self):
-        if not self.point_account:
-            ProductPointAccount = self.point_account.field.related_model
-            self.point_account, created = ProductPointAccount.objects.get_or_create(product=self)
-            if created:
-                self.save()
+        ProductPointAccount = apps.get_model('commerce', 'ProductPointAccount')
+        ProductPointAccount.objects.get_or_create(product=self)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.ensure_point_account()
-
 
 
 class Initiative(TimeStampMixin, UUIDMixin):

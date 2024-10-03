@@ -46,7 +46,7 @@ class OrganisationPointAccount(TimeStampMixin):
         return False
 
 class ProductPointAccount(TimeStampMixin):
-    product = models.OneToOneField('product_management.Product', on_delete=models.CASCADE, related_name='point_account')
+    product = models.OneToOneField('product_management.Product', on_delete=models.CASCADE, related_name='product_point_account')
     balance = models.PositiveIntegerField(default=0)
 
     def __str__(self):
