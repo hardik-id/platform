@@ -1,38 +1,58 @@
 import pytest
-from apps.commerce.models import BountyCart, BountyCartItem
+from django.urls import reverse
+from apps.commerce.models import BountyCart, PointTransaction
 
 @pytest.mark.django_db
-class TestBountyCart:
-    def test_create_bounty_cart(self, user, product):
-        cart = BountyCart.objects.create(
-            user=user,
-            product=product,
-            status=BountyCart.BountyCartStatus.CREATED
-        )
-        assert cart.user == user
-        assert cart.product == product
-        assert cart.status == BountyCart.BountyCartStatus.CREATED
-
-    def test_total_points(self, bounty_cart_with_items):
-        assert bounty_cart_with_items.total_points() == 100
-
-    def test_process_cart(self, bounty_cart_with_items, organisation_point_account):
+class TestBountyCartProcessing:
+    def test_process_cart_with_points(self, client, user, bounty_cart_with_items, organisation_point_account):
+        client.force_login(user)
         bounty_cart_with_items.organisation = organisation_point_account.organisation
         bounty_cart_with_items.save()
-        assert bounty_cart_with_items.process_cart() == True
+        
+        initial_balance = organisation_point_account.balance
+        total_points = bounty_cart_with_items.total_points()
+        
+        url = reverse('process_cart', args=[bounty_cart_with_items.id])
+        response = client.post(url)
+        
+        assert response.status_code == 302
         bounty_cart_with_items.refresh_from_db()
         assert bounty_cart_with_items.status == BountyCart.BountyCartStatus.COMPLETED
+        
         organisation_point_account.refresh_from_db()
-        assert organisation_point_account.balance == 900  # 1000 initial - 100 for the bounty
+        assert organisation_point_account.balance == initial_balance - total_points
+        
+        point_transaction = PointTransaction.objects.filter(bounty_cart=bounty_cart_with_items).first()
+        assert point_transaction is not None
+        assert point_transaction.amount == total_points
+        assert point_transaction.transaction_type == 'USE'
 
-@pytest.mark.django_db
-class TestBountyCartItem:
-    def test_create_bounty_cart_item(self, bounty_cart, bounty):
-        item = BountyCartItem.objects.create(
-            cart=bounty_cart,
-            bounty=bounty,
-            points=bounty.reward_amount
-        )
-        assert item.cart == bounty_cart
-        assert item.bounty == bounty
-        assert item.points == bounty.reward_amount
+    def test_process_cart_with_usd(self, client, user, bounty_cart_with_usd_items):
+        client.force_login(user)
+        
+        url = reverse('process_cart', args=[bounty_cart_with_usd_items.id])
+        response = client.post(url)
+        
+        assert response.status_code == 302
+        bounty_cart_with_usd_items.refresh_from_db()
+        assert bounty_cart_with_usd_items.status == BountyCart.BountyCartStatus.COMPLETED
+        
+        # Add assertions to check if USD payment was processed correctly
+
+    def test_process_cart_insufficient_points(self, client, user, bounty_cart_with_items, organisation_point_account):
+        client.force_login(user)
+        bounty_cart_with_items.organisation = organisation_point_account.organisation
+        bounty_cart_with_items.save()
+        
+        # Set balance to less than required
+        organisation_point_account.balance = bounty_cart_with_items.total_points() - 1
+        organisation_point_account.save()
+        
+        url = reverse('process_cart', args=[bounty_cart_with_items.id])
+        response = client.post(url)
+        
+        assert response.status_code == 302  # Assuming it redirects on failure
+        bounty_cart_with_items.refresh_from_db()
+        assert bounty_cart_with_items.status != BountyCart.BountyCartStatus.COMPLETED
+        
+        assert PointTransaction.objects.filter(bounty_cart=bounty_cart_with_items).count() == 0

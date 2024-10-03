@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from apps.openunited.mixins import TimeStampMixin, UUIDMixin
@@ -34,12 +34,14 @@ class PointTransaction(TimeStampMixin, UUIDMixin):
     TRANSACTION_TYPES = [
         ('GRANT', 'Grant'),
         ('USE', 'Use'),
+        ('REFUND', 'Refund'),
     ]
 
-    account = models.ForeignKey(OrganisationPointAccount, on_delete=models.CASCADE, related_name='transactions')
-    amount = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    transaction_type = models.CharField(max_length=5, choices=TRANSACTION_TYPES)
+    account = models.ForeignKey('OrganisationPointAccount', on_delete=models.CASCADE, related_name='transactions')
+    amount = models.PositiveIntegerField()
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     description = models.TextField(blank=True)
+    bounty_cart = models.ForeignKey('BountyCart', on_delete=models.SET_NULL, null=True, blank=True, related_name='point_transactions')
 
     def __str__(self):
         return f"{self.get_transaction_type_display()} of {self.amount} points for {self.account.organisation.name}"
@@ -71,6 +73,7 @@ class BountyCart(TimeStampMixin, UUIDMixin):
     def total_usd(self):
         return sum(item.usd_amount for item in self.items.all() if item.bounty.reward_type == 'USD')
 
+    @transaction.atomic
     def process_cart(self):
         if self.status in [self.BountyCartStatus.CREATED, self.BountyCartStatus.PENDING]:
             total_points = self.total_points()
@@ -79,11 +82,22 @@ class BountyCart(TimeStampMixin, UUIDMixin):
             if total_points > 0 and self.organisation:
                 if not self.organisation.point_account.use_points(total_points):
                     return False  # Not enough points
+                
+                # Create PointTransaction for points used
+                PointTransaction.objects.create(
+                    account=self.organisation.point_account,
+                    amount=total_points,
+                    transaction_type='USE',
+                    description=f"Points used for Bounty Cart {self.id}",
+                    bounty_cart=self
+                )
 
             if total_usd > 0:
                 # Process USD payment here
                 # If payment fails, return False
-                pass
+                payment_successful = self.process_usd_payment(total_usd)
+                if not payment_successful:
+                    return False
 
             # If we've reached here, both point deduction and USD payment (if applicable) were successful
             for item in self.items.all():
@@ -97,6 +111,12 @@ class BountyCart(TimeStampMixin, UUIDMixin):
             return True
 
         return False
+
+    def process_usd_payment(self, amount):
+        # TODO: Implement USD payment processing logic here
+        # Return True if payment is successful, False otherwise
+        # This is a placeholder implementation
+        return True  # Assuming payment is always successful for now
 
 class BountyCartItem(TimeStampMixin, UUIDMixin):
     cart = models.ForeignKey(BountyCart, related_name='items', on_delete=models.CASCADE)
