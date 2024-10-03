@@ -1,0 +1,326 @@
+[
+    {
+        "model": "product_management.productarea",
+        "pk": 21,
+        "fields": {
+            "path": "00200021",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Energy Consumption",
+            "description": "Track and analyze energy usage",
+            "product_tree": 4
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 22,
+        "fields": {
+            "path": "00200022",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Transportation Emissions",
+            "description": "Calculate emissions from various transport modes",
+            "product_tree": 4
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 23,
+        "fields": {
+            "path": "00200023",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Waste Generation",
+            "description": "Measure and analyze waste production",
+            "product_tree": 4
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 24,
+        "fields": {
+            "path": "0024",
+            "depth": 1,
+            "numchild": 3,
+            "name": "Budgeting Tools",
+            "description": "Features for personal budget management",
+            "product_tree": 5
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 25,
+        "fields": {
+            "path": "00240025",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Expense Categorization",
+            "description": "Categorize and track expenses",
+            "product_tree": 5
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 26,
+        "fields": {
+            "path": "00240026",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Income Tracking",
+            "description": "Monitor and analyze income sources",
+            "product_tree": 5
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 27,
+        "fields": {
+            "path": "00240027",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Budget Planner",
+            "description": "Create and manage budget plans",
+            "product_tree": 5
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 28,
+        "fields": {
+            "path": "0028",
+            "depth": 1,
+            "numchild": 3,
+            "name": "Event Management",
+            "description": "Tools for organizing virtual events",
+            "product_tree": 6
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 29,
+        "fields": {
+            "path": "00280029",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Event Creation Wizard",
+            "description": "Step-by-step event setup process",
+            "product_tree": 6
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 30,
+        "fields": {
+            "path": "00280030",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Attendee Registration",
+            "description": "Manage event registrations",
+            "product_tree": 6
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 31,
+        "fields": {
+            "path": "00280031",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Schedule Builder",
+            "description": "Create and manage event schedules",
+            "product_tree": 6
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 32,
+        "fields": {
+            "path": "0032",
+            "depth": 1,
+            "numchild": 3,
+            "name": "Code Editor",
+            "description": "Core code editing features",
+            "product_tree": 7
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 33,
+        "fields": {
+            "path": "00320033",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Syntax Highlighting",
+            "description": "Language-specific code coloring",
+            "product_tree": 7
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 34,
+        "fields": {
+            "path": "00320034",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Auto-completion",
+            "description": "Intelligent code completion suggestions",
+            "product_tree": 7
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 35,
+        "fields": {
+            "path": "00320035",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Version Control Integration",
+            "description": "Built-in version control features",
+            "product_tree": 7
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 36,
+        "fields": {
+            "path": "0036",
+            "depth": 1,
+            "numchild": 3,
+            "name": "Pet Services Finder",
+            "description": "Find pet care services",
+            "product_tree": 8
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 37,
+        "fields": {
+            "path": "00360037",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Veterinarians",
+            "description": "Find and book veterinarians",
+            "product_tree": 8
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 38,
+        "fields": {
+            "path": "00360038",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Groomers",
+            "description": "Find and book pet groomers",
+            "product_tree": 8
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 39,
+        "fields": {
+            "path": "00360039",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Pet Sitters",
+            "description": "Find and book pet sitters",
+            "product_tree": 8
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 40,
+        "fields": {
+            "path": "0040",
+            "depth": 1,
+            "numchild": 3,
+            "name": "Security Devices",
+            "description": "Smart home security devices",
+            "product_tree": 9
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 41,
+        "fields": {
+            "path": "00400041",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Smart Cameras",
+            "description": "AI-powered security cameras",
+            "product_tree": 9
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 42,
+        "fields": {
+            "path": "00400042",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Door/Window Sensors",
+            "description": "Sensors for entry points",
+            "product_tree": 9
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 43,
+        "fields": {
+            "path": "00400043",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Motion Detectors",
+            "description": "Detect movement in specified areas",
+            "product_tree": 9
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 44,
+        "fields": {
+            "path": "0044",
+            "depth": 1,
+            "numchild": 3,
+            "name": "Gear Marketplace",
+            "description": "Buy and sell music equipment",
+            "product_tree": 10
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 45,
+        "fields": {
+            "path": "00440045",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Buy/Sell Instruments",
+            "description": "Platform for instrument transactions",
+            "product_tree": 10
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 46,
+        "fields": {
+            "path": "00440046",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Gear Rentals",
+            "description": "Rent music equipment",
+            "product_tree": 10
+        }
+    },
+    {
+        "model": "product_management.productarea",
+        "pk": 47,
+        "fields": {
+            "path": "00440047",
+            "depth": 2,
+            "numchild": 0,
+            "name": "Equipment Reviews",
+            "description": "User-generated gear reviews",
+            "product_tree": 10
+        }
+    }
+]

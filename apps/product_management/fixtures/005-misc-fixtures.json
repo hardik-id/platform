@@ -1,0 +1,121 @@
+[
+    {
+        "model": "product_management.initiative",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-06T17:34:47.088Z",
+            "updated_at": "2024-05-06T17:34:47.088Z",
+            "uuid": "1d895f9c-4387-49bc-991f-3046f22e703f",
+            "name": "ArtCollab Beta Testing",
+            "product": 1,
+            "description": "Launch an initiative to conduct beta testing for ArtCollab, a collaborative digital art platform, inviting artists to participate and provide feedback on usability, features, and overall experience. The initiative aims to refine the platform before its official launch.",
+            "status": "Active",
+            "video_url": "https://www.youtube.com/embed/artcollab-beta-testing"
+        }
+    },
+    {
+        "model": "product_management.initiative",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-05-06T17:35:00.092Z",
+            "updated_at": "2024-05-06T17:35:00.092Z",
+            "uuid": "2d895f9c-4387-49bc-991f-3046f22e703f",
+            "name": "ArtCollab Community Spotlight",
+            "product": 1,
+            "description": "Launch an initiative to showcase the artworks created by the ArtCollab community, highlighting talented artists and their contributions to the platform. The initiative aims to foster a sense of community and appreciation among users.",
+            "status": "Active",
+            "video_url": "https://www.youtube.com/embed/artcollab-community-spotlight"
+        }
+    },
+    {
+        "model": "product_management.challenge",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-06T17:34:38.076Z",
+            "updated_at": "2024-05-06T17:34:38.076Z",
+            "uuid": "eaf9f4fb-352c-41b1-9434-504f579065f0",
+            "initiative": 1,
+            "product_area": 1,
+            "title": "Community Art Collaboration Challenge",
+            "description": "Launch a challenge for the CloudCanvas community to collaborate on creating a large-scale artwork. Participants will contribute their unique artistic styles to a shared canvas, resulting in a collective masterpiece.",
+            "short_description": "Collaborative challenge for community artwork creation.",
+            "status": "Active",
+            "blocked": false,
+            "featured": true,
+            "priority": "High",
+            "published_id": 0,
+            "auto_approve_bounty_claims": true,
+            "created_by": 1,
+            "updated_by": null,
+            "comments_start": null,
+            "product": 1,
+            "video_url": "https://www.youtube.com/watch?v=abcd1234"
+        }
+    },
+    {
+        "model": "product_management.challenge",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-05-06T17:34:38.076Z",
+            "updated_at": "2024-05-06T17:34:38.076Z",
+            "uuid": "8a3e8c16-26b0-4f21-96e2-c268e8d83b17",
+            "initiative": 1,
+            "product_area": 1,
+            "title": "Artist Showcase Challenge",
+            "description": "Launch a challenge for CloudCanvas artists to showcase their individual artworks and portfolios. Participants will have the opportunity to gain exposure and connect with potential collaborators and clients.",
+            "short_description": "Challenge for artists to showcase their portfolios.",
+            "status": "Active",
+            "blocked": false,
+            "featured": true,
+            "priority": "High",
+            "published_id": 0,
+            "auto_approve_bounty_claims": true,
+            "created_by": 1,
+            "updated_by": null,
+            "comments_start": null,
+            "product": 1,
+            "video_url": "https://www.youtube.com/watch?v=abcd1234"
+        }
+    },
+    {
+        "model": "product_management.competition",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-06T17:34:38.076Z",
+            "updated_at": "2024-05-06T17:34:38.076Z",
+            "product_area": 1,
+            "product": 1,
+            "title": "CloudCanvas Art Competition",
+            "description": "A competition for digital artists to showcase their best works created using CloudCanvas.",
+            "short_description": "Digital art competition using CloudCanvas",
+            "status": "Active",
+            "entry_deadline": "2024-07-31T23:59:59Z",
+            "judging_deadline": "2024-08-15T23:59:59Z",
+            "max_entries": 500
+        }
+    },
+    {
+        "model": "product_management.idea",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-06T17:34:45.952Z",
+            "updated_at": "2024-05-06T17:34:45.952Z",
+            "title": "CloudCanvas: Integrate AI-Assisted Art Generation",
+            "description": "Implement AI-assisted art generation features in CloudCanvas to help artists overcome creative blocks and explore new artistic styles.",
+            "product": 1,
+            "person": 1
+        }
+    },
+    {
+        "model": "product_management.bug",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-06T17:34:46.515Z",
+            "updated_at": "2024-05-06T17:34:46.516Z",
+            "title": "CloudCanvas: Layer Blending Issue",
+            "description": "Users report inconsistent behavior when blending layers with certain brush types, leading to unexpected visual artifacts in the final artwork.",
+            "product": 1,
+            "person": 1
+        }
+    }
+]

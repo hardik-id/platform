@@ -220,7 +220,7 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         default=ChallengePriority.HIGH,
     )
     published_id = models.IntegerField(default=0, blank=True, editable=False)
-    auto_bounty_claims = models.BooleanField(default=False)
+    auto_approve_bounty_claims = models.BooleanField(default=False)
     created_by = models.ForeignKey(
         "talent.Person",
         on_delete=models.CASCADE,
@@ -244,13 +244,6 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
     )
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
     video_url = models.URLField(blank=True, null=True)
-    contribution_guide = models.ForeignKey(
-        "ContributorGuide",
-        null=True,
-        default=None,
-        blank=True,
-        on_delete=models.SET_NULL,
-    )
 
     class Meta:
         verbose_name_plural = "Challenges"
@@ -512,7 +505,7 @@ class ContributorGuide(models.Model):
     skill = models.ForeignKey(
         "talent.Skill",
         on_delete=models.CASCADE,
-        related_name="category_contributor_guide",
+        related_name="skill_contributor_guide",
         blank=True,
         null=True,
         default=None,

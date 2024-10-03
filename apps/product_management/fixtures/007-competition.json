@@ -1,0 +1,29 @@
+[
+    {
+        "model": "product_management.competitionentry",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-06T17:34:38.127Z",
+            "updated_at": "2024-05-06T17:34:38.127Z",
+            "uuid": "7f8204cd-5976-403f-b851-9cec73dd86cd",
+            "bounty": 1,
+            "submitter": 1,
+            "content": "Submission content for the CloudCanvas Art Competition",
+            "entry_time": "2024-06-15T14:30:00Z",
+            "status": "Submitted"
+        }
+    },
+    {
+        "model": "product_management.competitionentryrating",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-06T17:34:38.127Z",
+            "updated_at": "2024-05-06T17:34:38.127Z",
+            "uuid": "9a7204cd-5976-403f-b851-9cec73dd86cd",
+            "entry": 1,
+            "rater": 2,
+            "rating": 4,
+            "comment": "Excellent use of new brush styles and color composition."
+        }
+    }
+]
