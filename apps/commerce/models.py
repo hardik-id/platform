@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from apps.openunited.mixins import TimeStampMixin, UUIDMixin
 from apps.product_management.models import Challenge, Competition, Bounty, Product
+from django.apps import apps
 
 class Organisation(TimeStampMixin):
     name = models.CharField(max_length=512, unique=True)
@@ -141,88 +142,6 @@ class OrganisationPointGrant(TimeStampMixin, UUIDMixin):
             description=f"Grant: {self.rationale}"
         )
 
-class PointOrder(TimeStampMixin, UUIDMixin):
-    product_account = models.ForeignKey(ProductPointAccount, on_delete=models.CASCADE, related_name='point_orders')
-    bounty = models.ForeignKey(Bounty, on_delete=models.CASCADE, related_name='point_orders')
-    amount = models.PositiveIntegerField()
-    status = models.CharField(max_length=20, choices=[
-        ('PENDING', 'Pending'),
-        ('COMPLETED', 'Completed'),
-        ('REFUNDED', 'Refunded'),
-    ], default='PENDING')
-
-    def __str__(self):
-        return f"Point Order of {self.amount} points for {self.bounty.title}"
-
-    @transaction.atomic
-    def complete(self):
-        if self.status != 'PENDING':
-            return False
-        
-        if self.product_account.use_points(self.amount):
-            self.status = 'COMPLETED'
-            self.save()
-            PointTransaction.objects.create(
-                product_account=self.product_account,
-                amount=self.amount,
-                transaction_type='USE',
-                description=f"Points used for Bounty: {self.bounty.title}"
-            )
-            self._activate_bounty()
-            return True
-        return False
-
-    @transaction.atomic
-    def refund(self):
-        if self.status != 'COMPLETED':
-            return False
-        
-        self.product_account.add_points(self.amount)
-        self.status = 'REFUNDED'
-        self.save()
-        PointTransaction.objects.create(
-            product_account=self.product_account,
-            amount=self.amount,
-            transaction_type='REFUND',
-            description=f"Points refunded for Bounty: {self.bounty.title}"
-        )
-        self._deactivate_bounty()
-        return True
-
-    def _activate_bounty(self):
-        if self.bounty.challenge:
-            self._activate_challenge(self.bounty.challenge)
-        elif self.bounty.competition:
-            self._activate_competition(self.bounty.competition)
-
-    def _deactivate_bounty(self):
-        if self.bounty.challenge:
-            self._deactivate_challenge(self.bounty.challenge)
-        elif self.bounty.competition:
-            self._deactivate_competition(self.bounty.competition)
-
-    def _activate_challenge(self, challenge):
-        if challenge.status != Challenge.ChallengeStatus.ACTIVE:
-            challenge.status = Challenge.ChallengeStatus.ACTIVE
-            challenge.save()
-
-    def _activate_competition(self, competition):
-        if competition.status == Competition.CompetitionStatus.DRAFT:
-            competition.status = Competition.CompetitionStatus.ACTIVE
-            competition.save()
-        # TODO: Add additional activation logic (e.g., setting start date, notifications)
-
-    def _deactivate_challenge(self, challenge):
-        if challenge.status == Challenge.ChallengeStatus.ACTIVE:
-            challenge.status = Challenge.ChallengeStatus.DRAFT
-            challenge.save()
-
-    def _deactivate_competition(self, competition):
-        if competition.status == Competition.CompetitionStatus.ACTIVE:
-            competition.status = Competition.CompetitionStatus.DRAFT
-            competition.save()
-        # TODO: Add additional deactivation logic if needed
-
 class BountyCart(TimeStampMixin, UUIDMixin):
     class BountyCartStatus(models.TextChoices):
         OPEN = "Open", "Open"
@@ -250,6 +169,8 @@ class BountyCart(TimeStampMixin, UUIDMixin):
             # Create SalesOrder for USD items
             usd_total = self.total_usd_cents()
             if usd_total > 0:
+                # Use string reference for SalesOrder
+                SalesOrder = apps.get_model('commerce', 'SalesOrder')
                 SalesOrder.objects.create(
                     bounty_cart=self,
                     total_usd_cents=usd_total
@@ -258,10 +179,13 @@ class BountyCart(TimeStampMixin, UUIDMixin):
             # Create PointOrder for Point items
             point_total = self.total_points()
             if point_total > 0:
+                # Use string reference for PointOrder
+                PointOrder = apps.get_model('commerce', 'PointOrder')
                 PointOrder.objects.create(
                     product_account=self.product.product_point_account,
                     bounty=self.items.filter(funding_type='Points').first().bounty,
-                    amount=point_total
+                    amount=point_total,
+                    bounty_cart=self
                 )
             
             return True
@@ -272,6 +196,7 @@ class BountyCart(TimeStampMixin, UUIDMixin):
 
     def total_usd_cents(self):
         return sum(item.funding_amount for item in self.items.all() if item.bounty.reward_type == 'USD')
+    
 
 class BountyCartItem(TimeStampMixin, UUIDMixin):
     cart = models.ForeignKey(BountyCart, related_name='items', on_delete=models.CASCADE)
@@ -429,3 +354,87 @@ class SalesOrder(TimeStampMixin, UUIDMixin):
         if competition.status == Competition.CompetitionStatus.ACTIVE:
             competition.status = Competition.CompetitionStatus.DRAFT
             competition.save()
+
+
+class PointOrder(TimeStampMixin, UUIDMixin):
+    product_account = models.ForeignKey(ProductPointAccount, on_delete=models.CASCADE, related_name='point_orders')
+    bounty = models.ForeignKey(Bounty, on_delete=models.CASCADE, related_name='point_orders')
+    bounty_cart = models.OneToOneField(BountyCart, on_delete=models.CASCADE, related_name='point_order')
+    amount = models.PositiveIntegerField()
+    status = models.CharField(max_length=20, choices=[
+        ('PENDING', 'Pending'),
+        ('COMPLETED', 'Completed'),
+        ('REFUNDED', 'Refunded'),
+    ], default='PENDING')
+
+    def __str__(self):
+        return f"Point Order of {self.amount} points for {self.bounty.title} in Cart {self.bounty_cart.id}"
+
+    @transaction.atomic
+    def complete(self):
+        if self.status != 'PENDING':
+            return False
+        
+        if self.product_account.use_points(self.amount):
+            self.status = 'COMPLETED'
+            self.save()
+            PointTransaction.objects.create(
+                product_account=self.product_account,
+                amount=self.amount,
+                transaction_type='USE',
+                description=f"Points used for Bounty: {self.bounty.title}"
+            )
+            self._activate_bounty()
+            return True
+        return False
+
+    @transaction.atomic
+    def refund(self):
+        if self.status != 'COMPLETED':
+            return False
+        
+        self.product_account.add_points(self.amount)
+        self.status = 'REFUNDED'
+        self.save()
+        PointTransaction.objects.create(
+            product_account=self.product_account,
+            amount=self.amount,
+            transaction_type='REFUND',
+            description=f"Points refunded for Bounty: {self.bounty.title}"
+        )
+        self._deactivate_bounty()
+        return True
+
+    def _activate_bounty(self):
+        if self.bounty.challenge:
+            self._activate_challenge(self.bounty.challenge)
+        elif self.bounty.competition:
+            self._activate_competition(self.bounty.competition)
+
+    def _deactivate_bounty(self):
+        if self.bounty.challenge:
+            self._deactivate_challenge(self.bounty.challenge)
+        elif self.bounty.competition:
+            self._deactivate_competition(self.bounty.competition)
+
+    def _activate_challenge(self, challenge):
+        if challenge.status != Challenge.ChallengeStatus.ACTIVE:
+            challenge.status = Challenge.ChallengeStatus.ACTIVE
+            challenge.save()
+
+    def _activate_competition(self, competition):
+        if competition.status == Competition.CompetitionStatus.DRAFT:
+            competition.status = Competition.CompetitionStatus.ACTIVE
+            competition.save()
+        # TODO: Add additional activation logic (e.g., setting start date, notifications)
+
+    def _deactivate_challenge(self, challenge):
+        if challenge.status == Challenge.ChallengeStatus.ACTIVE:
+            challenge.status = Challenge.ChallengeStatus.DRAFT
+            challenge.save()
+
+    def _deactivate_competition(self, competition):
+        if competition.status == Competition.CompetitionStatus.ACTIVE:
+            competition.status = Competition.CompetitionStatus.DRAFT
+            competition.save()
+        # TODO: Add additional deactivation logic if needed
