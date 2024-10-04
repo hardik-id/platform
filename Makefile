@@ -2,11 +2,33 @@ MANAGE = python manage.py
 
 # List of fixtures in the correct loading order
 FIXTURES_ORDERED = \
-    apps/product_management/fixtures/001-product-fixture.json \
+	security \
+	talent \
+	apps/product_management/fixtures/001-product-fixture.json \
     apps/product_management/fixtures/002-producttree-fixture.json \
     apps/product_management/fixtures/003-productarea-fixture-part1.json \
     apps/product_management/fixtures/004-productarea-fixture-part2.json \
-    apps/product_management/fixtures/005-misc-fixtures.json
+    apps/product_management/fixtures/005-misc-fixtures.json \
+	apps/product_management/fixtures/001-product-fixture.json \
+    apps/product_management/fixtures/002-producttree-fixture.json \
+    apps/product_management/fixtures/003-productarea-fixture-part1.json \
+    apps/product_management/fixtures/004-productarea-fixture-part2.json \
+    apps/product_management/fixtures/005-misc-fixtures.json \
+    apps/product_management/fixtures/006-bounty_fixtures.json \
+    apps/product_management/fixtures/007-competition.json \
+	apps/commerce/fixtures/001-organisation.json \
+    apps/commerce/fixtures/002-organisationpointaccount.json \
+    apps/commerce/fixtures/003-pointtransaction.json \
+    apps/commerce/fixtures/004-bountycart.json \
+    apps/commerce/fixtures/005-bountycartitem.json \
+    apps/commerce/fixtures/006-productpointaccount.json \
+    apps/commerce/fixtures/007-platformfeeconfiguration.json \
+    apps/commerce/fixtures/008-platformfee.json \
+    apps/commerce/fixtures/009-salesorder.json \
+    apps/commerce/fixtures/010-pointorder.json \
+	engagement \
+	apps/talent/fixtures/bountyclaim.json \
+	apps/security/fixtures/product_role_assignment.json
 
 help:
 	@echo "help               -- Print this help showing all commands.         "
@@ -33,29 +55,16 @@ migrate:
 	$(MANAGE) migrate
 
 seed:
-	${MANAGE} loaddata security talent
 	for fixture in $(FIXTURES_ORDERED); do \
 		${MANAGE} loaddata $$fixture; \
 	done
-	${MANAGE} loaddata apps/product_management/fixtures/006-bounty_fixtures.json
-	${MANAGE} loaddata apps/product_management/fixtures/007-competition.json
-	${MANAGE} loaddata canopy commerce engagement
-	${MANAGE} loaddata apps/talent/fixtures/bountyclaim.json
-	${MANAGE} loaddata apps/security/fixtures/product_role_assignment.json
 
 setup:
 	python reset_database.py
 	make migrate
-	${MANAGE} loaddata security talent
 	for fixture in $(FIXTURES_ORDERED); do \
 		${MANAGE} loaddata $$fixture; \
 	done
-	${MANAGE} loaddata apps/product_management/fixtures/006-bounty_fixtures.json
-	${MANAGE} loaddata apps/product_management/fixtures/007-competition.json
-	${MANAGE} loaddata canopy commerce engagement
-	${MANAGE} loaddata apps/talent/fixtures/bountyclaim.json
-	${MANAGE} loaddata apps/security/fixtures/product_role_assignment.json
-
 	make test
 dumpdata:
 	${MANAGE} dumpdata canopy --output apps/canopy/fixtures/canopy.json

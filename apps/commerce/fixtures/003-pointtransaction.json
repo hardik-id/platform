@@ -1,0 +1,47 @@
+[
+    {
+        "model": "commerce.pointtransaction",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-05-06T17:34:50.341Z",
+            "updated_at": "2024-05-06T17:34:50.341Z",
+            "uuid": "236d16bd-f30a-433d-9767-03d52913f106",
+            "account": 1,
+            "product_account": null,
+            "amount": 10,
+            "transaction_type": "GRANT",
+            "description": "Initial grant of points",
+            "sales_order": null
+        }
+    },
+    {
+        "model": "commerce.pointtransaction",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-05-06T17:34:50.344Z",
+            "updated_at": "2024-05-06T17:34:50.344Z",
+            "uuid": "2a6f6f00-936e-4331-bf7f-ff2e27aba088",
+            "account": 2,
+            "product_account": null,
+            "amount": 20,
+            "transaction_type": "GRANT",
+            "description": "Initial grant of points",
+            "sales_order": null
+        }
+    },
+    {
+        "model": "commerce.pointtransaction",
+        "pk": 3,
+        "fields": {
+            "created_at": "2024-05-06T17:34:50.346Z",
+            "updated_at": "2024-05-06T17:34:50.346Z",
+            "uuid": "599accbb-5dc0-4c2e-b797-935dfcd9bc2c",
+            "account": 3,
+            "product_account": null,
+            "amount": 30,
+            "transaction_type": "GRANT",
+            "description": "Initial grant of points",
+            "sales_order": null
+        }
+    }
+]
