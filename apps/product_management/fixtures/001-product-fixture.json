@@ -14,9 +14,7 @@
             "detail_url": "https://www.smartwatchpro.com/products/smartwatch-pro",
             "video_url": "https://www.youtube.com/embed/LtJNX-oWIVc",
             "slug": "cloud-canvas",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 1
+            "is_private": false
         }
     },
     {
@@ -34,9 +32,7 @@
             "detail_url": "https://www.wirelessearbudsx.com/products/wireless-earbuds-x",
             "video_url": "https://www.youtube.com/embed/PzlSdp7Dz1U",
             "slug": "edu-sync",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 2
+            "is_private": false
         }
     },
     {
@@ -54,9 +50,7 @@
             "detail_url": "https://www.gourmetcoffeeblend.com/products/gourmet-coffee-blend",
             "video_url": "https://www.youtube.com/embed/pYT6RxeKXJI",
             "slug": "health-hub",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 3
+            "is_private": false
         }
     },
     {
@@ -74,9 +68,7 @@
             "detail_url": "https://www.organicskincareset.com/products/organic-skincare-set",
             "video_url": "https://www.youtube.com/embed/UCE84HDi8OY",
             "slug": "eco-tracker",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 4
+            "is_private": false
         }
     },
     {
@@ -94,9 +86,7 @@
             "detail_url": "https://www.smarthomehub.com/products/smart-home-hub",
             "video_url": "https://www.youtube.com/embed/MtSojiNQH_4",
             "slug": "finance-flow",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 5
+            "is_private": false
         }
     },
     {
@@ -114,9 +104,7 @@
             "detail_url": "https://www.ecofriendlywaterbottle.com/products/eco-friendly-water-bottle",
             "video_url": "https://www.youtube.com/embed/7Vx2k9tH1p8",
             "slug": "virtual-event-pro",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 6
+            "is_private": false
         }
     },
     {
@@ -134,9 +122,7 @@
             "detail_url": "https://www.wirelesschargingpad.com/products/wireless-charging-pad",
             "video_url": "https://www.youtube.com/embed/8CPGUe_IaZs",
             "slug": "code-craft",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 7
+            "is_private": false
         }
     },
     {
@@ -154,9 +140,7 @@
             "detail_url": "https://www.portablebluetoothspeaker.com/products/portable-bluetooth-speaker",
             "video_url": "https://www.youtube.com/embed/QSPOEolV4Rc",
             "slug": "pet-connect",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 8
+            "is_private": false
         }
     },
     {
@@ -174,9 +158,7 @@
             "detail_url": "https://www.sustainablefashionbackpack.com/products/sustainable-fashion-backpack",
             "video_url": "https://www.youtube.com/embed/c9dJfXMKOzw",
             "slug": "secure-home",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 9
+            "is_private": false
         }
     },
     {
@@ -194,9 +176,7 @@
             "detail_url": "https://www.homesecuritycamera.com/products/home-security-camera",
             "video_url": "https://www.youtube.com/embed/H0yF5HESP0Q",
             "slug": "gig-gear",
-            "is_private": false,
-            "content_type": 12,
-            "object_id": 10
+            "is_private": false
         }
     }
 ]

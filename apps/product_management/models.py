@@ -68,9 +68,6 @@ class ProductArea(MP_Node, common.AbstractModel, common.AttachmentAbstract):
 
 
 class Product(ProductMixin, common.AttachmentAbstract):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey("content_type", "object_id")
 
     def make_private(self):
         self.is_private = True
@@ -400,8 +397,6 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
     )
     reward_type = models.CharField(max_length=10, choices=RewardType.choices, default=RewardType.POINTS)
     reward_amount = models.PositiveIntegerField(default=0, help_text="Amount in points if reward_type is POINTS, or cents if reward_type is USD")
-
-
 
     claimed_by = models.ForeignKey(
         "talent.Person",

@@ -257,7 +257,8 @@ class BountyClaim(TimeStampMixin, UUIDMixin):
         from apps.product_management.models import Bounty
 
         if instance.status == instance.Status.COMPLETED:
-            instance.person.add_points(instance.bounty.points)
+            if instance.bounty.reward_type == 'Points':
+                instance.person.add_points(instance.bounty.reward_amount)
 
         bounty_to_bounty_claim_status = {
             sender.Status.REQUESTED: Bounty.BountyStatus.AVAILABLE,
