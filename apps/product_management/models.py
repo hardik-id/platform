@@ -13,7 +13,6 @@ from treebeard.mp_tree import MP_Node
 
 from apps.common import models as common
 from apps.openunited.mixins import TimeStampMixin, UUIDMixin
-from apps.product_management.mixins import ProductMixin
 
 from django.core.exceptions import ValidationError
 
@@ -67,7 +66,25 @@ class ProductArea(MP_Node, common.AbstractModel, common.AttachmentAbstract):
         return self.name
 
 
-class Product(ProductMixin, common.AttachmentAbstract):
+class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
+    photo = models.ImageField(upload_to="products/", blank=True, null=True)
+    name = models.TextField()
+    short_description = models.TextField()
+    full_description = models.TextField()
+    website = models.CharField(max_length=512, blank=True, null=True)
+    detail_url = models.URLField(blank=True, null=True)
+    video_url = models.URLField(blank=True, null=True)
+    slug = models.SlugField(unique=True)
+    is_private = models.BooleanField(default=False)
+
+    def get_initials_of_name(self):
+        return "".join([word[0] for word in self.name.split()])
+
+    def get_absolute_url(self):
+        return reverse("product_detail", args=(self.slug,))
+    
+    def __str__(self):
+        return self.name
 
     def make_private(self):
         self.is_private = True
