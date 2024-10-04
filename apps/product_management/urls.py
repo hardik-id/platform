@@ -1,320 +1,79 @@
 from django.urls import path, re_path
 
-from . import views
+from .views import bounties, challenges, products, initiatives, portal, ideas_bugs, product_areas
 
-# Developer's Note: I separated the urlpatterns because I found it convenient to do like this.
-# It looked too ugly when putting every path into a single list.
-#
-# If a new path requires to be added, add it to their corresponding part. If it does not fit
-# any of the existing groups, you can add an additional group.
-
-
-# URL patterns for challenge and product list views
 urlpatterns = [
-    # This pattern matches any subpath under 'challenges/'
-    re_path(r"^challenges/.*$", views.redirect_challenge_to_bounties, name="challenges"),
-    path(
-        "<str:product_slug>/challenge/create/",
-        views.CreateChallengeView.as_view(),
-        name="create-challenge",
-    ),
-    path(
-        "<str:product_slug>/challenge/update/<int:pk>/",
-        views.UpdateChallengeView.as_view(),
-        name="update-challenge",
-    ),
-    path(
-        "<str:product_slug>/challenge/delete/<int:pk>/",
-        views.DeleteChallengeView.as_view(),
-        name="delete-challenge",
-    ),
-    path(
-        "<str:product_slug>/challenge/<int:challenge_id>/bounty/<int:pk>",
-        views.BountyDetailView.as_view(),
-        name="bounty-detail",
-    ),
-    path(
-        "<str:product_slug>/challenge/<int:challenge_id>/bounty/create/",
-        views.CreateBountyView.as_view(),
-        name="create-bounty",
-    ),
-    path(
-        "<str:product_slug>/challenge/<int:challenge_id>/bounty/update/<int:pk>",
-        views.UpdateBountyView.as_view(),
-        name="update-bounty",
-    ),
-    path(
-        "<str:product_slug>/challenge/<int:challenge_id>/bounty/delete/<int:pk>",
-        views.DeleteBountyView.as_view(),
-        name="delete-bounty",
-    ),
-    path(
-        "bounty_claim/delete/<int:pk>",
-        views.DeleteBountyClaimView.as_view(),
-        name="delete-bounty-claim",
-    ),
-    path("products/", views.ProductListView.as_view(), name="products"),
-    path(
-        "bounty-claim/<int:pk>/",
-        views.BountyClaimView.as_view(),
-        name="bounty-claim",
-    ),
-    path(
-        "product/create",
-        views.CreateProductView.as_view(),
-        name="create-product",
-    ),
-    path(
-        "product/update/<int:pk>/",
-        views.UpdateProductView.as_view(),
-        name="update-product",
-    ),
-    path(
-        "organisation/create",
-        views.CreateOrganisationView.as_view(),
-        name="create-organisation",
-    ),
-]
+    # Bounty-related URLs
+    path("bounties/", bounties.BountyListView.as_view(), name="bounties"),
+    path("<str:product_slug>/bounties/", bounties.ProductBountyListView.as_view(), name="product_bounties"),
+    path("<str:product_slug>/challenge/<int:challenge_id>/bounty/<int:pk>/", bounties.BountyDetailView.as_view(), name="bounty-detail"),
+    path("<str:product_slug>/challenge/<int:challenge_id>/bounty/create/", bounties.CreateBountyView.as_view(), name="create-bounty"),
+    path("<str:product_slug>/challenge/<int:challenge_id>/bounty/update/<int:pk>/", bounties.UpdateBountyView.as_view(), name="update-bounty"),
+    path("<str:product_slug>/challenge/<int:challenge_id>/bounty/delete/<int:pk>/", bounties.DeleteBountyView.as_view(), name="delete-bounty"),
+    path("bounty-claim/<int:pk>/", bounties.BountyClaimView.as_view(), name="bounty-claim"),
+    path("bounty-claim/delete/<int:pk>/", bounties.DeleteBountyClaimView.as_view(), name="delete-bounty-claim"),
 
-urlpatterns += [
-    path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
-    path(
-        "dashboard/product/<str:product_slug>/<int:default_tab>/",
-        views.DashboardView.as_view(),
-        name="product-dashboard",
-    ),
-    path(
-        "dashboard/home",
-        views.DashboardHomeView.as_view(),
-        name="dashboard-home",
-    ),
-    path(
-        "dashboard/bounties",
-        views.ManageBountiesView.as_view(),
-        name="manage-bounties",
-    ),
-    path(
-        "dashboard/bounties/bounty-requests",
-        views.DashboardBountyClaimRequestsView.as_view(),
-        name="dashboard-bounty-requests",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/tab/<int:default_tab>/",
-        views.DashboardProductDetailView.as_view(),
-        name="dashboard-product-detail",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/challenges/",
-        views.DashboardProductChallengesView.as_view(),
-        name="dashboard-product-challenges",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/challenges/filter/",
-        views.DashboardProductChallengeFilterView.as_view(),
-        name="dashboard-product-challenge-filter",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/bounties/",
-        views.DashboardProductBountiesView.as_view(),
-        name="dashboard-product-bounties",
-    ),
-    path(
-        "dashboard/bounties/action/<int:pk>/",
-        views.bounty_claim_actions,
-        name="dashboard-bounties-action",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/bounties/filter/",
-        views.DashboardProductBountyFilterView.as_view(),
-        name="dashboard-product-bounty-filter",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/review-work",
-        views.DashboardReviewWorkView.as_view(),
-        name="dashboard-review-work",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/contributor-agreement-templates",
-        views.DashboardContributorAgreementTemplateListView.as_view(),
-        name="dashboard-contributor-agreement-templates",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/user-management",
-        views.ManageUsersView.as_view(),
-        name="manage-users",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/add-product-user",
-        views.AddProductUserView.as_view(),
-        name="add-product-user",
-    ),
-    path(
-        "dashboard/product/<str:product_slug>/product-users/<int:pk>/update",
-        views.UpdateProductUserView.as_view(),
-        name="update-product-user",
-    ),
-    path(
-        "dashboard/product-setting/<int:pk>/",
-        views.ProductSettingView.as_view(),
-        name="product-setting",
-    ),
-]
+    # Challenge-related URLs
+    re_path(r"^challenges/.*$", challenges.redirect_challenge_to_bounties, name="challenges"),
+    path("<str:product_slug>/challenge/create/", challenges.CreateChallengeView.as_view(), name="create-challenge"),
+    path("<str:product_slug>/challenge/update/<int:pk>/", challenges.UpdateChallengeView.as_view(), name="update-challenge"),
+    path("<str:product_slug>/challenge/delete/<int:pk>/", challenges.DeleteChallengeView.as_view(), name="delete-challenge"),
+    path("<str:product_slug>/challenge/<int:pk>/", challenges.ChallengeDetailView.as_view(), name="challenge_detail"),
+    path("<str:product_slug>/challenges/", challenges.ProductChallengesView.as_view(), name="product_challenges"),
 
+    # Product-related URLs
+    path("products/", products.ProductListView.as_view(), name="products"),
+    path("product/create/", products.CreateProductView.as_view(), name="create-product"),
+    path("product/update/<int:pk>/", products.UpdateProductView.as_view(), name="update-product"),
+    path("product/<str:product_slug>/", products.ProductRedirectView.as_view(), name="product_detail"),
+    path("<str:product_slug>/summary/", products.ProductSummaryView.as_view(), name="product_summary"),
+    path("<str:product_slug>/tree/", products.ProductTreeInteractiveView.as_view(), name="product_tree"),
+    path("<str:product_slug>/people/", products.ProductRoleAssignmentView.as_view(), name="product_people"),
+    path("organisation/create/", products.CreateOrganisationView.as_view(), name="create-organisation"),
 
-# URL patterns for contributor agreement views
-urlpatterns += [
-    path(
-        "<str:product_slug>/contributor-agreement/<int:pk>",
-        views.ContributorAgreementTemplateView.as_view(),
-        name="contributor-agreement-template-detail",
-    ),
-    path(
-        "<str:product_slug>/contributor-agreement/create/",
-        views.CreateContributorAgreementTemplateView.as_view(),
-        name="create-contributor-agreement-template",
-    ),
-    # path(
-    #     "<str:product_slug>/contribution-agreement/update/<int:pk>",
-    #     views.UpdateContributionAgreementView.as_view(),
-    #     name="update-contribution-agreement",
-    # ),
-]
+    # Initiative-related URLs
+    path("<str:product_slug>/initiatives/", initiatives.ProductInitiativesView.as_view(), name="product_initiatives"),
+    path("<str:product_slug>/initiative/create/", initiatives.CreateInitiativeView.as_view(), name="create-initiative"),
+    path("<str:product_slug>/initiative/<int:pk>/", initiatives.InitiativeDetailView.as_view(), name="initiative_detail"),
 
+    # Portal (formerly Dashboard) URLs
+    path("portal/", portal.PortalDashboardView.as_view(), name="portal-dashboard"),
+    path("portal/product/<str:product_slug>/<int:default_tab>/", portal.PortalDashboardView.as_view(), name="product-portal"),
+    path("portal/home/", portal.PortalDashboardView.as_view(), name="portal-home"),
+    path("portal/bounties/", portal.ManageBountiesView.as_view(), name="manage-bounties"),
+    path("portal/bounties/bounty-requests/", portal.BountyClaimRequestsView.as_view(), name="portal-bounty-requests"),
+    path("portal/product/<str:product_slug>/tab/<int:default_tab>/", portal.PortalProductDetailView.as_view(), name="portal-product-detail"),
+    path("portal/product/<str:product_slug>/challenges/", portal.DashboardProductChallengesView.as_view(), name="portal-product-challenges"),
+    path("portal/product/<str:product_slug>/challenges/filter/", portal.DashboardProductChallengeFilterView.as_view(), name="portal-product-challenge-filter"),
+    path("portal/product/<str:product_slug>/bounties/", portal.DashboardProductBountiesView.as_view(), name="portal-product-bounties"),
+    path("portal/bounties/action/<int:pk>/", portal.bounty_claim_actions, name="portal-bounties-action"),
+    path("portal/product/<str:product_slug>/bounties/filter/", portal.DashboardProductBountyFilterView.as_view(), name="portal-product-bounty-filter"),
+    path("portal/product/<str:product_slug>/review-work/", portal.ReviewWorkView.as_view(), name="portal-review-work"),
+    path("portal/product/<str:product_slug>/contributor-agreement-templates/", portal.ContributorAgreementTemplateListView.as_view(), name="portal-contributor-agreement-templates"),
+    path("portal/product/<str:product_slug>/user-management/", portal.ManageUsersView.as_view(), name="manage-users"),
+    path("portal/product/<str:product_slug>/add-product-user/", portal.AddProductUserView.as_view(), name="add-product-user"),
+    path("portal/product/<str:product_slug>/product-users/<int:pk>/update/", portal.UpdateProductUserView.as_view(), name="update-product-user"),
+    path("portal/product-setting/<int:pk>/", portal.ProductSettingView.as_view(), name="product-setting"),
 
-# URL patterns for various product views
-urlpatterns += [
-    path(
-        "product/<str:product_slug>/",
-        views.ProductRedirectView.as_view(),
-        name="product_detail",
-    ),
-    path(
-        "<str:product_slug>/summary",
-        views.ProductSummaryView.as_view(),
-        name="product_summary",
-    ),
-    path(
-        "<str:product_slug>/initiatives",
-        views.ProductInitiativesView.as_view(),
-        name="product_initiatives",
-    ),
-    path(
-        "<str:product_slug>/challenges",
-        views.ProductChallengesView.as_view(),
-        name="product_challenges",
-    ),
-    path("bounties", views.BountyListView.as_view(), name="bounties"),
-    path(
-        "<str:product_slug>/bounties",
-        views.ProductBountyListView.as_view(),
-        name="product_bounties",
-    ),
-    path(
-        "<str:product_slug>/tree",
-        views.ProductTreeInteractiveView.as_view(),
-        name="product_tree",
-    ),
-    path(
-        "<str:product_slug>/product-areas",
-        views.ProductAreaCreateView.as_view(),
-        name="product_area",
-    ),
-    path(
-        "<str:product_slug>/product-areas/<int:pk>/update",
-        views.ProductAreaUpdateView.as_view(),
-        name="product_area_update",
-    ),
-    path(
-        "<str:product_slug>/product-areas/<int:pk>/detail",
-        views.ProductAreaDetailView.as_view(),
-        name="product_area_detail",
-    ),
-    path(
-        "<str:product_slug>/idea-list",
-        views.ProductIdeaListView.as_view(),
-        name="product_idea_list",
-    ),
-    path(
-        "<str:product_slug>/bug-list",
-        views.ProductBugListView.as_view(),
-        name="product_bug_list",
-    ),
-    path(
-        "<str:product_slug>/ideas-and-bugs",
-        views.ProductIdeasAndBugsView.as_view(),
-        name="product_ideas_bugs",
-    ),
-    path(
-        "<str:product_slug>/ideas/new",
-        views.CreateProductIdea.as_view(),
-        name="add_product_idea",
-    ),
-    path(
-        "<str:product_slug>/idea/<int:pk>",
-        views.ProductIdeaDetail.as_view(),
-        name="product_idea_detail",
-    ),
-    path(
-        "<str:product_slug>/ideas/update/<int:pk>",
-        views.UpdateProductIdea.as_view(),
-        name="update_product_idea",
-    ),
-    path(
-        "<str:product_slug>/bugs/new",
-        views.CreateProductBug.as_view(),
-        name="add_product_bug",
-    ),
-    path(
-        "<str:product_slug>/bug/<int:pk>",
-        views.ProductBugDetail.as_view(),
-        name="product_bug_detail",
-    ),
-    path(
-        "<str:product_slug>/bugs/update/<int:pk>",
-        views.UpdateProductBug.as_view(),
-        name="update_product_bug",
-    ),
-    path(
-        "<str:product_slug>/people",
-        views.ProductRoleAssignmentView.as_view(),
-        name="product_people",
-    ),
-]
+    # Ideas and Bugs URLs
+    path("<str:product_slug>/ideas-and-bugs/", ideas_bugs.ProductIdeasAndBugsView.as_view(), name="product_ideas_bugs"),
+    path("<str:product_slug>/idea-list/", ideas_bugs.ProductIdeaListView.as_view(), name="product_idea_list"),
+    path("<str:product_slug>/bug-list/", ideas_bugs.ProductBugListView.as_view(), name="product_bug_list"),
+    path("<str:product_slug>/ideas/new/", ideas_bugs.CreateProductIdea.as_view(), name="add_product_idea"),
+    path("<str:product_slug>/idea/<int:pk>/", ideas_bugs.ProductIdeaDetail.as_view(), name="product_idea_detail"),
+    path("<str:product_slug>/ideas/update/<int:pk>/", ideas_bugs.UpdateProductIdea.as_view(), name="update_product_idea"),
+    path("<str:product_slug>/bugs/new/", ideas_bugs.CreateProductBug.as_view(), name="add_product_bug"),
+    path("<str:product_slug>/bug/<int:pk>/", ideas_bugs.ProductBugDetail.as_view(), name="product_bug_detail"),
+    path("<str:product_slug>/bugs/update/<int:pk>/", ideas_bugs.UpdateProductBug.as_view(), name="update_product_bug"),
+    path("cast-vote-for-idea/<int:pk>/", ideas_bugs.cast_vote_for_idea, name="cast-vote-for-idea"),
 
-# URL patterns for initiative, capability, and challenge detail views
-urlpatterns += [
-    path(
-        "<str:product_slug>/initiative/create",
-        views.CreateInitiativeView.as_view(),
-        name="create-initiative",
-    ),
-    path(
-        "<str:product_slug>/initiative/<int:pk>",
-        views.InitiativeDetailView.as_view(),
-        name="initiative_detail",
-    ),
-    path(
-        "<str:product_slug>/capability/create",
-        views.CreateCapability.as_view(),
-        name="create-capability",
-    ),
-    path(
-        "<str:product_slug>/capability/<int:pk>",
-        views.CapabilityDetailView.as_view(),
-        name="capability_detail",
-    ),
-    path(
-        "<str:product_slug>/challenge/<int:pk>",
-        views.ChallengeDetailView.as_view(),
-        name="challenge_detail",
-    ),
-]
+    # Product Areas URLs
+    path("<str:product_slug>/product-areas/", product_areas.ProductAreaCreateView.as_view(), name="product_area"),
+    path("<str:product_slug>/product-areas/<int:pk>/update/", product_areas.ProductAreaUpdateView.as_view(), name="product_area_update"),
+    path("<str:product_slug>/product-areas/<int:pk>/detail/", product_areas.ProductAreaDetailView.as_view(), name="product_area_detail"),
+    path("<str:product_slug>/capability/create/", product_areas.CreateCapabilityView.as_view(), name="create-capability"),
 
-
-urlpatterns += [
-    path(
-        "cast-vote-for-idea/<int:pk>",
-        views.cast_vote_for_idea,
-        name="cast-vote-for-idea",
-    )
+    # Contributor Agreement URLs
+    path("<str:product_slug>/contributor-agreement/<int:pk>/", portal.ContributorAgreementTemplateView.as_view(), name="contributor-agreement-template-detail"),
+    path("<str:product_slug>/contributor-agreement/create/", portal.CreateContributorAgreementTemplateView.as_view(), name="create-contributor-agreement-template"),
 ]
