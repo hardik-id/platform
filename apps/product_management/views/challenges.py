@@ -132,3 +132,6 @@ class DeleteChallengeView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, "The challenge has been successfully deleted!")
         return super().delete(request, *args, **kwargs)
+
+def redirect_challenge_to_bounties(request):
+    return redirect(reverse("bounties"))

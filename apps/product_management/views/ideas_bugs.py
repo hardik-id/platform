@@ -1,40 +1,51 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, RedirectView, TemplateView, UpdateView
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse
 from django.db.models import Count
 
+
 from ..models import Idea, Bug, Product, IdeaVote
 from ..forms import IdeaForm, BugForm
 from .. import utils
 
-class ProductIdeasAndBugsView(utils.BaseProductDetailView):
+class ProductIdeasAndBugsView(utils.BaseProductDetailView, TemplateView):
     template_name = "product_management/product_ideas_and_bugs.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product = context["product"]
+
+        ideas_with_votes = []
         user = self.request.user
 
-        ideas = Idea.objects.filter(product=product).annotate(vote_count=Count('ideavote'))
-        
         if user.is_authenticated:
-            ideas_with_votes = [
-                {
-                    "idea_obj": idea,
-                    "num_votes": idea.vote_count,
-                    "user_has_voted": IdeaVote.objects.filter(voter=user, idea=idea).exists(),
-                }
-                for idea in ideas
-            ]
+            for idea in Idea.objects.filter(product=product):
+                num_votes = IdeaVote.objects.filter(idea=idea).count()
+                user_has_voted = IdeaVote.objects.filter(voter=user, idea=idea).exists()
+                ideas_with_votes.append(
+                    {
+                        "idea_obj": idea,
+                        "num_votes": num_votes,
+                        "user_has_voted": user_has_voted,
+                    }
+                )
         else:
-            ideas_with_votes = [{"idea_obj": idea, "num_votes": idea.vote_count} for idea in ideas]
+            for idea in Idea.objects.filter(product=product):
+                ideas_with_votes.append(
+                    {
+                        "idea_obj": idea,
+                    }
+                )
 
-        context.update({
-            "ideas": ideas_with_votes,
-            "bugs": Bug.objects.filter(product=product),
-        })
+        context.update(
+            {
+                "ideas": ideas_with_votes,
+                "bugs": Bug.objects.filter(product=product),
+            }
+        )
 
         return context
 

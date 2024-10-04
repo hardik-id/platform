@@ -477,6 +477,7 @@ class CompetitionEntry(TimeStampMixin, UUIDMixin):
         return f"Entry for {self.bounty.competition.title} - {self.bounty.title} by {self.submitter.name}"
 
     def can_user_rate(self, user):
+        from apps.security.models import ProductRoleAssignment
         is_admin_or_judge = ProductRoleAssignment.objects.filter(
             person=user.person,
             product=self.bounty.competition.product,

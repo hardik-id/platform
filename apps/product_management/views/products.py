@@ -1,10 +1,11 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, RedirectView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
-from ..models import Product, Challenge, ProductArea, Initiative, Idea, Bug, ProductRoleAssignment
+from ..models import Product, Challenge, ProductArea, Initiative, Idea, Bug, Bounty
 from ..forms import ProductForm, OrganisationForm
 from .. import utils
 from apps.commerce.models import Organisation
@@ -96,7 +97,7 @@ class UpdateProductView(LoginRequiredMixin, common_mixins.AttachmentMixin, Updat
     def form_valid(self, form):
         return super().form_save(form)
 
-class CreateOrganisationView(LoginRequiredMixin, common_mixins.HTMXInlineFormValidationMixin, CreateView):
+class CreateOrganisationView(LoginRequiredMixin, CreateView):
     model = Organisation
     form_class = OrganisationForm
     template_name = "product_management/create_organisation.html"
@@ -203,3 +204,18 @@ class ProductSettingView(LoginRequiredMixin, common_mixins.AttachmentMixin, Upda
 
     def form_valid(self, form):
         return super().form_save(form)
+    
+class ProductRoleAssignmentView(utils.BaseProductDetailView, TemplateView):
+    template_name = "product_management/product_people.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = context["product"]
+
+        context.update(
+            {
+                "product_people": ProductRoleAssignment.objects.filter(product=product),
+            }
+        )
+
+        return context

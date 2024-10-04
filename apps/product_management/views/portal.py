@@ -1,14 +1,16 @@
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import HttpResponse, HttpResponseRedirect, get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 
-from ..models import Product, Challenge, Bounty, BountyClaim, ProductRoleAssignment, ProductContributorAgreementTemplate
+from ..models import Product, Challenge, Bounty, ProductContributorAgreementTemplate
 from ..forms import ProductRoleAssignmentForm, ContributorAgreementTemplateForm
 from .. import utils
-from apps.talent.models import Person, BountyDeliveryAttempt
+from apps.talent.models import Person, BountyDeliveryAttempt, BountyClaim
 from apps.common.mixins import PersonSearchMixin
+from apps.security.models import ProductRoleAssignment
+from apps.common import mixins as common_mixins
 
 class PortalBaseView(LoginRequiredMixin):
     login_url = "sign_in"
@@ -244,8 +246,6 @@ class DashboardProductChallengeFilterView(LoginRequiredMixin, ListView):
         context["product"] = get_object_or_404(Product, slug=self.kwargs.get("product_slug"))
         return context
     
-# ... (previous code remains the same)
-
 class ProductChallengesManagementView(LoginRequiredMixin, ListView):
     model = Challenge
     context_object_name = "challenges"
@@ -284,3 +284,104 @@ class ProductChallengeFilterView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["product"] = get_object_or_404(Product, slug=self.kwargs.get("product_slug"))
         return context
+
+
+class DashboardProductBountiesView(LoginRequiredMixin, ListView):
+    model = Bounty
+    context_object_name = "bounty_claims"
+    template_name = "product_management/dashboard/manage_bounties.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+
+        slug = self.kwargs.get("product_slug")
+        context.update({"product": Product.objects.get(slug=slug)})
+        return context
+
+    def get_queryset(self):
+        product_slug = self.kwargs.get("product_slug")
+        product = Product.objects.get(slug=product_slug)
+        return BountyClaim.objects.filter(
+            bounty__challenge__product=product,
+            status=BountyClaim.Status.REQUESTED,
+        )
+
+def bounty_claim_actions(request, pk):
+    instance = BountyClaim.objects.get(pk=pk)
+    action_type = request.GET.get("action")
+    if action_type == "accept":
+        instance.status = BountyClaim.Status.GRANTED
+
+        # If one claim is accepted for a particular challenge, the other claims automatically fails.
+        challenge = instance.bounty.challenge
+        _ = BountyClaim.objects.filter(bounty__challenge=challenge).update(status=BountyClaim.Status.REJECTED)
+    elif action_type == "reject":
+        instance.status = BountyClaim.Status.REJECTED
+    else:
+        raise BadRequest()
+
+    instance.save()
+
+    return redirect(reverse("dashboard-product-bounties", args=(instance.bounty.challenge.product.slug,)))
+
+
+class DashboardProductBountyFilterView(LoginRequiredMixin, TemplateView):
+    template_name = "product_management/dashboard/bounty_table.html"
+    login_url = "sign_in"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+
+        slug = self.kwargs.get("product_slug")
+        context.update({"product": Product.objects.get(slug=slug)})
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+
+        product = context.get("product")
+        queryset = Bounty.objects.filter(challenge__product=product)
+
+        if query_parameter := request.GET.get("q"):
+            for q in query_parameter.split(" "):
+                q = q.split(":")
+                key = q[0]
+                if key == "sort":
+                    value = q[1]
+
+                    if value == "points-asc":
+                        queryset = queryset.order_by("points")
+                    elif value == "points-desc":
+                        queryset = queryset.order_by("-points")
+
+        if query_parameter := request.GET.get("search-bounty"):
+            queryset = Bounty.objects.filter(challenge__title__icontains=query_parameter)
+
+        context.update({"bounties": queryset})
+
+        return render(request, self.template_name, context)
+    
+class ProductSettingView(LoginRequiredMixin, common_mixins.AttachmentMixin, UpdateView):
+    model = Product
+    #form_class = forms.ProductForm
+    template_name = "product_management/dashboard/product_setting.html"
+    login_url = "sign_in"
+
+    def get_success_url(self):
+        return reverse("product-setting", args=(self.object.id,))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        initial = {}
+
+        #context["form"] = self.form_class(instance=self.object, initial=initial)
+        context["product_instance"] = self.object
+
+        return context
+
+    def form_valid(self, form):
+        return super().form_save(form)
+
+    def form_invalid(self, form):
+        print(form.errors)
+        return super().form_invalid(form)
