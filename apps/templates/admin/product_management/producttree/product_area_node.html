@@ -1,0 +1,10 @@
+<li>
+    <a href="{% url 'admin:product_management_productarea_change' node.id %}">{{ node.name }}</a>
+    {% if node.get_children %}
+        <ul>
+            {% for child in node.get_children %}
+                {% include "admin/product_management/producttree/product_area_node.html" with node=child %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>

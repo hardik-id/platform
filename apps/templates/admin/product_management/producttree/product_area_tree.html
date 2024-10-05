@@ -1,0 +1,15 @@
+<div style="margin-left: {{ node.depth }}em;">
+    <strong>{{ node.name }}</strong>
+    {% if node.video_link %}
+        - <a href="{{ node.video_link }}" target="_blank">Video</a>
+    {% endif %}
+    {% if node.get_children %}
+        <ul>
+            {% for child in node.get_children %}
+                <li>
+                    {% include "admin/product_management/producttree/product_area_tree.html" with node=child %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

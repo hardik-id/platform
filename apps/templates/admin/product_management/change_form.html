@@ -1,0 +1,31 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block after_field_sets %}
+{{ block.super }}
+<fieldset class="module aligned">
+    <h2>{% trans "Product Areas" %}</h2>
+    {% if product_areas %}
+        <ul class="product-area-tree">
+            {% for area in product_areas %}
+                {% include "admin/product_management/producttree/product_area_node.html" with node=area %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{% trans "No product areas found for this product tree." %}</p>
+    {% endif %}
+</fieldset>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .product-area-tree, .product-area-tree ul {
+        list-style-type: none;
+        padding-left: 20px;
+    }
+    .product-area-tree li {
+        margin: 5px 0;
+    }
+</style>
+{% endblock %}

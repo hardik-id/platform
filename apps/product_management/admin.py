@@ -5,6 +5,16 @@ from treebeard.forms import movenodeform_factory
 from apps.product_management import models as product
 from apps.commerce.models import Organisation
 from apps.talent.models import Person
+from .models import ProductTree, ProductArea
+
+from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
+
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
+from django.utils.safestring import mark_safe
 
 @admin.register(product.Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -51,17 +61,26 @@ class InitiativeAdmin(admin.ModelAdmin):
     list_filter = ["status"]
     search_fields = ["name", "product__name"]
 
-@admin.register(product.ProductTree)
+
+@admin.register(ProductTree)
 class ProductTreeAdmin(admin.ModelAdmin):
     list_display = ["name", "product", "created_at"]
     search_fields = ["name", "product__name"]
 
-@admin.register(product.ProductArea)
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        product_tree = self.get_object(request, object_id)
+        extra_context['product_areas'] = ProductArea.get_root_nodes().filter(product_tree=product_tree)
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context,
+        )
+
+@admin.register(ProductArea)
 class ProductAreaAdmin(TreeAdmin):
-    form = movenodeform_factory(product.ProductArea)
-    list_display = ["name", "product_tree", "video_link", "path"]
-    search_fields = ["name", "video_link"]
-    filter_horizontal = ("attachments",)
+    form = movenodeform_factory(ProductArea)
+    list_display = ('name', 'product_tree')
+    search_fields = ('name', 'product_tree__name')
+
 
 @admin.register(product.Challenge)
 class ChallengeAdmin(admin.ModelAdmin):

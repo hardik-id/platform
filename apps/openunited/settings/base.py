@@ -27,7 +27,7 @@ ACTUAL_APPS = [
     "apps.engagement",
     "apps.commerce",
     "apps.canopy",
-    "apps.common",
+    "apps.common"
 ]
 THIRD_PARTIES = [
     "django_htmx",
@@ -38,7 +38,7 @@ THIRD_PARTIES = [
     "social_django",
     "django_filters",
     "corsheaders",
-    "tinymce",
+    "tinymce"
 ]
 BUILTIN_APPS = [
     "django.contrib.admin",
@@ -47,6 +47,7 @@ BUILTIN_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'treebeard'
 ]
 
 INSTALLED_APPS = BUILTIN_APPS + ACTUAL_APPS + THIRD_PARTIES
