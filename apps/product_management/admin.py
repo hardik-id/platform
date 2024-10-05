@@ -133,4 +133,5 @@ class ProductContributorAgreementAdmin(admin.ModelAdmin):
 
 # Fix pluralization issues
 product.Bounty._meta.verbose_name_plural = "Bounties"
-product.ChallengeDependency._meta.verbose_name_plural = "Challenge Dependencies"
+product.ChallengeDependency._meta.verbose_name_plural = "Challenge dependencies"
+product.CompetitionEntry._meta.verbose_name_plural = "Competition entries"
