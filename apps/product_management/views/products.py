@@ -59,6 +59,7 @@ class CreateProductView(LoginRequiredMixin, common_mixins.AttachmentMixin, Creat
         return reverse("product_summary", args=(self.object.slug,))
 
     def form_valid(self, form):
+        form.instance.person = self.request.user.person  # Set the person instead of user
         response = super().form_valid(form)
         if not self.request.htmx:
             ProductRoleAssignment.objects.create(
@@ -67,6 +68,7 @@ class CreateProductView(LoginRequiredMixin, common_mixins.AttachmentMixin, Creat
                 role=ProductRoleAssignment.ProductRoles.ADMIN,
             )
         return response
+
 
 class UpdateProductView(LoginRequiredMixin, common_mixins.AttachmentMixin, UpdateView):
     model = Product
@@ -80,22 +82,22 @@ class UpdateProductView(LoginRequiredMixin, common_mixins.AttachmentMixin, Updat
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         initial = {}
-        if self.object.content_type_id == ContentType.objects.get_for_model(self.request.user.person).id:
-            initial_make_me_owner = self.object.object_id == self.request.user.id
+        owner = self.object.get_owner()
+        if isinstance(owner, Person):
+            initial_make_me_owner = owner == self.request.user.person
             initial = {"make_me_owner": initial_make_me_owner}
             context["make_me_owner"] = initial_make_me_owner
-
-        if self.object.content_type_id == ContentType.objects.get_for_model(Organisation).id:
-            initial_organisation = Organisation.objects.filter(id=self.object.object_id).first()
-            initial = {"organisation": initial_organisation}
-            context["organisation"] = initial_organisation
+        elif isinstance(owner, Organisation):
+            initial = {"organisation": owner}
+            context["organisation"] = owner
 
         context["form"] = self.form_class(instance=self.object, initial=initial)
         context["product_instance"] = self.object
         return context
 
     def form_valid(self, form):
-        return super().form_save(form)
+        return super().form_valid(form)
+    
 
 class CreateOrganisationView(LoginRequiredMixin, CreateView):
     model = Organisation
@@ -188,22 +190,21 @@ class ProductSettingView(LoginRequiredMixin, common_mixins.AttachmentMixin, Upda
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         initial = {}
-        if self.object.content_type_id == ContentType.objects.get_for_model(self.request.user.person).id:
-            initial_make_me_owner = self.object.object_id == self.request.user.id
+        owner = self.object.get_owner()
+        if isinstance(owner, Person):
+            initial_make_me_owner = owner == self.request.user.person
             initial = {"make_me_owner": initial_make_me_owner}
             context["make_me_owner"] = initial_make_me_owner
-
-        if self.object.content_type_id == ContentType.objects.get_for_model(Organisation).id:
-            initial_organisation = Organisation.objects.filter(id=self.object.object_id).first()
-            initial = {"organisation": initial_organisation}
-            context["organisation"] = initial_organisation
+        elif isinstance(owner, Organisation):
+            initial = {"organisation": owner}
+            context["organisation"] = owner
 
         context["form"] = self.form_class(instance=self.object, initial=initial)
         context["product_instance"] = self.object
         return context
 
     def form_valid(self, form):
-        return super().form_save(form)
+        return super().form_valid(form)
     
 class ProductRoleAssignmentView(utils.BaseProductDetailView, TemplateView):
     template_name = "product_management/product_people.html"

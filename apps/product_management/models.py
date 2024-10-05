@@ -67,7 +67,7 @@ class ProductArea(MP_Node, common.AbstractModel, common.AttachmentAbstract):
 
 
 class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    person = models.ForeignKey("talent.Person", on_delete=models.CASCADE)
     organisation = models.ForeignKey("commerce.Organisation", on_delete=models.SET_NULL, null=True, blank=True)
     photo = models.ImageField(upload_to="products/", blank=True, null=True)
     name = models.TextField()
@@ -82,7 +82,7 @@ class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
     def get_owner(self):
         if self.organisation:
             return self.organisation
-        return self.user.person
+        return self.person
 
     def get_initials_of_name(self):
         return "".join([word[0] for word in self.name.split()])

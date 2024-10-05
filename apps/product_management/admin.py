@@ -3,15 +3,48 @@ from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
 
 from apps.product_management import models as product
-
+from apps.commerce.models import Organisation
+from apps.talent.models import Person
 
 @admin.register(product.Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["slug", "name", "organisation", "is_private"]
+    list_display = ["slug", "name", "person", "organisation", "owner_type", "is_private"]
     list_filter = ["is_private"]
-    search_fields = ["slug", "name", "organisation__name"]
+    search_fields = ["slug", "name", "person__user__username", "organisation__name"]
+    raw_id_fields = ["person", "organisation"]
     filter_horizontal = ("attachments",)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('person', 'organisation')
+
+    def owner_type(self, obj):
+        owner = obj.get_owner()
+        if isinstance(owner, Organisation):
+            return "Organisation"
+        elif isinstance(owner, Person):
+            return "Person"
+        else:
+            return "Unknown"
+    owner_type.short_description = "Owner Type"
+
+class OwnerTypeFilter(admin.SimpleListFilter):
+    title = 'Owner Type'
+    parameter_name = 'owner_type'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('person', 'Person'),
+            ('organisation', 'Organisation'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'person':
+            return queryset.filter(organisation__isnull=True, person__isnull=False)
+        if self.value() == 'organisation':
+            return queryset.filter(organisation__isnull=False)
+
+# Add OwnerTypeFilter to the list_filter in ProductAdmin
+ProductAdmin.list_filter += (OwnerTypeFilter,)
 
 @admin.register(product.Initiative)
 class InitiativeAdmin(admin.ModelAdmin):
