@@ -1,0 +1,79 @@
+import os
+import sys
+import django
+
+# Add the project root and its parent to the Python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.extend([current_dir, parent_dir])
+
+# Set up Django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apps.openunited.settings.development")
+
+# Print debug information
+print(f"Current directory: {current_dir}")
+print(f"Parent directory: {parent_dir}")
+print(f"Python path: {sys.path}")
+print(f"DJANGO_SETTINGS_MODULE: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
+
+try:
+    django.setup()
+except ImportError as e:
+    print(f"Error during django.setup(): {e}")
+    sys.exit(1)
+
+from django.contrib.auth import get_user_model
+from apps.talent.models import Person
+
+def create_superuser_and_person():
+    User = get_user_model()
+
+    # Create or get superuser
+    user, created = User.objects.get_or_create(
+        username='dawson',
+        email='dawson@dawsonscreek.90s',
+        defaults={'is_staff': True, 'is_superuser': True}
+    )
+    
+    if created:
+        user.set_password('password!')
+        user.save()
+        print("Superuser created:", user)
+    else:
+        print("User already exists:", user)
+        # Ensure the existing user is a superuser
+        if not user.is_superuser or not user.is_staff:
+            user.is_superuser = True
+            user.is_staff = True
+            user.set_password('password!')
+            user.save()
+            print("Existing user updated to superuser status")
+
+    # Create or get associated Person
+    person, person_created = Person.objects.get_or_create(
+        user=user,
+        defaults={
+            'full_name': 'Dawson Leery',
+            'preferred_name': 'Dawson',
+            'headline': '',
+            'overview': ''
+        }
+    )
+    
+    if person_created:
+        print("Person created:", person)
+    else:
+        print("Person already exists:", person)
+
+    print("Superuser and Person creation process completed.")
+
+    # Verify authentication
+    from django.contrib.auth import authenticate
+    auth_user = authenticate(username='dawson', password='password!')
+    if auth_user is not None:
+        print("Authentication successful")
+    else:
+        print("Authentication failed")
+
+if __name__ == "__main__":
+    create_superuser_and_person()
