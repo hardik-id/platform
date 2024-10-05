@@ -19,7 +19,7 @@ class PortalBaseView(LoginRequiredMixin):
         context = super().get_context_data(**kwargs)
         person = self.request.user.person
         photo_url = person.get_photo_url()
-        product_queryset = Product.objects.filter(content_type__model="person", object_id=person.id)
+        product_queryset = Product.objects.filter(person = person)
         context.update({"person": person, "photo_url": photo_url, "products": product_queryset})
         return context
 
@@ -27,7 +27,7 @@ class PortalDashboardView(PortalBaseView, TemplateView):
     """
     This view represents the dashboard (home/landing screen) of the portal.
     """
-    template_name = "product_management/portal/dashboard.html"
+    template_name = "product_management/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

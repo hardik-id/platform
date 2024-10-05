@@ -37,7 +37,7 @@ urlpatterns = [
     path("<str:product_slug>/initiative/<int:pk>/", initiatives.InitiativeDetailView.as_view(), name="initiative_detail"),
 
     # Portal (formerly Dashboard) URLs
-    path("portal/", portal.PortalDashboardView.as_view(), name="portal-dashboard"),
+    path("portal/", portal.PortalDashboardView.as_view(), name="dashboard-home"),
     path("portal/product/<str:product_slug>/<int:default_tab>/", portal.PortalDashboardView.as_view(), name="product-portal"),
     path("portal/home/", portal.PortalDashboardView.as_view(), name="portal-home"),
     path("portal/bounties/", portal.ManageBountiesView.as_view(), name="manage-bounties"),
