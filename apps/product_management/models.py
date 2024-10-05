@@ -67,7 +67,7 @@ class ProductArea(MP_Node, common.AbstractModel, common.AttachmentAbstract):
 
 
 class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
-    person = models.ForeignKey("talent.Person", on_delete=models.CASCADE)
+    person = models.ForeignKey("talent.Person", on_delete=models.CASCADE, null=True, blank=True)
     organisation = models.ForeignKey("commerce.Organisation", on_delete=models.SET_NULL, null=True, blank=True)
     photo = models.ImageField(upload_to="products/", blank=True, null=True)
     name = models.TextField()

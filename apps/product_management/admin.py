@@ -146,6 +146,3 @@ class ProductContributorAgreementAdmin(admin.ModelAdmin):
     list_display = ["agreement_template", "person", "accepted_at"]
     search_fields = ["agreement_template__title", "person__user__username"]
 
-
-# Register the FileAttachment model if it's not registered elsewhere
-admin.site.register(product.FileAttachment)
