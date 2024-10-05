@@ -1,16 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
-
-from .models import BlacklistedUsernames, ProductRoleAssignment, SignInAttempt, SignUpRequest, User, OrganisationPersonRoleAssignment
+from .models import BlacklistedUsername, ProductRoleAssignment, SignInAttempt, SignUpRequest, User, OrganisationPersonRoleAssignment
 
 admin.site.register(
     [
         SignInAttempt,
         SignUpRequest,
-        BlacklistedUsernames,
     ]
 )
 
+@admin.register(BlacklistedUsername)
+class BlacklistedUsernameAdmin(admin.ModelAdmin):
+    list_display = ['username']
+    search_fields = ['username']
 
 @admin.register(ProductRoleAssignment)
 class ProductRoleAssignmentAdmin(admin.ModelAdmin):
@@ -27,7 +29,6 @@ class ProductRoleAssignmentAdmin(admin.ModelAdmin):
         "product__name",
     ]
 
-
 @admin.register(OrganisationPersonRoleAssignment)
 class OrganisationPersonRoleAssignmentAdmin(admin.ModelAdmin):
     def organisation_name(self, obj):
@@ -43,9 +44,11 @@ class OrganisationPersonRoleAssignmentAdmin(admin.ModelAdmin):
         "organisation__name",
     ]
 
-
 @admin.register(User)
-class UserAdminAdmin(auth_admin.UserAdmin):
+class UserAdmin(auth_admin.UserAdmin):
     list_display = ["pk", "first_name", "last_name", "username", "is_test_user"]
     search_fields = ["pk", "first_name", "last_name", "username"]
     list_filter = auth_admin.UserAdmin.list_filter + ("is_test_user",)
+
+# Update the Meta class in your models to fix pluralization
+BlacklistedUsername._meta.verbose_name_plural = "Blacklisted Usernames"

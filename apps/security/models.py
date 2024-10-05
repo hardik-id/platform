@@ -79,7 +79,7 @@ class ProductRoleAssignment(TimeStampMixin, UUIDMixin):
         return f"{self.person} - {self.role}"
 
 
-class BlacklistedUsernames(models.Model):
+class BlacklistedUsername(models.Model):
     username = models.CharField(max_length=30, unique=True, blank=False)
 
     def __str__(self):
