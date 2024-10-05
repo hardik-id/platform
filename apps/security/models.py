@@ -87,3 +87,24 @@ class BlacklistedUsernames(models.Model):
 
     class Meta:
         db_table = "black_listed_usernames"
+
+
+class OrganisationPersonRoleAssignment(TimeStampMixin, UUIDMixin):
+    class OrganisationRoles(models.TextChoices):
+        OWNER = "Owner"
+        MANAGER = "Manager"
+        MEMBER = "Member"
+
+    person = models.ForeignKey("talent.Person", on_delete=models.CASCADE)
+    organisation = models.ForeignKey("commerce.Organisation", on_delete=models.CASCADE)
+    role = models.CharField(
+        max_length=255,
+        choices=OrganisationRoles.choices,
+        default=OrganisationRoles.MEMBER,
+    )
+
+    class Meta:
+        unique_together = ('person', 'organisation')
+
+    def __str__(self):
+        return f"{self.person} - {self.organisation} - {self.role}"

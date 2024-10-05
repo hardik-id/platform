@@ -79,6 +79,11 @@ class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
     slug = models.SlugField(unique=True)
     is_private = models.BooleanField(default=False)
 
+    def get_owner(self):
+        if self.organisation:
+            return self.organisation
+        return self.user.person
+
     def get_initials_of_name(self):
         return "".join([word[0] for word in self.name.split()])
 
