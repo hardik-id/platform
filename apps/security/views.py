@@ -1,5 +1,3 @@
-from random import randrange
-
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,7 +8,6 @@ from django.contrib.auth.views import (
     PasswordResetDoneView,
     PasswordResetView,
 )
-from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -21,15 +18,16 @@ from formtools.wizard.views import SessionWizardView
 from apps.talent.models import Person
 
 from .forms import (
-    PasswordResetForm,
-    SetPasswordForm,
+    CustomPasswordResetForm,
+    CustomSetPasswordForm,
     SignInForm,
     SignUpStepOneForm,
     SignUpStepThreeForm,
     SignUpStepTwoForm,
 )
-from .models import User
+from .models import User, SignUpRequest
 from .services import UserService
+from .utils import extract_device_info
 
 
 class SignUpWizard(SessionWizardView):
@@ -41,15 +39,7 @@ class SignUpWizard(SessionWizardView):
         data = super().process_step(form)
 
         if self.get_step_index() == 0:
-            six_digit_number = str(randrange(100_000, 1_000_000))
-            self.request.session["verification_code"] = six_digit_number
-            email = form.cleaned_data.get("email")
-            send_mail(
-                "Verification Code",
-                f"Code: {six_digit_number}",
-                None,
-                [email],
-            )
+            self.request.session["verification_code"] = form.cleaned_data["verification_code"]
 
         elif self.get_step_index() == 1:
             expected_code = self.request.session.get("verification_code")
@@ -62,13 +52,11 @@ class SignUpWizard(SessionWizardView):
 
     def done(self, form_list, **kwargs):
         first_form_data = form_list[0].cleaned_data
-        # second_form_data = form_list[1].cleaned_data
         third_form_data = form_list[2].cleaned_data
 
         full_name = first_form_data.get("full_name")
         preferred_name = first_form_data.get("preferred_name")
         email = first_form_data.get("email")
-        # verification_code = second_form_data.get("verification_code")
         username = third_form_data.get("username")
         password = third_form_data.get("password")
 
@@ -84,7 +72,8 @@ class SignUpWizard(SessionWizardView):
             user=user,
         )
 
-        # TODO: create SignUpRequest instance when JS library for fingerprinting is set up
+        device_info = extract_device_info(self.request)
+        SignUpRequest.objects.filter(email=email).update(user=user, successful=True)
 
         authenticated_user = authenticate(self.request, username=username, password=password)
         login(self.request, authenticated_user)
@@ -128,7 +117,6 @@ class SignInView(TemplateView):
 
             user = authenticate(request, username=username_or_email, password=password)
 
-            # TODO: create SignInAttempt for the both cases
             if user is not None:
                 login(request, user)
                 next_url = request.GET.get("next")
@@ -158,7 +146,7 @@ class PasswordResetRequiredView(TemplateView):
 
 
 class PasswordResetView(PasswordResetView):
-    form_class = PasswordResetForm
+    form_class = CustomPasswordResetForm
     template_name = "security/password_reset/password_reset.html"
 
     def get(self, request, *args, **kwargs):
@@ -184,14 +172,13 @@ class PasswordResetDoneView(PasswordResetDoneView):
 
 class PasswordResetConfirmView(PasswordResetConfirmView):
     template_name = "security/password_reset/password_reset_confirm.html"
-    form_class = SetPasswordForm
+    form_class = CustomSetPasswordForm
 
 
 class PasswordResetCompleteView(PasswordResetCompleteView):
     template_name = "security/password_reset/password_reset_complete.html"
 
 
-# TODO: We can add 5 seconds pause before redirecting immediately
 class LogoutView(LoginRequiredMixin, LogoutView):
     template_name = "security/logout.html"
     login_url = "sign_in"

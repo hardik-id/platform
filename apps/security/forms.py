@@ -3,10 +3,10 @@ from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.password_validation import validate_password
 from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
-from random import randrange
 
 from .models import User, SignUpRequest
-from .utils import extract_device_info, extract_location_info, generate_device_identifier
+from .utils import extract_device_info
+
 
 class SignUpStepOneForm(forms.Form):
     full_name = forms.CharField(
@@ -55,7 +55,7 @@ class SignUpStepOneForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
+        self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
 
     def clean_email(self):
@@ -70,27 +70,11 @@ class SignUpStepOneForm(forms.Form):
 
         if email and self.request:
             device_info = extract_device_info(self.request)
-            location_info = extract_location_info(self.request)
-            device_identifier = generate_device_identifier(device_info)
-
-            verification_code = self.generate_verification_code()
-            
-            SignUpRequest.objects.create(
-                email=email,
-                device_identifier=device_identifier,
-                country=location_info.get('country'),
-                region_code=location_info.get('region_code'),
-                city=location_info.get('city'),
-                verification_code=verification_code
-            )
-
-            self.send_verification_email(email, verification_code)
-            self.request.session['verification_code'] = verification_code
+            signup_request = SignUpRequest.create_signup_request(email, device_info)
+            self.send_verification_email(email, signup_request.verification_code)
+            cleaned_data["verification_code"] = signup_request.verification_code
 
         return cleaned_data
-
-    def generate_verification_code(self):
-        return str(randrange(100_000, 1_000_000))
 
     def send_verification_email(self, email, verification_code):
         send_mail(

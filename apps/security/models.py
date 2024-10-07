@@ -12,6 +12,12 @@ from apps.talent.models import Person
 
 from .constants import DEFAULT_LOGIN_ATTEMPT_BUDGET
 from .managers import UserManager
+from random import randrange
+from .utils import extract_device_info
+
+
+def generate_verification_code():
+    return str(randrange(100_000, 1_000_000))
 
 
 # This model will be used for advanced authentication methods
@@ -41,43 +47,32 @@ class User(AbstractUser, TimeStampMixin):
 class SignUpRequest(TimeStampMixin):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     device_identifier = models.CharField(max_length=64, null=True, blank=True)
-    country = models.CharField(max_length=64, null=True, blank=True)
-    region_code = models.CharField(max_length=8, null=True, blank=True)
-    city = models.CharField(max_length=128, null=True, blank=True)
     verification_code = models.CharField(max_length=6)
     successful = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user} - {self.successful}"
-    
+
     @classmethod
-    def create_signup_request(cls, email, device_info, location_info):
+    def create_signup_request(cls, email, device_info):
         device_identifier = generate_device_identifier(device_info)
         return cls.objects.create(
-            email=email,
-            device_identifier=device_identifier,
-            country=location_info.get('country'),
-            region_code=location_info.get('region_code'),
-            city=location_info.get('city'),
-            verification_code=generate_verification_code()
+            email=email, device_identifier=device_identifier, verification_code=generate_verification_code()
         )
 
 
 class SignInAttempt(TimeStampMixin):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     device_identifier = models.CharField(max_length=64, null=True, blank=True)
-    country = models.CharField(max_length=64, null=True, blank=True)
-    region_code = models.CharField(max_length=8, null=True, blank=True)
-    city = models.CharField(max_length=128, null=True, blank=True)
     successful = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.region_code} - {self.city} - {self.country}"
+        return f"{self.user} - {'Successful' if self.successful else 'Failed'}"
 
 
 class ProductRoleAssignment(TimeStampMixin, UUIDMixin):
     from apps.product_management.models import Product
-    
+
     class ProductRoles(models.TextChoices):
         CONTRIBUTOR = "Contributor"
         MANAGER = "Manager"
@@ -120,60 +115,35 @@ class OrganisationPersonRoleAssignment(TimeStampMixin, UUIDMixin):
     )
 
     class Meta:
-        unique_together = ('person', 'organisation')
+        unique_together = ("person", "organisation")
 
     def __str__(self):
         return f"{self.person} - {self.organisation} - {self.role}"
-    
+
+
 def generate_device_identifier(device_info):
     # Combine relevant device information
     device_string = f"{device_info['user_agent']}|{device_info['ip_address']}"
     # Create a hash of the device string
     return hashlib.sha256(device_string.encode()).hexdigest()
 
-def extract_device_info(request):
-    return {
-        'user_agent': request.META.get('HTTP_USER_AGENT', ''),
-        'ip_address': request.META.get('REMOTE_ADDR', ''),
-    }
 
-def extract_location_info(request):
-    # You might want to use a geolocation service here
-    # For now, we'll return placeholder data
-    return {
-        'country': 'Unknown',
-        'region_code': 'Unknown',
-        'city': 'Unknown',
-    }
-    
-
-#receivers
+# receivers
 @receiver(user_logged_in)
 def log_successful_login(sender, request, user, **kwargs):
     device_info = extract_device_info(request)
-    location_info = extract_location_info(request)
     device_identifier = generate_device_identifier(device_info)
-    
-    SignInAttempt.objects.create(
-        user=user,
-        device_identifier=device_identifier,
-        country=location_info.get('country'),
-        region_code=location_info.get('region_code'),
-        city=location_info.get('city'),
-        successful=True
-    )
+
+    SignInAttempt.objects.create(user=user, device_identifier=device_identifier, successful=True)
+
 
 @receiver(user_login_failed)
 def log_failed_login(sender, credentials, request, **kwargs):
     device_info = extract_device_info(request)
-    location_info = extract_location_info(request)
     device_identifier = generate_device_identifier(device_info)
-    
+
     SignInAttempt.objects.create(
-        user=User.objects.filter(username=credentials.get('username')).first(),
+        user=User.objects.filter(username=credentials.get("username")).first(),
         device_identifier=device_identifier,
-        country=location_info.get('country'),
-        region_code=location_info.get('region_code'),
-        city=location_info.get('city'),
-        successful=False
+        successful=False,
     )
