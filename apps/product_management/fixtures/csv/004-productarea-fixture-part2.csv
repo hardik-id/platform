@@ -1,0 +1,28 @@
+id,depth,description,name,numchild,path,product_tree
+21,2,Track and analyze energy usage,Energy Consumption,0,00200021,4
+22,2,Calculate emissions from various transport modes,Transportation Emissions,0,00200022,4
+23,2,Measure and analyze waste production,Waste Generation,0,00200023,4
+24,1,Features for personal budget management,Budgeting Tools,3,0024,5
+25,2,Categorize and track expenses,Expense Categorization,0,00240025,5
+26,2,Monitor and analyze income sources,Income Tracking,0,00240026,5
+27,2,Create and manage budget plans,Budget Planner,0,00240027,5
+28,1,Tools for organizing virtual events,Event Management,3,0028,6
+29,2,Step-by-step event setup process,Event Creation Wizard,0,00280029,6
+30,2,Manage event registrations,Attendee Registration,0,00280030,6
+31,2,Create and manage event schedules,Schedule Builder,0,00280031,6
+32,1,Core code editing features,Code Editor,3,0032,7
+33,2,Language-specific code coloring,Syntax Highlighting,0,00320033,7
+34,2,Intelligent code completion suggestions,Auto-completion,0,00320034,7
+35,2,Built-in version control features,Version Control Integration,0,00320035,7
+36,1,Find pet care services,Pet Services Finder,3,0036,8
+37,2,Find and book veterinarians,Veterinarians,0,00360037,8
+38,2,Find and book pet groomers,Groomers,0,00360038,8
+39,2,Find and book pet sitters,Pet Sitters,0,00360039,8
+40,1,Smart home security devices,Security Devices,3,0040,9
+41,2,AI-powered security cameras,Smart Cameras,0,00400041,9
+42,2,Sensors for entry points,Door/Window Sensors,0,00400042,9
+43,2,Detect movement in specified areas,Motion Detectors,0,00400043,9
+44,1,Buy and sell music equipment,Gear Marketplace,3,0044,10
+45,2,Platform for instrument transactions,Buy/Sell Instruments,0,00440045,10
+46,2,Rent music equipment,Gear Rentals,0,00440046,10
+47,2,User-generated gear reviews,Equipment Reviews,0,00440047,10
