@@ -49,18 +49,22 @@ from django.core.management.base import BaseCommand, CommandError
 from django.apps import apps
 from django.core.serializers.json import DjangoJSONEncoder
 
+
 class Command(BaseCommand):
-    help = 'Manage CSV fixtures: export, import, validate, and convert from JSON'
+    help = "Manage CSV fixtures: export, import, validate, and convert from JSON"
 
     def add_arguments(self, parser):
-        parser.add_argument('action', type=str, choices=['export', 'import', 'validate', 'convert_json'],
-                            help='Action to perform on fixtures')
-        parser.add_argument('--app', type=str, help='Specific app to process (optional)')
-
+        parser.add_argument(
+            "action",
+            type=str,
+            choices=["export", "import", "validate", "convert_json"],
+            help="Action to perform on fixtures",
+        )
+        parser.add_argument("--app", type=str, help="Specific app to process (optional)")
 
     def handle(self, *args, **options):
-        action = options['action']
-        specific_app = options.get('app')
+        action = options["action"]
+        specific_app = options.get("app")
 
         if specific_app:
             try:
@@ -71,27 +75,27 @@ class Command(BaseCommand):
             app_configs = apps.get_app_configs()
 
         for app_config in app_configs:
-            if action == 'export':
+            if action == "export":
                 self.export_to_csv(app_config)
-            elif action == 'import':
+            elif action == "import":
                 self.import_from_csv(app_config)
-            elif action == 'validate':
+            elif action == "validate":
                 self.validate_csv(app_config)
-            elif action == 'convert_json':
+            elif action == "convert_json":
                 self.convert_json_to_csv(app_config)
 
         self.stdout.write(self.style.SUCCESS(f"{action.capitalize()} operation completed."))
 
     def export_to_csv(self, app_config):
         app_name = app_config.name
-        csv_fixture_dir = os.path.join(app_name, 'fixtures', 'csv')
+        csv_fixture_dir = os.path.join(app_name, "fixtures", "csv")
         os.makedirs(csv_fixture_dir, exist_ok=True)
 
         for model in app_config.get_models():
             model_name = model._meta.model_name
             csv_path = os.path.join(csv_fixture_dir, f"{model_name}.csv")
 
-            with open(csv_path, 'w', newline='') as csvfile:
+            with open(csv_path, "w", newline="") as csvfile:
                 writer = csv.writer(csvfile)
                 fields = [field.name for field in model._meta.fields]
                 writer.writerow(fields)
@@ -104,14 +108,14 @@ class Command(BaseCommand):
 
     def import_from_csv(self, app_config):
         app_name = app_config.name
-        csv_fixture_dir = os.path.join(app_name, 'fixtures', 'csv')
+        csv_fixture_dir = os.path.join(app_name, "fixtures", "csv")
 
         if not os.path.exists(csv_fixture_dir):
             self.stdout.write(self.style.WARNING(f"No CSV fixtures found for app: {app_name}"))
             return
 
         for filename in os.listdir(csv_fixture_dir):
-            if filename.endswith('.csv'):
+            if filename.endswith(".csv"):
                 model_name = os.path.splitext(filename)[0]
                 try:
                     model = app_config.get_model(model_name)
@@ -120,7 +124,7 @@ class Command(BaseCommand):
                     continue
 
                 csv_path = os.path.join(csv_fixture_dir, filename)
-                with open(csv_path, 'r') as csvfile:
+                with open(csv_path, "r") as csvfile:
                     reader = csv.DictReader(csvfile)
                     for row in reader:
                         model.objects.create(**row)
@@ -129,14 +133,14 @@ class Command(BaseCommand):
 
     def validate_csv(self, app_config):
         app_name = app_config.name
-        csv_fixture_dir = os.path.join(app_name, 'fixtures', 'csv')
+        csv_fixture_dir = os.path.join(app_name, "fixtures", "csv")
 
         if not os.path.exists(csv_fixture_dir):
             self.stdout.write(self.style.WARNING(f"No CSV fixtures found for app: {app_name}"))
             return
 
         for filename in os.listdir(csv_fixture_dir):
-            if filename.endswith('.csv'):
+            if filename.endswith(".csv"):
                 model_name = os.path.splitext(filename)[0]
                 try:
                     model = app_config.get_model(model_name)
@@ -152,13 +156,15 @@ class Command(BaseCommand):
                     for inconsistency in inconsistencies:
                         self.stdout.write(self.style.ERROR(f"- {inconsistency}"))
                 else:
-                    self.stdout.write(self.style.SUCCESS(f"\n{app_name}/{filename} is consistent with the model definition."))
+                    self.stdout.write(
+                        self.style.SUCCESS(f"\n{app_name}/{filename} is consistent with the model definition.")
+                    )
 
     def validate_csv_against_model(self, csv_path, model):
         model_fields = {field.name: field for field in model._meta.fields}
         inconsistencies = []
 
-        with open(csv_path, 'r') as csv_file:
+        with open(csv_path, "r") as csv_file:
             reader = csv.DictReader(csv_file)
             headers = reader.fieldnames
 
@@ -186,17 +192,17 @@ class Command(BaseCommand):
 
     def convert_json_to_csv(self, app_config):
         app_name = app_config.name
-        json_fixture_dir = os.path.join(app_name, 'fixtures')
-        csv_fixture_dir = os.path.join(app_name, 'fixtures', 'csv')
+        json_fixture_dir = os.path.join(app_name, "fixtures")
+        csv_fixture_dir = os.path.join(app_name, "fixtures", "csv")
         os.makedirs(csv_fixture_dir, exist_ok=True)
 
         for filename in os.listdir(json_fixture_dir):
-            if filename.endswith('.json'):
+            if filename.endswith(".json"):
                 json_path = os.path.join(json_fixture_dir, filename)
-                csv_filename = os.path.splitext(filename)[0] + '.csv'
+                csv_filename = os.path.splitext(filename)[0] + ".csv"
                 csv_path = os.path.join(csv_fixture_dir, csv_filename)
 
-                with open(json_path, 'r') as json_file:
+                with open(json_path, "r") as json_file:
                     data = json.load(json_file)
 
                 if not data:
@@ -205,16 +211,16 @@ class Command(BaseCommand):
 
                 fields = set()
                 for item in data:
-                    fields.update(item['fields'].keys())
+                    fields.update(item["fields"].keys())
                 fields = sorted(fields)
 
-                with open(csv_path, 'w', newline='') as csv_file:
-                    writer = csv.DictWriter(csv_file, fieldnames=['id'] + fields)
+                with open(csv_path, "w", newline="") as csv_file:
+                    writer = csv.DictWriter(csv_file, fieldnames=["id"] + fields)
                     writer.writeheader()
 
                     for item in data:
-                        row = {'id': item['pk']}
-                        row.update(item['fields'])
+                        row = {"id": item["pk"]}
+                        row.update(item["fields"])
                         writer.writerow(row)
 
                 self.stdout.write(self.style.SUCCESS(f"Converted {json_path} to {csv_path}"))
