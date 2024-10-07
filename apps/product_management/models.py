@@ -90,7 +90,7 @@ class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
 
     def get_absolute_url(self):
         return reverse("product_detail", args=(self.slug,))
-    
+
     def __str__(self):
         return self.name
 
@@ -131,7 +131,7 @@ class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
             return 0
 
     def ensure_point_account(self):
-        ProductPointAccount = apps.get_model('commerce', 'ProductPointAccount')
+        ProductPointAccount = apps.get_model("commerce", "ProductPointAccount")
         ProductPointAccount.objects.get_or_create(product=self)
 
     def save(self, *args, **kwargs):
@@ -268,11 +268,10 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('challenge_detail', kwargs={'product_slug': self.product.slug, 'pk': self.pk})
+        return reverse("challenge_detail", kwargs={"product_slug": self.product.slug, "pk": self.pk})
 
     def get_total_reward(self):
-        return self.bounty_set.aggregate(Sum('reward_amount'))['reward_amount__sum'] or 0
-
+        return self.bounty_set.aggregate(Sum("reward_amount"))["reward_amount__sum"] or 0
 
     def can_delete_challenge(self, person):
         from apps.security.models import ProductRoleAssignment
@@ -354,7 +353,7 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
             return f"{self.description[0:MAX_LEN]}..."
 
         return self.description
-    
+
     def update_status(self):
         if all(bounty.status == Bounty.BountyStatus.COMPLETED for bounty in self.bounty_set.all()):
             self.status = self.ChallengeStatus.COMPLETED
@@ -370,8 +369,8 @@ class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         COMPLETED = "Completed"
         CANCELLED = "Cancelled"
 
-    product_area = models.ForeignKey('ProductArea', on_delete=models.SET_NULL, blank=True, null=True)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    product_area = models.ForeignKey("ProductArea", on_delete=models.SET_NULL, blank=True, null=True)
+    product = models.ForeignKey("Product", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
     short_description = models.CharField(max_length=256)
@@ -384,10 +383,10 @@ class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('competition_detail', kwargs={'product_slug': self.product.slug, 'pk': self.pk})
+        return reverse("competition_detail", kwargs={"product_slug": self.product.slug, "pk": self.pk})
 
     def get_total_reward(self):
-        return self.bounty_set.aggregate(Sum('reward_amount'))['reward_amount__sum'] or 0
+        return self.bounty_set.aggregate(Sum("reward_amount"))["reward_amount__sum"] or 0
 
     def update_status(self):
         now = timezone.now()
@@ -396,6 +395,7 @@ class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         elif now >= self.judging_deadline and self.status == self.CompetitionStatus.ENTRIES_CLOSED:
             self.status = self.CompetitionStatus.JUDGING
         self.save()
+
 
 class Bounty(TimeStampMixin, common.AttachmentAbstract):
     class BountyStatus(models.TextChoices):
@@ -429,7 +429,9 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         default=BountyStatus.DRAFT,
     )
     reward_type = models.CharField(max_length=10, choices=RewardType.choices, default=RewardType.POINTS)
-    reward_amount = models.PositiveIntegerField(default=0, help_text="Amount in points if reward_type is POINTS, or cents if reward_type is USD")
+    reward_amount = models.PositiveIntegerField(
+        default=0, help_text="Amount in points if reward_type is POINTS, or cents if reward_type is USD"
+    )
 
     claimed_by = models.ForeignKey(
         "talent.Person",
@@ -463,17 +465,16 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
 
     def __str__(self):
         return self.title
-    
+
     def clean(self):
         super().clean()
         if (self.challenge is None) == (self.competition is None):
             raise ValidationError("Bounty must be associated with either a Challenge or a Competition, but not both.")
 
-
     def update_status_from_claim(self):
         from apps.talent.models import BountyClaim  # Import here to avoid circular imports
 
-        latest_claim = BountyClaim.objects.filter(bounty=self).order_by('-created_at').first()
+        latest_claim = BountyClaim.objects.filter(bounty=self).order_by("-created_at").first()
 
         if not latest_claim:
             new_status = self.BountyStatus.OPEN
@@ -493,14 +494,15 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
 
 class CompetitionEntry(TimeStampMixin, UUIDMixin):
     from apps.security.models import ProductRoleAssignment
+
     class EntryStatus(models.TextChoices):
         SUBMITTED = "Submitted"
         FINALIST = "Finalist"
         WINNER = "Winner"
         REJECTED = "Rejected"
 
-    bounty = models.ForeignKey(Bounty, on_delete=models.CASCADE, related_name='competition_entries')
-    submitter = models.ForeignKey('talent.Person', on_delete=models.CASCADE, related_name='competition_entries')
+    bounty = models.ForeignKey(Bounty, on_delete=models.CASCADE, related_name="competition_entries")
+    submitter = models.ForeignKey("talent.Person", on_delete=models.CASCADE, related_name="competition_entries")
     content = models.TextField()
     entry_time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=EntryStatus.choices, default=EntryStatus.SUBMITTED)
@@ -510,17 +512,19 @@ class CompetitionEntry(TimeStampMixin, UUIDMixin):
 
     def can_user_rate(self, user):
         from apps.security.models import ProductRoleAssignment
+
         is_admin_or_judge = ProductRoleAssignment.objects.filter(
             person=user.person,
             product=self.bounty.competition.product,
-            role__in=[ProductRoleAssignment.ProductRoles.ADMIN, ProductRoleAssignment.ProductRoles.JUDGE]
+            role__in=[ProductRoleAssignment.ProductRoles.ADMIN, ProductRoleAssignment.ProductRoles.JUDGE],
         ).exists()
         has_rated = self.ratings.filter(rater=user.person).exists()
         return is_admin_or_judge and not has_rated
 
+
 class CompetitionEntryRating(TimeStampMixin, UUIDMixin):
-    entry = models.ForeignKey(CompetitionEntry, on_delete=models.CASCADE, related_name='ratings')
-    rater = models.ForeignKey('talent.Person', on_delete=models.CASCADE, related_name='given_ratings')
+    entry = models.ForeignKey(CompetitionEntry, on_delete=models.CASCADE, related_name="ratings")
+    rater = models.ForeignKey("talent.Person", on_delete=models.CASCADE, related_name="given_ratings")
     rating = models.PositiveSmallIntegerField(help_text="Rating from 1 to 5")
     comment = models.TextField(blank=True)
 
@@ -528,7 +532,7 @@ class CompetitionEntryRating(TimeStampMixin, UUIDMixin):
         return f"Rating for {self.entry} by {self.rater.name}"
 
     class Meta:
-        unique_together = ('entry', 'rater')
+        unique_together = ("entry", "rater")
 
 
 class ChallengeDependency(models.Model):
@@ -627,23 +631,27 @@ class ProductContributorAgreement(TimeStampMixin):
 def update_challenge_status(sender, instance, **kwargs):
     if instance.challenge:
         instance.challenge.update_status()
-    
-@receiver(post_save, sender='talent.BountyClaim')
+
+
+@receiver(post_save, sender="talent.BountyClaim")
 def update_bounty_status_from_claim(sender, instance, **kwargs):
     instance.bounty.update_status_from_claim()
 
-@receiver(post_save, sender='talent.BountyBid')
+
+@receiver(post_save, sender="talent.BountyBid")
 def update_bounty_status_from_bid(sender, instance, **kwargs):
-    if instance.status == 'ACCEPTED':
+    if instance.status == "ACCEPTED":
         if instance.bounty.status != Bounty.BountyStatus.IN_PROGRESS:
             instance.bounty.status = Bounty.BountyStatus.IN_PROGRESS
             instance.bounty.save()
+
 
 @receiver(pre_save, sender="product_management.Product")
 def _pre_save(sender, instance, **kwargs):
     from .services import ProductService
 
     instance.video_url = ProductService.convert_youtube_link_to_embed(instance.video_url)
+
 
 @receiver(post_save, sender="product_management.Competition")
 def update_competition_status(sender, instance, **kwargs):
