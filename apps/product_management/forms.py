@@ -22,29 +22,6 @@ class DateInput(forms.DateInput):
     input_type = "date"
 
 
-class BountyClaimForm(forms.ModelForm):
-    is_agreement_accepted = forms.BooleanField(label=_("I have read and agree to the Contribution Agreement"))
-
-    class Meta:
-        model = BountyClaim
-        fields = ["expected_finish_date"]
-        labels = {
-            "expected_finish_date": "Expected Submission Date",
-        }
-
-        widgets = {
-            "expected_finish_date": DateInput(),
-        }
-
-    def clean_expected_finish_date(self):
-        finish_date = self.cleaned_data.get("expected_finish_date")
-
-        if finish_date < date.today():
-            raise ValidationError(_("Expected finish date cannot be earlier than today"))
-
-        return finish_date
-
-
 class IdeaForm(forms.ModelForm):
     class Meta:
         model = Idea

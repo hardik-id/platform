@@ -192,19 +192,19 @@ class FeedbackForm(forms.ModelForm):
 
 
 class BountyDeliveryAttemptForm(forms.ModelForm):
-    bounty_claim = forms.ModelChoiceField(
-        empty_label="Select a Bounty Claim",
-        queryset=BountyClaim.objects.filter(status=BountyClaim.Status.GRANTED),
-        label="Bounty Claim",
-        widget=forms.Select(
-            attrs={
-                "class": (
-                    "mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset"
-                    " ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                ),
-            }
-        ),
-    )
+    # bounty_claim = forms.ModelChoiceField(
+    #     empty_label="Select a Bounty Claim",
+    #     queryset=BountyClaim.objects.filter(status=BountyClaim.Status.IN_PROGRESS),
+    #     label="Bounty Claim",
+    #     widget=forms.Select(
+    #         attrs={
+    #             "class": (
+    #                 "mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset"
+    #                 " ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+    #             ),
+    #         }
+    #     ),
+    # )
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request", None)

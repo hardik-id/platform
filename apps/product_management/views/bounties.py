@@ -7,7 +7,7 @@ from django.db import models
 from django.contrib import messages
 
 from ..models import Bounty, Challenge, Product
-from ..forms import BountyForm, BountyClaimForm
+from ..forms import BountyForm
 from .. import utils
 from apps.talent.utils import serialize_skills
 from apps.talent.models import Skill, Expertise, BountyClaim
@@ -186,26 +186,26 @@ class DeleteBountyView(LoginRequiredMixin, DeleteView):
         messages.success(request, "The bounty has been successfully deleted.")
         return HttpResponseRedirect(success_url)
 
-class BountyClaimView(LoginRequiredMixin, CreateView):
-    form_class = BountyClaimForm
+# class BountyClaimView(LoginRequiredMixin, CreateView):
+#     form_class = BountyClaimForm
 
-    def post(self, request, pk, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if not form.is_valid():
-            return JsonResponse({"errors": form.errors}, status=400)
+#     def post(self, request, pk, *args, **kwargs):
+#         form = self.form_class(request.POST)
+#         if not form.is_valid():
+#             return JsonResponse({"errors": form.errors}, status=400)
 
-        bounty = get_object_or_404(Bounty, pk=pk)
-        instance = form.save(commit=False)
-        instance.bounty = bounty
-        instance.person = request.user.person
-        instance.status = BountyClaim.Status.REQUESTED
-        instance.save()
+#         bounty = get_object_or_404(Bounty, pk=pk)
+#         instance = form.save(commit=False)
+#         instance.bounty = bounty
+#         instance.person = request.user.person
+#         instance.status = BountyClaim.Status.REQUESTED
+#         instance.save()
 
-        return render(
-            request,
-            "product_management/partials/buttons/delete_bounty_claim_button.html",
-            context={"bounty_claim": instance},
-        )
+#         return render(
+#             request,
+#             "product_management/partials/buttons/delete_bounty_claim_button.html",
+#             context={"bounty_claim": instance},
+#         )
 
 def bounty_claim_actions(request, pk):
     instance = get_object_or_404(BountyClaim, pk=pk)

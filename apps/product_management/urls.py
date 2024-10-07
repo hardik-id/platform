@@ -10,7 +10,7 @@ urlpatterns = [
     path("<str:product_slug>/challenge/<int:challenge_id>/bounty/create/", bounties.CreateBountyView.as_view(), name="create-bounty"),
     path("<str:product_slug>/challenge/<int:challenge_id>/bounty/update/<int:pk>/", bounties.UpdateBountyView.as_view(), name="update-bounty"),
     path("<str:product_slug>/challenge/<int:challenge_id>/bounty/delete/<int:pk>/", bounties.DeleteBountyView.as_view(), name="delete-bounty"),
-    path("bounty-claim/<int:pk>/", bounties.BountyClaimView.as_view(), name="bounty-claim"),
+    # path("bounty-claim/<int:pk>/", bounties.BountyClaimView.as_view(), name="bounty-claim"),
     path("bounty-claim/delete/<int:pk>/", bounties.DeleteBountyClaimView.as_view(), name="delete-bounty-claim"),
 
     # Challenge-related URLs
