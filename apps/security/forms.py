@@ -1,12 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.password_validation import validate_password
+from django.core.mail import send_mail
 from django.utils.translation import gettext_lazy as _
+from random import randrange
 
-from apps.security.models import SignUpRequest
-
-from .models import User
-
+from .models import User, SignUpRequest
+from .utils import extract_device_info, extract_location_info, generate_device_identifier
 
 class SignUpStepOneForm(forms.Form):
     full_name = forms.CharField(
@@ -54,12 +54,51 @@ class SignUpStepOneForm(forms.Form):
         )
     )
 
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if User.objects.filter(email=email).exists() or SignUpRequest.objects.filter(user__email=email).exists():
+        if User.objects.filter(email=email).exists() or SignUpRequest.objects.filter(email=email).exists():
             raise forms.ValidationError(_("That email isn't available, please try another"))
-
         return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+
+        if email and self.request:
+            device_info = extract_device_info(self.request)
+            location_info = extract_location_info(self.request)
+            device_identifier = generate_device_identifier(device_info)
+
+            verification_code = self.generate_verification_code()
+            
+            SignUpRequest.objects.create(
+                email=email,
+                device_identifier=device_identifier,
+                country=location_info.get('country'),
+                region_code=location_info.get('region_code'),
+                city=location_info.get('city'),
+                verification_code=verification_code
+            )
+
+            self.send_verification_email(email, verification_code)
+            self.request.session['verification_code'] = verification_code
+
+        return cleaned_data
+
+    def generate_verification_code(self):
+        return str(randrange(100_000, 1_000_000))
+
+    def send_verification_email(self, email, verification_code):
+        send_mail(
+            "Verification Code",
+            f"Code: {verification_code}",
+            None,
+            [email],
+        )
 
 
 class SignUpStepTwoForm(forms.Form):
@@ -128,12 +167,10 @@ class SignUpStepThreeForm(forms.Form):
         username = self.cleaned_data.get("username")
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError(_("Username already exists"))
-
         return username
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
-
         validate_password(password)
         return password
 
@@ -179,7 +216,7 @@ class SignInForm(forms.Form):
     remember_me = forms.BooleanField(required=False)
 
 
-class PasswordResetForm(PasswordResetForm):
+class CustomPasswordResetForm(PasswordResetForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -196,7 +233,7 @@ class PasswordResetForm(PasswordResetForm):
         )
 
 
-class SetPasswordForm(SetPasswordForm):
+class CustomSetPasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
