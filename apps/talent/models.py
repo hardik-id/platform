@@ -257,7 +257,9 @@ class BountyClaim(TimeStampMixin, UUIDMixin):
 
     bounty = models.ForeignKey("product_management.Bounty", on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    accepted_bid = models.OneToOneField(BountyBid, on_delete=models.SET_NULL, null=True, related_name="resulting_claim")
+    accepted_bid = models.OneToOneField(
+        BountyBid, on_delete=models.SET_NULL, null=True, related_name="resulting_claim"
+    )
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
 
     class Meta:
@@ -270,7 +272,7 @@ class BountyClaim(TimeStampMixin, UUIDMixin):
     @property
     def expected_finish_date(self):
         return self.accepted_bid.expected_finish_date if self.accepted_bid else None
-    
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.bounty.update_status_from_claim()
@@ -360,14 +362,11 @@ class Feedback(models.Model):
     def __str__(self):
         return f"{self.recipient} - {self.provider} - {self.stars} - {self.message[:10]}..."
 
+
 # Signal receivers
-@receiver(post_save, sender='talent.BountyBid')
+@receiver(post_save, sender="talent.BountyBid")
 def handle_accepted_bid(sender, instance, **kwargs):
     if instance.status == BountyBid.Status.ACCEPTED:
-        BountyClaim.objects.create(
-            bounty=instance.bounty,
-            person=instance.person,
-            accepted_bid=instance
-        )
+        BountyClaim.objects.create(bounty=instance.bounty, person=instance.person, accepted_bid=instance)
         instance.bounty.status = Bounty.BountyStatus.IN_PROGRESS
         instance.bounty.save()
