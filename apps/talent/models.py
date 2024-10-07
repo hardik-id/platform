@@ -6,7 +6,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -227,61 +227,53 @@ class Expertise(AncestryMixin):
         return Expertise.objects.filter(parent=None).values("id", "name")
 
 
-class BountyClaim(TimeStampMixin, UUIDMixin):
+class BountyBid(TimeStampMixin, UUIDMixin):
     class Status(models.TextChoices):
-        REQUESTED = "Requested"
-        CANCELLED = "Cancelled"
+        PENDING = "Pending"
+        ACCEPTED = "Accepted"
         REJECTED = "Rejected"
-        GRANTED = "Granted"
-        CONTRIBUTED = "Contributed"
-        COMPLETED = "Completed"
-        FAILED = "Failed"
+        WITHDRAWN = "Withdrawn"
 
-    bounty = models.ForeignKey("product_management.Bounty", on_delete=models.CASCADE)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE, blank=True, null=True)
-    expected_finish_date = models.DateField(default=date.today)
-    status = models.CharField(choices=Status.choices, default=Status.REQUESTED)
+    bounty = models.ForeignKey("product_management.Bounty", on_delete=models.CASCADE, related_name="bids")
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="bounty_bids")
+    amount = models.PositiveIntegerField()
+    expected_finish_date = models.DateField()
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    message = models.TextField(blank=True, null=True)
 
     class Meta:
         unique_together = ("bounty", "person")
         ordering = ("-created_at",)
 
-    def get_challenge_detail_url(self):
-        return self.bounty.challenge.get_absolute_url()
+    def __str__(self):
+        return f"Bid on {self.bounty.title} by {self.person.get_full_name()}"
 
-    def get_product_detail_url(self):
-        return self.bounty.challenge.product.get_absolute_url()
 
-    @receiver(pre_save, sender="talent.BountyClaim")
-    def _pre_save(sender, instance, **kwargs):
-        from apps.product_management.models import Bounty
+class BountyClaim(TimeStampMixin, UUIDMixin):
+    class Status(models.TextChoices):
+        ACTIVE = "Active"
+        COMPLETED = "Completed"
+        FAILED = "Failed"
 
-        if instance.status == instance.Status.COMPLETED:
-            if instance.bounty.reward_type == 'Points':
-                instance.person.add_points(instance.bounty.reward_amount)
+    bounty = models.ForeignKey("product_management.Bounty", on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    accepted_bid = models.OneToOneField(BountyBid, on_delete=models.SET_NULL, null=True, related_name="resulting_claim")
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
 
-        bounty_to_bounty_claim_status = {
-            sender.Status.REQUESTED: Bounty.BountyStatus.AVAILABLE,
-            sender.Status.CANCELLED: Bounty.BountyStatus.AVAILABLE,
-            sender.Status.FAILED: Bounty.BountyStatus.AVAILABLE,
-            sender.Status.REJECTED: Bounty.BountyStatus.AVAILABLE,
-            sender.Status.GRANTED: Bounty.BountyStatus.CLAIMED,
-            sender.Status.COMPLETED: Bounty.BountyStatus.COMPLETED,
-            sender.Status.CONTRIBUTED: Bounty.BountyStatus.IN_REVIEW,
-        }
-
-        if instance.status in bounty_to_bounty_claim_status:
-            bounty = instance.bounty
-            bounty.status = bounty_to_bounty_claim_status[instance.status]
-            bounty.save()
-
-        if instance.status == sender.Status.GRANTED:
-            bounty = instance.bounty
-            bounty.claimed_by = instance.person
-            bounty.save()
+    class Meta:
+        unique_together = ("bounty", "person")
+        ordering = ("-created_at",)
 
     def __str__(self):
-        return f"{self.bounty.title} ({self.bounty.challenge}): {self.person} ({self.status})"
+        return f"Claim on {self.bounty.title} by {self.person.get_full_name()}"
+
+    @property
+    def expected_finish_date(self):
+        return self.accepted_bid.expected_finish_date if self.accepted_bid else None
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.bounty.update_status_from_claim()
 
 
 class Comment(MP_Node):
@@ -367,3 +359,15 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"{self.recipient} - {self.provider} - {self.stars} - {self.message[:10]}..."
+
+# Signal receivers
+@receiver(post_save, sender='talent.BountyBid')
+def handle_accepted_bid(sender, instance, **kwargs):
+    if instance.status == BountyBid.Status.ACCEPTED:
+        BountyClaim.objects.create(
+            bounty=instance.bounty,
+            person=instance.person,
+            accepted_bid=instance
+        )
+        instance.bounty.status = Bounty.BountyStatus.IN_PROGRESS
+        instance.bounty.save()

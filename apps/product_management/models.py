@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 from django.apps import apps
+from django.utils import timezone
 
 from model_utils import FieldTracker
 from treebeard.mp_tree import MP_Node
@@ -114,12 +115,6 @@ class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
 
         if Product.objects.filter(slug=slug):
             return f"The name {product_name} is not available currently. Please pick something different."
-
-    @receiver(pre_save, sender="product_management.Product")
-    def _pre_save(sender, instance, **kwargs):
-        from .services import ProductService
-
-        instance.video_url = ProductService.convert_youtube_link_to_embed(instance.video_url)
 
     def __str__(self):
         return self.name
@@ -359,6 +354,12 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
             return f"{self.description[0:MAX_LEN]}..."
 
         return self.description
+    
+    def update_status(self):
+        if all(bounty.status == Bounty.BountyStatus.COMPLETED for bounty in self.bounty_set.all()):
+            self.status = self.ChallengeStatus.COMPLETED
+            self.save()
+
 
 class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
     class CompetitionStatus(models.TextChoices):
@@ -388,11 +389,19 @@ class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
     def get_total_reward(self):
         return self.bounty_set.aggregate(Sum('reward_amount'))['reward_amount__sum'] or 0
 
+    def update_status(self):
+        now = timezone.now()
+        if now >= self.entry_deadline and self.status == self.CompetitionStatus.ACTIVE:
+            self.status = self.CompetitionStatus.ENTRIES_CLOSED
+        elif now >= self.judging_deadline and self.status == self.CompetitionStatus.ENTRIES_CLOSED:
+            self.status = self.CompetitionStatus.JUDGING
+        self.save()
 
 class Bounty(TimeStampMixin, common.AttachmentAbstract):
     class BountyStatus(models.TextChoices):
-        AVAILABLE = "Available"
-        CLAIMED = "Claimed"
+        DRAFT = "Draft"
+        OPEN = "Open"
+        IN_PROGRESS = "In Progress"
         IN_REVIEW = "In Review"
         COMPLETED = "Completed"
         CANCELLED = "Cancelled"
@@ -415,9 +424,9 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
     )
     expertise = models.ManyToManyField("talent.Expertise", related_name="bounty_expertise")
     status = models.CharField(
-        max_length=255,
+        max_length=20,
         choices=BountyStatus.choices,
-        default=BountyStatus.AVAILABLE,
+        default=BountyStatus.DRAFT,
     )
     reward_type = models.CharField(max_length=10, choices=RewardType.choices, default=RewardType.POINTS)
     reward_amount = models.PositiveIntegerField(default=0, help_text="Amount in points if reward_type is POINTS, or cents if reward_type is USD")
@@ -461,10 +470,26 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
             raise ValidationError("Bounty must be associated with either a Challenge or a Competition, but not both.")
 
 
-    @receiver(pre_save, sender="product_management.Bounty")
-    def _pre_save(sender, instance, **kwargs):
-        if instance.status == Bounty.BountyStatus.AVAILABLE:
-            instance.claimed_by = None
+    def update_status_from_claim(self):
+        from apps.talent.models import BountyClaim  # Import here to avoid circular imports
+
+        latest_claim = BountyClaim.objects.filter(bounty=self).order_by('-created_at').first()
+
+        if not latest_claim:
+            new_status = self.BountyStatus.OPEN
+        elif latest_claim.status == BountyClaim.Status.ACTIVE:
+            new_status = self.BountyStatus.IN_PROGRESS
+        elif latest_claim.status == BountyClaim.Status.COMPLETED:
+            new_status = self.BountyStatus.COMPLETED
+        elif latest_claim.status == BountyClaim.Status.FAILED:
+            new_status = self.BountyStatus.OPEN
+        else:
+            return  # No status change needed
+
+        if self.status != new_status:
+            self.status = new_status
+            self.save()
+
 
 class CompetitionEntry(TimeStampMixin, UUIDMixin):
     from apps.security.models import ProductRoleAssignment
@@ -595,3 +620,31 @@ class ProductContributorAgreement(TimeStampMixin):
         related_name="contributor_agreement",
     )
     accepted_at = models.DateTimeField(auto_now_add=True, null=True)
+
+
+# Signal receivers
+@receiver(post_save, sender="product_management.Bounty")
+def update_challenge_status(sender, instance, **kwargs):
+    if instance.challenge:
+        instance.challenge.update_status()
+    
+@receiver(post_save, sender='talent.BountyClaim')
+def update_bounty_status_from_claim(sender, instance, **kwargs):
+    instance.bounty.update_status_from_claim()
+
+@receiver(post_save, sender='talent.BountyBid')
+def update_bounty_status_from_bid(sender, instance, **kwargs):
+    if instance.status == 'ACCEPTED':
+        if instance.bounty.status != Bounty.BountyStatus.IN_PROGRESS:
+            instance.bounty.status = Bounty.BountyStatus.IN_PROGRESS
+            instance.bounty.save()
+
+@receiver(pre_save, sender="product_management.Product")
+def _pre_save(sender, instance, **kwargs):
+    from .services import ProductService
+
+    instance.video_url = ProductService.convert_youtube_link_to_embed(instance.video_url)
+
+@receiver(post_save, sender="product_management.Competition")
+def update_competition_status(sender, instance, **kwargs):
+    instance.update_status()
