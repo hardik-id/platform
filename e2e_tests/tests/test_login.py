@@ -1,5 +1,5 @@
-from e2e.helpers import login_user
-from e2e.pages.login_page import LoginPage
+from e2e_tests.helpers import login_user
+from e2e_tests.pages.login_page import LoginPage
 
 
 def test_login(live_server, page_context, create_user):

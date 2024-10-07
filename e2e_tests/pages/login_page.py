@@ -1,4 +1,4 @@
-from e2e.pages.base import BasePage
+from e2e_tests.pages.base import BasePage
 
 
 class LoginPage(BasePage):

@@ -1,4 +1,4 @@
-from e2e.pages.signup_page import SignupPage
+from e2e_tests.pages.signup_page import SignupPage
 
 
 def test_signup(live_server, page_context):

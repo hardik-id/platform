@@ -1,4 +1,4 @@
-from e2e.pages.login_page import LoginPage
+from e2e_tests.pages.login_page import LoginPage
 
 
 def login_user(page, live_server_url, username, password):

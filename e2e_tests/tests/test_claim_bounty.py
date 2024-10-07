@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
 from apps.talent.models import BountyClaim
-from e2e.helpers import login_user
-from e2e.pages.challenge_details_page import ChallengeDetailPage
+from e2e_tests.helpers import login_user
+from e2e_tests.pages.challenge_details_page import ChallengeDetailPage
 
 
 def test_claim_bounty(live_server, page_context, setup_bounty):
