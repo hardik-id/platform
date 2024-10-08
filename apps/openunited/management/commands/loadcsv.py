@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand
 from django.apps import apps
 import csv
-from django.db import transaction
+from django.db import transaction, models
 
 class Command(BaseCommand):
     help = 'Load data from a CSV file into the specified model.'
@@ -59,10 +59,18 @@ class Command(BaseCommand):
 class ModelParser:
     def create_object(self, model, row):
         parsed = self.parse_row(row)
-        obj, created = model.objects.update_or_create(
-            id=int(parsed['id']),
-            defaults=parsed
-        )
+        
+        # Check if the 'id' field is a UUID or integer
+        if isinstance(model._meta.get_field('id'), models.UUIDField):
+            obj, created = model.objects.update_or_create(
+                id=parsed['id'],  # Don't cast to int if it's a UUID
+                defaults=parsed
+            )
+        else:
+            obj, created = model.objects.update_or_create(
+                id=int(parsed['id']),
+                defaults=parsed
+            )
         return obj, created
 
     def parse_row(self, row):
