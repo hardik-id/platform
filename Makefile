@@ -43,6 +43,7 @@ FIXTURES = \
     apps/product_management/fixtures/challenge-fixture.csv:product_management.Challenge \
     apps/engagement/fixtures/email-notification-fixture.csv:engagement.EmailNotification
 
+.PHONY: seed setup
 
 help:
 	@echo "help               -- Print this help showing all commands.         "
@@ -69,11 +70,11 @@ migrate:
 	$(MANAGE) migrate
 
 seed:
-    for fixture in $(FIXTURES); do \
-        csv_file=$${fixture%%:*}; \
-        model_name=$${fixture##*:}; \
-        ${MANAGE} loadcsv $$csv_file $$model_name; \
-    done
+	for fixture in $(FIXTURES); do \
+		csv_file=$${fixture%%:*}; \
+		model_name=$${fixture##*:}; \
+		${MANAGE} loadcsv $$csv_file $$model_name; \
+	done
 
 setup:
 	python reset_database.py
