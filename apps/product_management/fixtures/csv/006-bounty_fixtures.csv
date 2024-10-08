@@ -1,6 +1,0 @@
-id,challenge,claimed_by,competition,created_at,description,expertise,reward_amount,reward_type,skill,status,title,updated_at
-1,2,,,2024-05-06T17:34:38.135Z,"Implement real-time collaboration features in CloudCanvas, enabling multiple artists to work simultaneously on the same canvas, fostering teamwork and creativity.","[20, 28]",30,Points,107,Available,Real-Time Collaboration,2024-05-13T20:34:26.618Z
-2,3,,,2024-05-06T17:34:38.145Z,"Improve the user interface of EduSync, focusing on user experience and accessibility to enhance engagement.","[21, 29]",40,Points,108,Available,Enhance User Interface,2024-05-13T20:34:26.628Z
-3,4,12,,2024-05-06T17:34:38.155Z,"Add live video streaming capabilities to HealthHub, allowing healthcare professionals to conduct real-time consultations.","[22, 30]",50,Points,109,Claimed,Implement Video Streaming,2024-05-13T20:34:26.638Z
-4,5,13,,2024-05-06T17:34:38.165Z,Develop a dashboard for EcoTracker that displays real-time data on sustainability metrics for organizations.,"[23, 31]",5000,USD,110,Completed,Build Sustainability Dashboard,2024-05-13T20:34:26.648Z
-5,6,,,2024-05-06T17:34:38.175Z,Integrate an AI-based budgeting tool into FinanceFlow to provide personalized financial advice to users.,"[24, 32]",3000,USD,111,Available,Integrate AI Budgeting Tool,2024-05-13T20:34:26.658Z

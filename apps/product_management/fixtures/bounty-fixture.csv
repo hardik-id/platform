@@ -1,0 +1,11 @@
+id,title,description,status,reward_type,reward_amount,claimed_by_id,skill_id,challenge_id,competition_id
+1,Fix login bug,"Resolve issue with user login on mobile devices",open,cash,500,null,1,1,null
+2,Implement dark mode,"Add dark mode option to the user interface",in_progress,points,1000,2,2,2,null
+3,Optimize database queries,"Improve performance of main dashboard queries",open,cash,750,null,3,3,null
+4,Create user documentation,"Write comprehensive user guide for new features",completed,points,1500,4,4,4,null
+5,Develop API endpoints,"Create RESTful API endpoints for mobile app integration",open,cash,1000,null,5,5,null
+6,Implement social login,"Add options for Google and Facebook login",in_progress,points,2000,6,6,6,null
+7,Design new logo,"Create a modern logo for the product rebrand",open,cash,300,null,7,7,1
+8,Refactor authentication system,"Improve security and scalability of auth system",open,points,2500,null,8,8,null
+9,Add multi-language support,"Implement i18n for supporting multiple languages",in_progress,cash,1200,9,9,9,null
+10,Create automated tests,"Develop comprehensive automated test suite",open,points,1800,null,10,10,null
