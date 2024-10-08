@@ -65,7 +65,7 @@ id,parent_id,active,selectable,display_boost_factor,name
 64,54,true,true,1,Solutions Architecture
 65,54,false,false,1,Systems Administration
 66,54,false,false,1,Systems Engineering
-67,,"false,false",1,"Marketing, Sales & Communications"
+67,,false,false,1,"Marketing, Sales & Communications"
 68,67,false,false,1,Brand Strategy
 69,67,false,false,1,Campaign Management
 70,67,false,false,1,Community Management
