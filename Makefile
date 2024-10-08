@@ -1,49 +1,47 @@
 MANAGE = python manage.py
 
-# List of fixtures in the correct loading order and their respective models
+# List of fixtures in the correct loading order
 FIXTURES = \
-    apps/security/fixtures/user-fixture.csv:security.User \
-    apps/talent/fixtures/person-fixture.csv:talent.Person \
-    apps/talent/fixtures/skill-fixture.csv:talent.Skill \
-    apps/talent/fixtures/expertise-fixture.csv:talent.Expertise \
-    apps/talent/fixtures/person-skill-fixture.csv:talent.PersonSkill \
-    apps/commerce/fixtures/organisation-fixture.csv:commerce.Organisation \
-    apps/product_management/fixtures/product-fixture.csv:product_management.Product \
-    apps/product_management/fixtures/product-tree-fixture.csv:product_management.ProductTree \
-    apps/product_management/fixtures/product-area-fixture.csv:product_management.ProductArea \
-    apps/commerce/fixtures/organisation-point-account-fixture.csv:commerce.OrganisationPointAccount \
-    apps/commerce/fixtures/product-point-account-fixture.csv:commerce.ProductPointAccount \
-    apps/commerce/fixtures/platform-fee-configuration-fixture.csv:commerce.PlatformFeeConfiguration \
-    apps/product_management/fixtures/initiative-fixture.csv:product_management.Initiative \
-    apps/product_management/fixtures/bounty-fixture.csv:product_management.Bounty \
-    apps/talent/fixtures/bounty-bid-fixture.csv:talent.BountyBid \
-    apps/talent/fixtures/bounty-claim-fixture.csv:talent.BountyClaim \
-    apps/talent/fixtures/bounty-delivery-attempt-fixture.csv:talent.BountyDeliveryAttempt \
-    apps/commerce/fixtures/bounty-cart-fixture.csv:commerce.BountyCart \
-    apps/commerce/fixtures/bounty-cart-item-fixture.csv:commerce.BountyCartItem \
-    apps/commerce/fixtures/platform-fee-fixture.csv:commerce.PlatformFee \
-    apps/commerce/fixtures/sales-order-fixture.csv:commerce.SalesOrder \
-    apps/commerce/fixtures/point-transaction-fixture.csv:commerce.PointTransaction \
-    apps/commerce/fixtures/point-order-fixture.csv:commerce.PointOrder \
-    apps/product_management/fixtures/competition-fixture.csv:product_management.Competition \
-    apps/product_management/fixtures/competition-entry-fixture.csv:product_management.CompetitionEntry \
-    apps/product_management/fixtures/competition-entry-rating-fixture.csv:product_management.CompetitionEntryRating \
-    apps/product_management/fixtures/contributor-guide-fixture.csv:product_management.ContributorGuide \
-    apps/product_management/fixtures/file-attachment-fixture.csv:product_management.FileAttachment \
-    apps/product_management/fixtures/idea-fixture.csv:product_management.Idea \
-    apps/product_management/fixtures/idea-vote-fixture.csv:product_management.IdeaVote \
-    apps/product_management/fixtures/product-contributor-agreement-template-fixture.csv:product_management.ProductContributorAgreementTemplate \
-    apps/product_management/fixtures/product-contributor-agreement-fixture.csv:product_management.ProductContributorAgreement \
-    apps/product_management/fixtures/bug-fixture.csv:product_management.Bug \
-    apps/commerce/fixtures/organisation-point-grant-fixture.csv:commerce.OrganisationPointGrant \
-    apps/security/fixtures/organisation-person-role-assignment-fixture.csv:security.OrganisationPersonRoleAssignment \
-    apps/security/fixtures/product-role-assignment-fixture.csv:security.ProductRoleAssignment \
-    apps/security/fixtures/sign-in-attempt-fixture.csv:security.SignInAttempt \
-    apps/security/fixtures/sign-up-request-fixture.csv:security.SignUpRequest \
-    apps/product_management/fixtures/challenge-fixture.csv:product_management.Challenge \
-    apps/engagement/fixtures/email-notification-fixture.csv:engagement.EmailNotification
-
-.PHONY: seed setup
+    apps/security/fixtures/user-fixture.csv \
+    apps/talent/fixtures/person-fixture.csv \
+    apps/talent/fixtures/skill-fixture.csv \
+    apps/talent/fixtures/expertise-fixture.csv \
+    apps/talent/fixtures/person-skill-fixture.csv \
+    apps/commerce/fixtures/organisation-fixture.csv \
+    apps/product_management/fixtures/product-fixture.csv \
+    apps/product_management/fixtures/product-tree-fixture.csv \
+    apps/product_management/fixtures/product-area-fixture.csv \
+    apps/commerce/fixtures/organisation-point-account-fixture.csv \
+    apps/commerce/fixtures/product-point-account-fixture.csv \
+    apps/commerce/fixtures/platform-fee-configuration-fixture.csv \
+    apps/product_management/fixtures/initiative-fixture.csv \
+    apps/product_management/fixtures/bounty-fixture.csv \
+    apps/talent/fixtures/bounty-bid-fixture.csv \
+    apps/talent/fixtures/bounty-claim-fixture.csv \
+    apps/talent/fixtures/bounty-delivery-attempt-fixture.csv \
+    apps/commerce/fixtures/bounty-cart-fixture.csv \
+    apps/commerce/fixtures/bounty-cart-item-fixture.csv \
+    apps/commerce/fixtures/platform-fee-fixture.csv \
+    apps/commerce/fixtures/sales-order-fixture.csv \
+    apps/commerce/fixtures/point-transaction-fixture.csv \
+    apps/commerce/fixtures/point-order-fixture.csv \
+    apps/product_management/fixtures/competition-fixture.csv \
+    apps/product_management/fixtures/competition-entry-fixture.csv \
+    apps/product_management/fixtures/competition-entry-rating-fixture.csv \
+    apps/product_management/fixtures/contributor-guide-fixture.csv \
+    apps/product_management/fixtures/file-attachment-fixture.csv \
+    apps/product_management/fixtures/idea-fixture.csv \
+    apps/product_management/fixtures/idea-vote-fixture.csv \
+    apps/product_management/fixtures/product-contributor-agreement-template-fixture.csv \
+    apps/product_management/fixtures/product-contributor-agreement-fixture.csv \
+    apps/product_management/fixtures/bug-fixture.csv \
+    apps/commerce/fixtures/organisation-point-grant-fixture.csv \
+    apps/security/fixtures/organisation-person-role-assignment-fixture.csv \
+    apps/security/fixtures/product-role-assignment-fixture.csv \
+    apps/security/fixtures/sign-in-attempt-fixture.csv \
+    apps/security/fixtures/sign-up-request-fixture.csv \
+    apps/product_management/fixtures/challenge-fixture.csv \
+    apps/engagement/fixtures/email-notification-fixture.csv
 
 help:
 	@echo "help               -- Print this help showing all commands.         "
@@ -58,7 +56,6 @@ help:
 	@echo "dumpdata           -- Backup the data from the running django app   "
 	@echo "tailwindcss        -- Generate Tailwindcss 						   "
 
-
 rmpyc:
 	find . | grep -E "__pycache__|\.pyc|\.pyo" | xargs sudo rm -rf
 
@@ -71,9 +68,7 @@ migrate:
 
 seed:
 	for fixture in $(FIXTURES); do \
-		csv_file=$${fixture%%:*}; \
-		model_name=$${fixture##*:}; \
-		${MANAGE} loadcsv $$csv_file $$model_name; \
+		${MANAGE} loadcsv $$fixture; \
 	done
 
 setup:
@@ -81,6 +76,7 @@ setup:
 	make migrate
 	make seed
 	make test
+
 dumpdata:
 	${MANAGE} dumpdata canopy --output apps/canopy/fixtures/canopy.json
 	${MANAGE} dumpdata commerce --output apps/commerce/fixtures/commerce.json
