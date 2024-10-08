@@ -2,33 +2,46 @@ MANAGE = python manage.py
 
 # List of fixtures in the correct loading order
 FIXTURES_ORDERED = \
-	security \
-	talent \
-	apps/product_management/fixtures/001-product-fixture.json \
-    apps/product_management/fixtures/002-producttree-fixture.json \
-    apps/product_management/fixtures/003-productarea-fixture-part1.json \
-    apps/product_management/fixtures/004-productarea-fixture-part2.json \
-    apps/product_management/fixtures/005-misc-fixtures.json \
-	apps/product_management/fixtures/001-product-fixture.json \
-    apps/product_management/fixtures/002-producttree-fixture.json \
-    apps/product_management/fixtures/003-productarea-fixture-part1.json \
-    apps/product_management/fixtures/004-productarea-fixture-part2.json \
-    apps/product_management/fixtures/005-misc-fixtures.json \
-    apps/product_management/fixtures/006-bounty_fixtures.json \
-    apps/product_management/fixtures/007-competition.json \
-	apps/commerce/fixtures/001-organisation.json \
-    apps/commerce/fixtures/002-organisationpointaccount.json \
-    apps/commerce/fixtures/003-pointtransaction.json \
-    apps/commerce/fixtures/004-bountycart.json \
-    apps/commerce/fixtures/005-bountycartitem.json \
-    apps/commerce/fixtures/006-productpointaccount.json \
-    apps/commerce/fixtures/007-platformfeeconfiguration.json \
-    apps/commerce/fixtures/008-platformfee.json \
-    apps/commerce/fixtures/009-salesorder.json \
-    apps/commerce/fixtures/010-pointorder.json \
-	engagement \
-	apps/talent/fixtures/bountyclaim.json \
-	apps/security/fixtures/product_role_assignment.json
+    apps/security/fixtures/user-fixture.csv \
+    apps/talent/fixtures/person-fixture.csv \
+    apps/talent/fixtures/skill-fixture.csv \
+    apps/talent/fixtures/expertise-fixture.csv \
+    apps/talent/fixtures/person-skill-fixture.csv \
+    apps/commerce/fixtures/organisation-fixture.csv \
+    apps/product_management/fixtures/product-fixture.csv \
+    apps/product_management/fixtures/product-tree-fixture.csv \
+    apps/product_management/fixtures/product-area-fixture.csv \
+    apps/commerce/fixtures/organisation-point-account-fixture.csv \
+    apps/commerce/fixtures/product-point-account-fixture.csv \
+    apps/commerce/fixtures/platform-fee-configuration-fixture.csv \
+    apps/product_management/fixtures/initiative-fixture.csv \
+    apps/product_management/fixtures/bounty-fixture.csv \
+    apps/talent/fixtures/bounty-bid-fixture.csv \
+    apps/talent/fixtures/bounty-claim-fixture.csv \
+    apps/talent/fixtures/bounty-delivery-attempt-fixture.csv \
+    apps/commerce/fixtures/bounty-cart-fixture.csv \
+    apps/commerce/fixtures/bounty-cart-item-fixture.csv \
+    apps/commerce/fixtures/platform-fee-fixture.csv \
+    apps/commerce/fixtures/sales-order-fixture.csv \
+    apps/commerce/fixtures/point-transaction-fixture.csv \
+    apps/commerce/fixtures/point-order-fixture.csv \
+    apps/product_management/fixtures/competition-fixture.csv \
+    apps/product_management/fixtures/competition-entry-fixture.csv \
+    apps/product_management/fixtures/competition-entry-rating-fixture.csv \
+    apps/product_management/fixtures/contributor-guide-fixture.csv \
+    apps/product_management/fixtures/file-attachment-fixture.csv \
+    apps/product_management/fixtures/idea-fixture.csv \
+    apps/product_management/fixtures/idea-vote-fixture.csv \
+    apps/product_management/fixtures/product-contributor-agreement-template-fixture.csv \
+    apps/product_management/fixtures/product-contributor-agreement-fixture.csv \
+    apps/product_management/fixtures/bug-fixture.csv \
+    apps/commerce/fixtures/organisation-point-grant-fixture.csv \
+    apps/security/fixtures/organisation-person-role-assignment-fixture.csv \
+    apps/security/fixtures/product-role-assignment-fixture.csv \
+    apps/security/fixtures/sign-in-attempt-fixture.csv \
+    apps/security/fixtures/sign-up-request-fixture.csv \
+    apps/product_management/fixtures/challenge-fixture.csv \
+    apps/engagement/fixtures/email-notification-fixture.csv
 
 help:
 	@echo "help               -- Print this help showing all commands.         "

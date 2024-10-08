@@ -1,4 +1,24 @@
 id,depth,description,name,numchild,path,product_tree
+1,1,Core drawing and editing tools,Canvas Tools,4,0001,1
+2,2,Various brush tools,Brushes,2,00010002,1
+3,3,Create and modify brushes,Customizable Brushes,0,000100020003,1
+4,3,Pre-defined brush settings,Brush Presets,0,000100020004,1
+5,2,Layer management system,Layers,0,00010005,1
+6,2,Color selection and management,Color Palette,0,00010006,1
+7,2,Tools for manipulating canvas elements,Transform Tools,0,00010007,1
+8,1,Tools for team collaboration,Collaboration Features,3,0008,1
+9,2,Simultaneous editing capabilities,Real-time Co-editing,0,00080009,1
+10,2,Track and manage art versions,Version Control,0,00080010,1
+11,2,Add notes and feedback to artworks,Comments and Annotations,0,00080011,1
+12,1,Tools for managing educational courses,Course Management,3,0012,2
+13,2,Create and organize course curricula,Curriculum Design,0,00120013,2
+14,2,Create and manage course assignments,Assignment Creator,0,00120014,2
+15,2,Manage student grades and assessments,Grading System,0,00120015,2
+16,1,Core services for patients,Patient Services,3,0016,3
+17,2,Book and manage medical appointments,Appointment Scheduling,0,00160017,3
+18,2,Conduct online doctor consultations,Virtual Consultations,0,00160018,3
+19,2,Manage and renew prescriptions,Prescription Management,0,00160019,3
+20,1,Tools for calculating carbon emissions,Carbon Footprint Calculator,3,0020,4
 21,2,Track and analyze energy usage,Energy Consumption,0,00200021,4
 22,2,Calculate emissions from various transport modes,Transportation Emissions,0,00200022,4
 23,2,Measure and analyze waste production,Waste Generation,0,00200023,4
