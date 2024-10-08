@@ -1,112 +1,112 @@
 id,name,description,path,depth,numchild,product_tree
-1,Canvas Tools,Core drawing and editing tools,0001,1,4,1
-2,Brushes,Various brush tools,00010001,2,2,1
-3,Customizable Brushes,Create and modify brushes,000100010001,3,0,1
-4,Brush Presets,Pre-defined brush settings,000100010002,3,0,1
-5,Layers,Layer management system,00010002,2,3,1
-6,Layer Types,Different types of layers,000100020001,3,0,1
-7,Layer Effects,Apply effects to layers,000100020002,3,0,1
-8,Layer Groups,Organize layers into groups,000100020003,3,0,1
-9,Color Palette,Color selection and management,00010003,2,2,1
-10,Color Picker,Advanced color selection tool,000100030001,3,0,1
-11,Color Schemes,Pre-defined color combinations,000100030002,3,0,1
-12,Transform Tools,Tools for manipulating canvas elements,00010004,2,3,1
-13,Resize,Change element size,000100040001,3,0,1
-14,Rotate,Rotate elements,000100040002,3,0,1
-15,Skew,Skew elements,000100040003,3,0,1
-16,Collaboration Features,Tools for team collaboration,0002,1,3,1
-17,Real-time Co-editing,Simultaneous editing capabilities,00020001,2,0,1
-18,Version Control,Track and manage art versions,00020002,2,0,1
-19,Comments and Annotations,Add notes and feedback to artworks,00020003,2,0,1
-20,Asset Management,Manage digital assets,0003,1,3,1
-21,Asset Library,Store and organize digital assets,00030001,2,0,1
-22,Asset Tagging,Tag and categorize assets,00030002,2,0,1
-23,Asset Search,Find assets quickly,00030003,2,0,1
-24,Export and Share,Tools for exporting and sharing artwork,0004,1,3,1
-25,Export Formats,Various file format options,00040001,2,0,1
-26,Cloud Integration,Integration with cloud storage services,00040002,2,0,1
-27,Social Media Sharing,Direct sharing to social platforms,00040003,2,0,1
-28,Course Management,Tools for managing educational courses,0001,1,4,2
-29,Curriculum Design,Create and organize course curricula,00010001,2,3,2
-30,Learning Objectives,Define course learning objectives,000100010001,3,0,2
-31,Course Outline,Create detailed course outlines,000100010002,3,0,2
-32,Resource Planning,Plan and allocate course resources,000100010003,3,0,2
-33,Assignment Creator,Create and manage course assignments,00010002,2,3,2
-34,Quiz Builder,Create interactive quizzes,000100020001,3,0,2
-35,Essay Assignments,Manage essay-type assignments,000100020002,3,0,2
-36,Group Projects,Set up and manage group projects,000100020003,3,0,2
-37,Grading System,Manage student grades and assessments,00010003,2,3,2
-38,Grade Book,Record and calculate grades,000100030001,3,0,2
-39,Rubric Creator,Create grading rubrics,000100030002,3,0,2
-40,Progress Reports,Generate student progress reports,000100030003,3,0,2
-41,Content Management,Manage course content,00010004,2,3,2
-42,Lesson Creator,Create interactive lessons,000100040001,3,0,2
-43,Media Library,Manage educational media,000100040002,3,0,2
-44,Content Scheduler,Schedule content release,000100040003,3,0,2
-45,Student Engagement,Tools for increasing student engagement,0002,1,3,2
-46,Discussion Forums,Facilitate class discussions,00020001,2,0,2
-47,Live Polling,Conduct real-time class polls,00020002,2,0,2
-48,Gamification,Implement game-like elements,00020003,2,0,2
-49,Analytics and Reporting,Track and analyze learning data,0003,1,3,2
-50,Learning Analytics,Analyze student performance data,00030001,2,0,2
-51,Engagement Metrics,Track student engagement levels,00030002,2,0,2
-52,Custom Reports,Generate customized reports,00030003,2,0,2
-53,Patient Services,Core services for patients,0001,1,4,3
-54,Appointment Scheduling,Book and manage medical appointments,00010001,2,3,3
-55,Calendar Integration,Sync with personal calendars,000100010001,3,0,3
-56,Reminders,Set up appointment reminders,000100010002,3,0,3
-57,Rescheduling,Easy appointment rescheduling,000100010003,3,0,3
-58,Virtual Consultations,Conduct online doctor consultations,00010002,2,3,3
-59,Video Calls,High-quality video consultations,000100020001,3,0,3
-60,Chat Support,Text-based consultations,000100020002,3,0,3
-61,File Sharing,Share medical documents securely,000100020003,3,0,3
-62,Prescription Management,Manage and renew prescriptions,00010003,2,3,3
-63,e-Prescriptions,Electronic prescription service,000100030001,3,0,3
-64,Refill Requests,Easy prescription refill requests,000100030002,3,0,3
-65,Medication Reminders,Set reminders for medication,000100030003,3,0,3
-66,Medical Records,Access and manage medical records,00010004,2,3,3
-67,Record Viewer,View medical history and test results,000100040001,3,0,3
-68,Document Upload,Upload medical documents,000100040002,3,0,3
-69,Health Tracker,Track health metrics over time,000100040003,3,0,3
-70,Provider Network,Find and connect with healthcare providers,0002,1,3,3
-71,Doctor Search,Find doctors by specialty and location,00020001,2,0,3
-72,Clinic Locator,Find nearby clinics and hospitals,00020002,2,0,3
-73,Provider Reviews,Read and write provider reviews,00020003,2,0,3
-74,Telemedicine,Remote healthcare services,0003,1,3,3
-75,Remote Monitoring,Monitor patients' health remotely,00030001,2,0,3
-76,Symptom Checker,AI-powered symptom assessment,00030002,2,0,3
-77,Emergency Services,Quick access to emergency care,00030003,2,0,3
-78,Carbon Footprint Calculator,Tools for calculating carbon emissions,0001,1,4,4
-79,Energy Consumption,Track and analyze energy usage,00010001,2,3,4
-80,Electricity Usage,Monitor electricity consumption,000100010001,3,0,4
-81,Gas Usage,Track natural gas consumption,000100010002,3,0,4
-82,Renewable Energy,Monitor renewable energy production,000100010003,3,0,4
-83,Transportation Emissions,Calculate emissions from various transport modes,00010002,2,3,4
-84,Vehicle Emissions,Calculate car and motorcycle emissions,000100020001,3,0,4
-85,Public Transit,Calculate emissions from public transportation,000100020002,3,0,4
-86,Air Travel,Calculate emissions from air travel,000100020003,3,0,4
-87,Waste Generation,Measure and analyze waste production,00010003,2,3,4
-88,Recycling Tracker,Track recycling efforts,000100030001,3,0,4
-89,Composting,Monitor composting activities,000100030002,3,0,4
-90,Landfill Waste,Calculate landfill waste emissions,000100030003,3,0,4
-91,Water Usage,Track water consumption and related emissions,00010004,2,3,4
-92,Household Water,Monitor household water usage,000100040001,3,0,4
-93,Industrial Water,Track industrial water consumption,000100040002,3,0,4
-94,Water Treatment,Calculate emissions from water treatment,000100040003,3,0,4
-95,Emission Reduction,Tools for reducing carbon emissions,0002,1,3,4
-96,Energy Efficiency,Suggestions for improving energy efficiency,00020001,2,0,4
-97,Transportation Alternatives,Eco-friendly transportation options,00020002,2,0,4
-98,Waste Reduction,Strategies for reducing waste,00020003,2,0,4
-99,Reporting and Analytics,Analyze and report on carbon footprint data,0003,1,3,4
-100,Data Visualization,Visualize carbon footprint data,00030001,2,0,4
-101,Trend Analysis,Analyze emission trends over time,00030002,2,0,4
-102,Comparative Reports,Compare emissions with industry benchmarks,00030003,2,0,4
-103,Budgeting Tools,Features for personal budget management,0001,1,4,5
-104,Expense Categorization,Categorize and track expenses,00010001,2,3,5
-105,Auto-categorization,Automatically categorize transactions,000100010001,3,0,5
-106,Custom Categories,Create custom expense categories,000100010002,3,0,5
-107,Spending Analysis,Analyze spending patterns,000100010003,3,0,5
-108,Income Tracking,Monitor and analyze income sources,00010002,2,3,5
-109,Income Categories,Categorize different income sources,000100020001,3,0,5
-110,Recurring Income,Set up and track recurring income,000100020002,3,0,5
-111,Income Projections,Project future income,000100020003,3,0,5
+1,Collaboration Tools,Core tools for real-time coding collaboration,0001,1,4,1
+2,Code Editor,Advanced code editing features,00010001,2,2,1
+3,Syntax Highlighting,Language-specific code highlighting,000100010001,3,0,1
+4,Auto-completion,Intelligent code completion suggestions,000100010002,3,0,1
+5,Version Control,Built-in version control system,00010002,2,3,1
+6,Branching,Create and manage code branches,000100020001,3,0,1
+7,Merging,Merge different code versions,000100020002,3,0,1
+8,Conflict Resolution,Tools for resolving merge conflicts,000100020003,3,0,1
+9,Real-time Collaboration,Features for simultaneous coding,00010003,2,2,1
+10,Pair Programming,Tools for pair programming sessions,000100030001,3,0,1
+11,Code Review,In-line code review capabilities,000100030002,3,0,1
+12,Project Management,Tools for managing coding projects,00010004,2,3,1
+13,Task Tracking,Assign and track coding tasks,000100040001,3,0,1
+14,Milestones,Set and monitor project milestones,000100040002,3,0,1
+15,Time Tracking,Track time spent on coding tasks,000100040003,3,0,1
+16,Integration Tools,Integrate with external tools and services,0002,1,3,1
+17,CI/CD Integration,Connect with CI/CD pipelines,00020001,2,0,1
+18,IDE Plugins,Plugins for popular IDEs,00020002,2,0,1
+19,API Integrations,Connect with external APIs and services,00020003,2,0,1
+20,Performance Tools,Tools for code performance analysis,0003,1,3,1
+21,Code Profiler,Analyze code performance,00030001,2,0,1
+22,Memory Analyzer,Detect memory leaks and optimize usage,00030002,2,0,1
+23,Load Testing,Tools for application load testing,00030003,2,0,1
+24,Knowledge Base,Resources for learning and improvement,0004,1,3,1
+25,Documentation,Comprehensive product documentation,00040001,2,0,1
+26,Tutorials,Step-by-step coding tutorials,00040002,2,0,1
+27,Community Forums,User community and support forums,00040003,2,0,1
+28,Data Visualization,Tools for creating data visualizations,0001,1,4,2
+29,Chart Types,Various types of charts and graphs,00010001,2,3,2
+30,Bar Charts,Create and customize bar charts,000100010001,3,0,2
+31,Line Graphs,Design interactive line graphs,000100010002,3,0,2
+32,Pie Charts,Generate informative pie charts,000100010003,3,0,2
+33,Data Import,Tools for importing data,00010002,2,3,2
+34,File Import,Import data from various file formats,000100020001,3,0,2
+35,Database Connection,Connect to external databases,000100020002,3,0,2
+36,API Integration,Import data from external APIs,000100020003,3,0,2
+37,Data Manipulation,Tools for processing and transforming data,00010003,2,3,2
+38,Data Cleaning,Clean and preprocess data,000100030001,3,0,2
+39,Data Aggregation,Aggregate and summarize data,000100030002,3,0,2
+40,Data Filtering,Filter and sort data sets,000100030003,3,0,2
+41,Customization,Options for customizing visualizations,00010004,2,3,2
+42,Color Schemes,Customize chart color palettes,000100040001,3,0,2
+43,Layout Options,Adjust chart layouts and positioning,000100040002,3,0,2
+44,Interactivity,Add interactive elements to charts,000100040003,3,0,2
+45,Advanced Features,Advanced data visualization capabilities,0002,1,3,2
+46,3D Visualizations,Create 3D charts and graphs,00020001,2,0,2
+47,Geospatial Mapping,Visualize data on interactive maps,00020002,2,0,2
+48,Real-time Data,Visualize real-time data streams,00020003,2,0,2
+49,Collaboration,Tools for team collaboration,0003,1,3,2
+50,Shared Dashboards,Create and share data dashboards,00030001,2,0,2
+51,Version Control,Track changes in visualizations,00030002,2,0,2
+52,Commenting,Add comments and annotations to charts,00030003,2,0,2
+53,File Management,Core file management features,0001,1,4,3
+54,File Organization,Organize and structure files,00010001,2,3,3
+55,Folder Hierarchy,Create and manage folder structures,000100010001,3,0,3
+56,Tagging,Tag files for easy categorization,000100010002,3,0,3
+57,Search,Advanced file search capabilities,000100010003,3,0,3
+58,File Sharing,Share files and manage permissions,00010002,2,3,3
+59,Link Sharing,Share files via secure links,000100020001,3,0,3
+60,Collaboration,Collaborate on files in real-time,000100020002,3,0,3
+61,Access Control,Manage user access and permissions,000100020003,3,0,3
+62,Sync,File synchronization across devices,00010003,2,3,3
+63,Desktop Sync,Sync files with desktop devices,000100030001,3,0,3
+64,Mobile Sync,Sync files with mobile devices,000100030002,3,0,3
+65,Selective Sync,Choose specific files to sync,000100030003,3,0,3
+66,Version Control,Manage file versions,00010004,2,3,3
+67,Version History,View and restore previous versions,000100040001,3,0,3
+68,File Locking,Lock files for editing,000100040002,3,0,3
+69,Conflict Resolution,Resolve conflicting file versions,000100040003,3,0,3
+70,Security,Ensure file security and privacy,0002,1,3,3
+71,Encryption,End-to-end file encryption,00020001,2,0,3
+72,Two-Factor Auth,Two-factor authentication for access,00020002,2,0,3
+73,Audit Logs,Track file access and changes,00020003,2,0,3
+74,Integrations,Connect with external services,0003,1,3,3
+75,Office Suite,Integrate with office productivity tools,00030001,2,0,3
+76,Project Management,Connect with project management tools,00030002,2,0,3
+77,Communication,Integrate with communication platforms,00030003,2,0,3
+78,AI Coding,AI-powered coding assistance,0001,1,4,4
+79,Code Completion,Intelligent code completion,00010001,2,3,4
+80,Context-Aware,Context-sensitive code suggestions,000100010001,3,0,4
+81,Snippet Generation,Generate code snippets,000100010002,3,0,4
+82,API Suggestions,Suggest relevant API usage,000100010003,3,0,4
+83,Code Refactoring,AI-assisted code refactoring,00010002,2,3,4
+84,Rename Refactoring,Intelligent symbol renaming,000100020001,3,0,4
+85,Extract Method,Suggest method extractions,000100020002,3,0,4
+86,Optimize Imports,Manage and optimize imports,000100020003,3,0,4
+87,Error Detection,Proactive error and bug detection,00010003,2,3,4
+88,Syntax Errors,Detect and suggest fixes for syntax errors,000100030001,3,0,4
+89,Logic Errors,Identify potential logic errors,000100030002,3,0,4
+90,Performance Issues,Detect performance bottlenecks,000100030003,3,0,4
+91,Code Generation,Generate code from requirements,00010004,2,3,4
+92,Boilerplate Code,Generate common boilerplate code,000100040001,3,0,4
+93,Test Generation,Auto-generate unit tests,000100040002,3,0,4
+94,Documentation,Generate code documentation,000100040003,3,0,4
+95,Language Support,Support for multiple programming languages,0002,1,3,4
+96,JavaScript/TypeScript,AI support for JS and TS,00020001,2,0,4
+97,Python,AI assistance for Python development,00020002,2,0,4
+98,Java,AI-powered Java coding help,00020003,2,0,4
+99,Learning and Improvement,Continuous learning and improvement,0003,1,3,4
+100,Personalized Suggestions,Learn from user's coding style,00030001,2,0,4
+101,Trending Patterns,Suggest trending coding patterns,00030002,2,0,4
+102,Best Practices,Promote coding best practices,00030003,2,0,4
+103,Network Security,Core network security features,0001,1,4,5
+104,Firewall Management,Manage network firewall,00010001,2,3,5
+105,Rule Configuration,Configure firewall rules,000100010001,3,0,5
+106,Traffic Monitoring,Monitor network traffic,000100010002,3,0,5
+107,Intrusion Detection,Detect potential security breaches,000100010003,3,0,5
+108,VPN Services,Secure VPN capabilities,00010002,2,3,5
+109,Site-to-Site VPN,Connect multiple networks securely,000100020001,3,0,5
+110,Remote Access VPN,Secure remote access for users,000100020002,3,0,5
+111,VPN Protocols,Support various VPN protocols,000100020003,3,0,5
