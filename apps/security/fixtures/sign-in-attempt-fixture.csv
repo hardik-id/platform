@@ -1,0 +1,11 @@
+id,device_identifier,successful,user_id
+1,device_1,true,1
+2,device_2,true,2
+3,device_3,false,3
+4,device_4,true,4
+5,device_5,true,5
+6,device_6,false,6
+7,device_7,true,7
+8,device_8,true,8
+9,device_9,false,9
+10,device_10,true,10

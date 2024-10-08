@@ -1,0 +1,11 @@
+id,password,last_login,is_superuser,username,first_name,last_name,email,is_staff,is_active,date_joined,remaining_budget_for_failed_logins,password_reset_required,is_test_user
+1,hashed_password_1,2024-05-01 09:00:00,true,admin,Admin,User,admin@example.com,true,true,2024-01-01 00:00:00,5,false,false
+2,hashed_password_2,2024-05-02 10:15:00,false,john_doe,John,Doe,john.doe@example.com,false,true,2024-01-02 00:00:00,5,false,false
+3,hashed_password_3,2024-05-03 11:30:00,false,jane_smith,Jane,Smith,jane.smith@example.com,false,true,2024-01-03 00:00:00,5,false,false
+4,hashed_password_4,2024-05-04 12:45:00,false,bob_johnson,Bob,Johnson,bob.johnson@example.com,false,true,2024-01-04 00:00:00,5,false,false
+5,hashed_password_5,2024-05-05 14:00:00,false,alice_williams,Alice,Williams,alice.williams@example.com,false,true,2024-01-05 00:00:00,5,false,false
+6,hashed_password_6,2024-05-06 15:15:00,false,charlie_brown,Charlie,Brown,charlie.brown@example.com,false,true,2024-01-06 00:00:00,5,false,false
+7,hashed_password_7,2024-05-07 16:30:00,false,diana_miller,Diana,Miller,diana.miller@example.com,false,true,2024-01-07 00:00:00,5,false,false
+8,hashed_password_8,2024-05-08 17:45:00,false,eric_davis,Eric,Davis,eric.davis@example.com,false,true,2024-01-08 00:00:00,5,false,false
+9,hashed_password_9,2024-05-09 19:00:00,false,fiona_taylor,Fiona,Taylor,fiona.taylor@example.com,false,true,2024-01-09 00:00:00,5,false,false
+10,hashed_password_10,2024-05-10 20:15:00,false,george_wilson,George,Wilson,george.wilson@example.com,false,true,2024-01-10 00:00:00,5,false,false
