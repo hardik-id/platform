@@ -89,9 +89,9 @@ class PersonSkillParser(ModelParser):
         parsed = self.parse_row(row)
 
         # Extract expertise IDs and remove them from parsed data
-        expertise_ids = parsed.pop('expertise_ids', [])
-        if isinstance(expertise_ids, list) and len(expertise_ids) == 1 and isinstance(expertise_ids[0], str):
-            expertise_ids = [int(x.strip()) for x in expertise_ids[0].split(',') if x]
+        expertise_ids = parsed.pop('expertise_ids', '')
+        if isinstance(expertise_ids, str):
+            expertise_ids = [int(x.strip()) for x in expertise_ids.split(',') if x]
 
         # Create or update the PersonSkill object
         obj, created = model.objects.update_or_create(
