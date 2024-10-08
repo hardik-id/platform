@@ -1,11 +1,11 @@
-id,name,short_description,full_description,website,github_repo,owner_id,license_id,created_by_id,updated_by_id
-1,CodeCollab,Collaborative coding platform,"CodeCollab is a powerful platform for teams to code together in real-time.",https://codecollab.com,codecollab/main,1,1,1,1
-2,DataViz,Data visualization tool,"DataViz turns complex data into beautiful, interactive visualizations.",https://dataviz.io,dataviz/core,2,2,2,2
-3,CloudSync,Cloud storage solution,"CloudSync provides secure and scalable cloud storage for businesses.",https://cloudsync.net,cloudsync/app,3,1,3,3
-4,AIAssist,AI-powered coding assistant,"AIAssist uses machine learning to help developers write better code faster.",https://aiassist.dev,aiassist/core,4,3,4,4
-5,SecureNet,Network security suite,"SecureNet offers comprehensive protection for enterprise networks.",https://securenet.io,securenet/main,5,2,5,5
-6,QuickBooks,Accounting software,"QuickBooks simplifies financial management for small businesses.",https://quickbooks.com,quickbooks/app,6,1,6,6
-7,HealthTrack,Health monitoring app,"HealthTrack helps users monitor and improve their overall well-being.",https://healthtrack.app,healthtrack/mobile,7,3,7,7
-8,EduLearn,E-learning platform,"EduLearn provides interactive online courses for various subjects.",https://edulearn.com,edulearn/platform,8,2,8,8
-9,GreenEnergy,Renewable energy management,"GreenEnergy optimizes renewable energy sources for maximum efficiency.",https://greenenergy.tech,greenenergy/core,9,1,9,9
-10,SmartHome,Home automation system,"SmartHome connects and controls all your smart devices in one place.",https://smarthome.io,smarthome/hub,10,3,10,10
+id,name,short_description,full_description,website,github_repo,owner_organisation_id,license_type,created_by_user_id,updated_by_user_id,created_at,updated_at
+1,CodeCollab,Collaborative coding platform,"CodeCollab is a powerful platform for teams to code together in real-time.",https://codecollab.com,codecollab/main,1,MIT,2,2,2024-01-01 00:00:00,2024-01-01 00:00:00
+2,DataViz,Data visualization tool,"DataViz turns complex data into beautiful, interactive visualizations.",https://dataviz.io,dataviz/core,2,Apache-2.0,3,3,2024-01-01 00:00:00,2024-01-01 00:00:00
+3,CloudSync,Cloud storage solution,"CloudSync provides secure and scalable cloud storage for businesses.",https://cloudsync.net,cloudsync/app,3,MIT,4,4,2024-01-01 00:00:00,2024-01-01 00:00:00
+4,AIAssist,AI-powered coding assistant,"AIAssist uses machine learning to help developers write better code faster.",https://aiassist.dev,aiassist/core,4,GPL-3.0,5,5,2024-01-01 00:00:00,2024-01-01 00:00:00
+5,SecureNet,Network security suite,"SecureNet offers comprehensive protection for enterprise networks.",https://securenet.io,securenet/main,5,Apache-2.0,6,6,2024-01-01 00:00:00,2024-01-01 00:00:00
+6,QuickBooks,Accounting software,"QuickBooks simplifies financial management for small businesses.",https://quickbooks.com,quickbooks/app,6,MIT,7,7,2024-01-01 00:00:00,2024-01-01 00:00:00
+7,HealthTrack,Health monitoring app,"HealthTrack helps users monitor and improve their overall well-being.",https://healthtrack.app,healthtrack/mobile,7,GPL-3.0,8,8,2024-01-01 00:00:00,2024-01-01 00:00:00
+8,EduLearn,E-learning platform,"EduLearn provides interactive online courses for various subjects.",https://edulearn.com,edulearn/platform,8,Apache-2.0,9,9,2024-01-01 00:00:00,2024-01-01 00:00:00
+9,GreenEnergy,Renewable energy management,"GreenEnergy optimizes renewable energy sources for maximum efficiency.",https://greenenergy.tech,greenenergy/core,9,MIT,10,10,2024-01-01 00:00:00,2024-01-01 00:00:00
+10,SmartHome,Home automation system,"SmartHome connects and controls all your smart devices in one place.",https://smarthome.io,smarthome/hub,10,GPL-3.0,11,11,2024-01-01 00:00:00,2024-01-01 00:00:00
