@@ -306,19 +306,19 @@ class CapabilityComment(Comment):
 
 
 class BountyDeliveryAttempt(TimeStampMixin, AttachmentAbstract):
-    class SubmissionType(models.TextChoices):
+    class BountyDeliveryStatus(models.TextChoices):
         NEW = "New"
         APPROVED = "Approved"
         REJECTED = "Rejected"
+        CANCELLED = "Cancelled"
 
-    kind = models.CharField(choices=SubmissionType.choices, default=SubmissionType.NEW)
+    status = models.CharField(choices=BountyDeliveryStatus.choices, default=BountyDeliveryStatus.NEW)
     bounty_claim = models.ForeignKey(
         BountyClaim,
         on_delete=models.CASCADE,
         related_name="delivery_attempt",
     )
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    is_canceled = models.BooleanField(default=False)
     delivery_message = models.CharField(max_length=2000, default=None)
 
     class Meta:

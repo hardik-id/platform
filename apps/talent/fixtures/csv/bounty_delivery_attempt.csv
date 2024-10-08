@@ -1,4 +1,0 @@
-id,bounty_claim,person,submission_type,is_canceled,delivery_message,created_at,updated_at,uuid
-1,1,1,NEW,False,First delivery,2024-10-07T21:26:40.256783,2024-10-07T21:26:40.256793,0d5f7fcd-a247-4273-9d29-b0f0bd8501a0
-2,2,2,APPROVED,False,Approved after review,2024-10-07T21:26:40.256790,2024-10-07T21:26:40.256795,e28b859d-f752-4708-af27-e5d0bd94a5be
-3,3,3,REJECTED,True,Rejected due to issues,2024-10-07T21:26:40.256792,2024-10-07T21:26:40.256797,da8bc51e-95ec-4391-acfa-51637c85693b
