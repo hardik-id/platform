@@ -1,4 +1,0 @@
-id,country,created_at,name,tax_id,updated_at
-1,US,2024-05-06T17:34:49.308Z,organisation_name_one,123456789,2024-05-06T17:34:49.308Z
-2,GB,2024-05-06T17:34:49.311Z,organisation_name_two,GB123456789,2024-05-06T17:34:49.311Z
-3,US,2024-05-06T17:34:49.312Z,organisation_name_three,987654321,2024-05-06T17:34:49.312Z

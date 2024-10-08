@@ -1,4 +1,0 @@
-id,account,amount,created_at,description,product_account,sales_order,transaction_type,updated_at,uuid
-1,1,10,2024-05-06T17:34:50.341Z,Initial grant of points,,,GRANT,2024-05-06T17:34:50.341Z,236d16bd-f30a-433d-9767-03d52913f106
-2,2,20,2024-05-06T17:34:50.344Z,Initial grant of points,,,GRANT,2024-05-06T17:34:50.344Z,2a6f6f00-936e-4331-bf7f-ff2e27aba088
-3,3,30,2024-05-06T17:34:50.346Z,Initial grant of points,,,GRANT,2024-05-06T17:34:50.346Z,599accbb-5dc0-4c2e-b797-935dfcd9bc2c
