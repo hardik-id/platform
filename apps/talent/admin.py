@@ -37,8 +37,8 @@ class PersonSkillAdmin(admin.ModelAdmin):
 
 @admin.register(models.BountyDeliveryAttempt)
 class BountyDeliveryAttemptAdmin(admin.ModelAdmin):
-    list_display = ["pk", "kind", "bounty_claim", "person", "is_canceled", "delivery_message"]
-    list_filter = ["is_canceled", "kind"]
+    list_display = ["pk", "status", "bounty_claim", "person",  "delivery_message"]
+    list_filter = ["status"]
 
 # Update the Meta classes in your models to fix pluralization
 models.BountyClaim._meta.verbose_name_plural = "Bounty Claims"

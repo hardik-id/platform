@@ -100,4 +100,5 @@ node_modules/
 /playwright/.cache/
 
 create_superuser.py
+delete_migrations.py
 apps/staticfiles/

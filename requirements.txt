@@ -28,6 +28,8 @@ django_lifecycle==1.2.4
 jsonformat==0.0.11
 platformdirs==4.3.6
 
+python-dotenv==1.0.1
+
 # Test dependencies.
 playwright==1.47.0
 pytest-django==4.9.0

@@ -153,7 +153,7 @@ class BountyClaimRequestsView(LoginRequiredMixin, ListView):
 class ReviewWorkView(LoginRequiredMixin, ListView):
     model = BountyDeliveryAttempt
     context_object_name = "bounty_deliveries"
-    queryset = BountyDeliveryAttempt.objects.filter(kind=BountyDeliveryAttempt.SubmissionType.NEW)
+    queryset = BountyDeliveryAttempt.objects.filter(status=BountyDeliveryAttempt.BountyDeliveryStatus.NEW)
     template_name = "product_management/portal/review_work.html"
 
 class ContributorAgreementTemplateListView(LoginRequiredMixin, ListView):
