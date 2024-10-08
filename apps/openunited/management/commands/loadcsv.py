@@ -2,13 +2,14 @@ import csv
 from django.core.management.base import BaseCommand
 from django.apps import apps
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 class Command(BaseCommand):
-    help = 'Load CSV data into the specified model.'
+    help = 'Load CSV data into the specified model, handling complex structures like lists.'
 
     def add_arguments(self, parser):
         parser.add_argument('csv_file', type=str, help='The path to the CSV file.')
-        parser.add_argument('model_name', type=str, help='The app_label.ModelName (e.g., "talent.Person")')
+        parser.add_argument('model_name', type=str, help='The app_label.ModelName (e.g., "talent.PersonSkill")')
 
     def handle(self, *args, **kwargs):
         csv_file = kwargs['csv_file']
@@ -26,38 +27,71 @@ class Command(BaseCommand):
             reader = csv.DictReader(file)
 
             for row in reader:
-                # Convert boolean-like values
-                for field, value in row.items():
-                    if value.lower() == 'true':
-                        row[field] = True
-                    elif value.lower() == 'false':
-                        row[field] = False
-
-                # Handle user_id for Person model
-                if model_name == 'talent.Person':
-                    user_id = row.pop('user_id', None)
-                    if user_id:
-                        try:
-                            user = User.objects.get(id=user_id)
-                            row['user'] = user
-                        except User.DoesNotExist:
-                            self.stdout.write(self.style.WARNING(f"User with id {user_id} does not exist. Skipping this row."))
-                            continue
-                    else:
-                        self.stdout.write(self.style.WARNING("user_id is required for Person model. Skipping this row."))
-                        continue
-
-                # Create a dictionary for model instantiation
-                data = {field: value for field, value in row.items() if field in [f.name for f in model._meta.fields]}
-
-                try:
-                    obj, created = model.objects.get_or_create(**data)
-
-                    if created:
-                        self.stdout.write(self.style.SUCCESS(f'Created: {obj}'))
-                    else:
-                        self.stdout.write(self.style.WARNING(f'Already exists: {obj}'))
-                except Exception as e:
-                    self.stdout.write(self.style.ERROR(f'Error creating/updating {model_name}: {str(e)}'))
+                with transaction.atomic():
+                    self.process_row(model, row, User)
 
         self.stdout.write(self.style.SUCCESS(f'Successfully loaded data from {csv_file} into {model_name}'))
+
+    def process_row(self, model, row, User):
+        # Convert boolean-like values and handle lists
+        for field, value in row.items():
+            if isinstance(value, str):
+                if value.lower() == 'true':
+                    row[field] = True
+                elif value.lower() == 'false':
+                    row[field] = False
+                elif ',' in value:  # Potential list
+                    row[field] = [item.strip() for item in value.split(',') if item.strip()]
+
+        # Handle user_id for Person model
+        if model._meta.model_name == 'Person':
+            self.handle_person_model(model, row, User)
+        elif model._meta.model_name == 'PersonSkill':
+            self.handle_person_skill_model(model, row)
+        else:
+            self.handle_generic_model(model, row)
+
+    def handle_person_model(self, model, row, User):
+        user_id = row.pop('user_id', None)
+        if user_id:
+            try:
+                user = User.objects.get(id=user_id)
+                row['user'] = user
+            except User.DoesNotExist:
+                self.stdout.write(self.style.WARNING(f"User with id {user_id} does not exist. Skipping this row."))
+                return
+        else:
+            self.stdout.write(self.style.WARNING("user_id is required for Person model. Skipping this row."))
+            return
+
+        self.create_or_update_object(model, row)
+
+    def handle_person_skill_model(self, model, row):
+        expertise_ids = row.pop('expertise_ids', [])
+        obj = self.create_or_update_object(model, row)
+        
+        if obj and expertise_ids:
+            Expertise = apps.get_model('talent.Expertise')
+            expertises = Expertise.objects.filter(id__in=expertise_ids)
+            obj.expertise.set(expertises)
+
+    def handle_generic_model(self, model, row):
+        self.create_or_update_object(model, row)
+
+    def create_or_update_object(self, model, data):
+        # Create a dictionary for model instantiation
+        field_names = [f.name for f in model._meta.fields]
+        filtered_data = {field: value for field, value in data.items() if field in field_names}
+
+        try:
+            obj, created = model.objects.update_or_create(**filtered_data)
+
+            if created:
+                self.stdout.write(self.style.SUCCESS(f'Created: {obj}'))
+            else:
+                self.stdout.write(self.style.SUCCESS(f'Updated: {obj}'))
+            
+            return obj
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f'Error creating/updating {model._meta.model_name}: {str(e)}'))
+            return None
