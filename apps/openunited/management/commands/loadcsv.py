@@ -56,15 +56,11 @@ class Command(BaseCommand):
         if user_id:
             try:
                 user = User.objects.get(id=user_id)
-                row['user'] = user
+                self.create_or_update_person(model, row, user)
             except User.DoesNotExist:
                 self.stdout.write(self.style.WARNING(f"User with id {user_id} does not exist. Skipping this row."))
-                return
         else:
             self.stdout.write(self.style.WARNING("user_id is required for Person model. Skipping this row."))
-            return
-
-        self.create_or_update_object(model, row)
 
     def handle_person_skill_model(self, model, row):
         expertise_ids = row.pop('expertise_ids', [])
@@ -78,19 +74,28 @@ class Command(BaseCommand):
     def handle_generic_model(self, model, row):
         self.create_or_update_object(model, row)
 
-    def create_or_update_object(self, model, data):
-        # Create a dictionary for model instantiation
-        field_names = [f.name for f in model._meta.fields]
-        filtered_data = {field: value for field, value in data.items() if field in field_names}
-
+    def create_or_update_person(self, model, data, user):
         try:
-            obj, created = model.objects.update_or_create(**filtered_data)
-
+            obj, created = model.objects.update_or_create(
+                user=user,
+                defaults=data
+            )
             if created:
                 self.stdout.write(self.style.SUCCESS(f'Created: {obj}'))
             else:
                 self.stdout.write(self.style.SUCCESS(f'Updated: {obj}'))
-            
+            return obj
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f'Error creating/updating Person: {str(e)}'))
+            return None
+
+    def create_or_update_object(self, model, data):
+        try:
+            obj, created = model.objects.update_or_create(**data)
+            if created:
+                self.stdout.write(self.style.SUCCESS(f'Created: {obj}'))
+            else:
+                self.stdout.write(self.style.SUCCESS(f'Updated: {obj}'))
             return obj
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error creating/updating {model._meta.model_name}: {str(e)}'))
