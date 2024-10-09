@@ -289,10 +289,11 @@ class BountyDeliveryAttempt(TimeStampMixin, AttachmentAbstract):
     bounty_claim = models.ForeignKey(
         BountyClaim,
         on_delete=models.CASCADE,
-        related_name="delivery_attempt",
+        related_name="delivery_attempts",
     )
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     delivery_message = models.CharField(max_length=2000, default=None)
+    review_message = models.CharField(max_length=2000, null=True, blank=True)
+    reviewed_by = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, related_name="reviewed_deliveries")
 
     class Meta:
         ordering = ("-created_at",)
@@ -309,8 +310,7 @@ class BountyDeliveryAttempt(TimeStampMixin, AttachmentAbstract):
         )
 
     def __str__(self):
-        return f"{self.person} - {self.get_kind_display()}"
-
+        return f"{self.bounty_claim.person} - {self.get_status_display()}"
 
 class Feedback(models.Model):
     # Person who recevies the feedback
