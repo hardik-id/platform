@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Notification(models.Model):
+    #TODO: revise the event types, remove comments etc. 
     class EventType(models.IntegerChoices):
         BOUNTY_CLAIMED = 0, _("Bounty Claimed")
         CHALLENGE_COMMENT = 1, _("Challenge Comment")

@@ -56,12 +56,6 @@ class ProductArea(MP_Node, common.AbstractModel, common.AttachmentAbstract):
         related_name="product_areas",
         on_delete=models.SET_NULL,
     )
-    comments_start = models.ForeignKey(
-        to="talent.capabilitycomment",
-        on_delete=models.SET_NULL,
-        null=True,
-        editable=False,
-    )
 
     def __str__(self):
         return self.name
@@ -252,12 +246,6 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         related_name="updated_by",
     )
     tracker = FieldTracker()
-    comments_start = models.ForeignKey(
-        to="talent.challengecomment",
-        on_delete=models.SET_NULL,
-        null=True,
-        editable=False,
-    )
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
     video_url = models.URLField(blank=True, null=True)
 
