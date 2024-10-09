@@ -10,6 +10,8 @@ from .models import (
     PlatformFeeConfiguration,
     Cart,
     CartItem,
+    PlatformFeeCartItem,
+    SalesTaxCartItem,
     SalesOrder,
     SalesOrderLineItem,
     PointOrder
@@ -58,12 +60,20 @@ class CartItemInline(admin.TabularInline):
     model = CartItem
     extra = 0
 
+class PlatformFeeCartItemInline(admin.TabularInline):
+    model = PlatformFeeCartItem
+    extra = 0
+
+class SalesTaxCartItemInline(admin.TabularInline):
+    model = SalesTaxCartItem
+    extra = 0
+
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ('user', 'organisation', 'product', 'status', 'created_at', 'total_amount')
+    list_display = ('user', 'organisation', 'product', 'status', 'created_at', 'total_amount', 'user_country')
     list_filter = ('status',)
     search_fields = ('user__username', 'organisation__name', 'product__name')
-    inlines = [CartItemInline]
+    inlines = [CartItemInline, PlatformFeeCartItemInline, SalesTaxCartItemInline]
 
     def total_amount(self, obj):
         return f"${obj.total_amount:.2f}"
@@ -75,6 +85,16 @@ class CartItemAdmin(admin.ModelAdmin):
     list_filter = ('funding_type',)
     search_fields = ('cart__id', 'bounty__title')
 
+@admin.register(PlatformFeeCartItem)
+class PlatformFeeCartItemAdmin(admin.ModelAdmin):
+    list_display = ('cart', 'amount_cents', 'fee_rate')
+    search_fields = ('cart__id',)
+
+@admin.register(SalesTaxCartItem)
+class SalesTaxCartItemAdmin(admin.ModelAdmin):
+    list_display = ('cart', 'amount_cents', 'tax_rate')
+    search_fields = ('cart__id',)
+
 class SalesOrderLineItemInline(admin.TabularInline):
     model = SalesOrderLineItem
     extra = 0
@@ -85,11 +105,11 @@ class SalesOrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'cart', 'status', 'total_usd', 'created_at')
     list_filter = ('status',)
     search_fields = ('id', 'cart__id')
-    readonly_fields = ('total_usd_cents', 'tax_amount_cents')
+    readonly_fields = ('total_usd_cents',)
     inlines = [SalesOrderLineItemInline]
 
     def total_usd(self, obj):
-        return f"${obj.total_usd:.2f}"
+        return f"${obj.total_usd_cents/100:.2f}"
     total_usd.short_description = 'Total USD'
 
 @admin.register(SalesOrderLineItem)
