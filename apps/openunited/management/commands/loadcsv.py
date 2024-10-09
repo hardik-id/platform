@@ -22,6 +22,7 @@ class Command(BaseCommand):
             'person': PersonParser(),
             'skill': SkillParser(),
             'expertise': ExpertiseParser(),
+            'bounty': BountyParser(),
         }
         return parsers.get(model._meta.model_name, ModelParser())
 
@@ -115,4 +116,28 @@ class PersonSkillParser(ModelParser):
             Expertise = apps.get_model('talent.Expertise')
             obj.expertise.set(Expertise.objects.filter(id__in=expertise_ids))
 
+        return obj, created
+
+class BountyParser(ModelParser):
+    def parse_row(self, row):
+        parsed_row = super().parse_row(row)
+        
+        # Convert string 'null' to None for specific fields
+        for field in ['claimed_by_id', 'competition_id']:
+            if parsed_row.get(field) == 'null':
+                parsed_row[field] = None
+        
+        # Ensure numeric fields are properly typed
+        for field in ['reward_amount', 'skill_id', 'challenge_id']:
+            if parsed_row.get(field):
+                parsed_row[field] = int(parsed_row[field])
+        
+        return parsed_row
+
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        obj, created = model.objects.update_or_create(
+            id=int(parsed['id']),
+            defaults=parsed
+        )
         return obj, created

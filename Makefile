@@ -15,6 +15,8 @@ FIXTURES = \
     apps/commerce/fixtures/product-point-account-fixture.csv:commerce.ProductPointAccount \
     apps/commerce/fixtures/platform-fee-configuration-fixture.csv:commerce.PlatformFeeConfiguration \
     apps/product_management/fixtures/initiative-fixture.csv:product_management.Initiative \
+	apps/product_management/fixtures/challenge-fixture.csv:product_management.Challenge \
+	apps/product_management/fixtures/competition-fixture.csv:product_management.Competition \
     apps/product_management/fixtures/bounty-fixture.csv:product_management.Bounty \
     apps/talent/fixtures/bounty-bid-fixture.csv:talent.BountyBid \
     apps/talent/fixtures/bounty-claim-fixture.csv:talent.BountyClaim \
@@ -25,7 +27,6 @@ FIXTURES = \
     apps/commerce/fixtures/sales-order-fixture.csv:commerce.SalesOrder \
     apps/commerce/fixtures/point-transaction-fixture.csv:commerce.PointTransaction \
     apps/commerce/fixtures/point-order-fixture.csv:commerce.PointOrder \
-    apps/product_management/fixtures/competition-fixture.csv:product_management.Competition \
     apps/product_management/fixtures/competition-entry-fixture.csv:product_management.CompetitionEntry \
     apps/product_management/fixtures/competition-entry-rating-fixture.csv:product_management.CompetitionEntryRating \
     apps/product_management/fixtures/contributor-guide-fixture.csv:product_management.ContributorGuide \
@@ -40,7 +41,6 @@ FIXTURES = \
     apps/security/fixtures/product-role-assignment-fixture.csv:security.ProductRoleAssignment \
     apps/security/fixtures/sign-in-attempt-fixture.csv:security.SignInAttempt \
     apps/security/fixtures/sign-up-request-fixture.csv:security.SignUpRequest \
-    apps/product_management/fixtures/challenge-fixture.csv:product_management.Challenge \
     apps/engagement/fixtures/email-notification-fixture.csv:engagement.EmailNotification
 
 
@@ -71,10 +71,16 @@ seed:
 	for fixture in $(FIXTURES); do \
 		file=$$(echo $$fixture | cut -d: -f1); \
 		model=$$(echo $$fixture | cut -d: -f2); \
+		echo "Running command: ${MANAGE} loadcsv $$file --model $$model"; \
 		${MANAGE} loadcsv $$file --model $$model; \
 	done
 
 setup:
+	python reset_database.py
+	make migrate
+	make seed
+
+setupandtest:
 	python reset_database.py
 	make migrate
 	make seed
