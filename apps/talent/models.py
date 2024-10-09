@@ -277,34 +277,6 @@ class BountyClaim(TimeStampMixin, UUIDMixin):
         super().save(*args, **kwargs)
         self.bounty.update_status_from_claim()
 
-
-class Comment(MP_Node):
-    person = models.ForeignKey(Person, on_delete=models.CASCADE, blank=True, null=True)
-    text = models.TextField(max_length=1000)
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return self.text
-
-
-class ChallengeComment(Comment):
-    pass
-
-
-class BugComment(Comment):
-    pass
-
-
-class IdeaComment(Comment):
-    pass
-
-
-class CapabilityComment(Comment):
-    pass
-
-
 class BountyDeliveryAttempt(TimeStampMixin, AttachmentAbstract):
     class BountyDeliveryStatus(models.TextChoices):
         NEW = "New"
