@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.apps import apps
 import csv
@@ -30,6 +31,8 @@ class Command(BaseCommand):
             'expertise': ExpertiseParser(),
             'bounty': BountyParser(),
             'bountybid': BountyBidParser(),
+            'platformfee': PlatformFeeParser(),
+            'salesorder': SalesOrderParser(),
         }
         return parsers.get(model._meta.model_name, ModelParser())
 
@@ -55,7 +58,7 @@ class Command(BaseCommand):
         try:
             # Load the specified model
             model = apps.get_model(model_name)
-            debug_print(f"Loaded model: {model}")
+            #debug_print(f"Loaded model: {model}")
         except LookupError:
             self.stdout.write(self.style.ERROR(f'Model {model_name} not found.'))
             return
@@ -161,13 +164,13 @@ class BountyBidParser(ModelParser):
         parsed = self.parse_row(row)
         
         try:
-            debug_print(f"Processing row: {parsed}")
+            #debug_print(f"Processing row: {parsed}")
             
             # Get the Bounty and Person models
             Bounty = apps.get_model('product_management.Bounty')
             Person = apps.get_model('talent.Person')
-            debug_print(f"Bounty model: {Bounty}")
-            debug_print(f"Person model: {Person}")
+            #debug_print(f"Bounty model: {Bounty}")
+            #debug_print(f"Person model: {Person}")
             
             # Ensure bounty_id and person_id are integers
             parsed['bounty_id'] = int(parsed['bounty_id'])
@@ -177,10 +180,10 @@ class BountyBidParser(ModelParser):
             try:
                 bounty = Bounty.objects.get(id=parsed['bounty_id'])
                 person = Person.objects.get(id=parsed['person_id'])
-                debug_print(f"Found bounty: {bounty}")
-                debug_print(f"Found person: {person}")
+                #debug_print(f"Found bounty: {bounty}")
+                #debug_print(f"Found person: {person}")
             except ObjectDoesNotExist as e:
-                debug_print(f"Object does not exist: {str(e)}")
+                #debug_print(f"Object does not exist: {str(e)}")
                 raise ValueError(f"Bounty with id {parsed['bounty_id']} or Person with id {parsed['person_id']} does not exist")
             
             # Convert amount to integer
@@ -207,11 +210,81 @@ class BountyBidParser(ModelParser):
                     'updated_at': parsed['updated_at'],
                 }
             )
-            debug_print(f"{'Created' if created else 'Updated'} object: {obj}")
+            #debug_print(f"{'Created' if created else 'Updated'} object: {obj}")
             
             return obj, created
         
         except Exception as e:
-            debug_print(f"Error in BountyBidParser: {str(e)}")
-            debug_print(f"Traceback: {traceback.format_exc()}")
+            #debug_print(f"Error in BountyBidParser: {str(e)}")
+            #debug_print(f"Traceback: {traceback.format_exc()}")
             raise ValueError(f"Error processing row: {str(e)}")
+        
+class PlatformFeeParser(ModelParser):
+    def parse_row(self, row):
+        parsed_row = super().parse_row(row)
+        
+        # Convert amount_cents to integer
+        if 'amount_cents' in parsed_row:
+            parsed_row['amount_cents'] = int(parsed_row['amount_cents'])
+        
+        # Convert fee_rate to Decimal
+        if 'fee_rate' in parsed_row:
+            parsed_row['fee_rate'] = Decimal(parsed_row['fee_rate'])
+        
+        # Convert bounty_cart_id to integer
+        if 'bounty_cart_id' in parsed_row:
+            parsed_row['bounty_cart_id'] = int(parsed_row['bounty_cart_id'])
+        
+        return parsed_row
+
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        obj, created = model.objects.update_or_create(
+            id=int(parsed['id']),
+            defaults=parsed
+        )
+        return obj, created
+    
+class SalesOrderParser(ModelParser):
+    def parse_row(self, row):
+        parsed_row = super().parse_row(row)
+        
+        # Convert numeric fields to appropriate types
+        if 'bounty_cart_id' in parsed_row:
+            parsed_row['bounty_cart_id'] = int(parsed_row['bounty_cart_id'])
+        
+        if 'total_usd_cents' in parsed_row:
+            parsed_row['total_usd_cents'] = int(parsed_row['total_usd_cents'])
+        
+        if 'platform_fee_id' in parsed_row:
+            parsed_row['platform_fee_id'] = int(parsed_row['platform_fee_id'])
+        
+        if 'tax_rate' in parsed_row:
+            parsed_row['tax_rate'] = Decimal(parsed_row['tax_rate'])
+        
+        if 'tax_amount_cents' in parsed_row:
+            parsed_row['tax_amount_cents'] = int(parsed_row['tax_amount_cents'])
+        
+        return parsed_row
+
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        BountyCart = apps.get_model('commerce.BountyCart')
+        PlatformFee = apps.get_model('commerce.PlatformFee')
+        
+        bounty_cart = BountyCart.objects.get(id=parsed['bounty_cart_id'])
+        platform_fee = PlatformFee.objects.get(id=parsed['platform_fee_id'])
+        
+        obj, created = model.objects.update_or_create(
+            id=int(parsed['id']),
+            defaults={
+                'bounty_cart': bounty_cart,
+                'status': parsed['status'],
+                'total_usd_cents': parsed['total_usd_cents'],
+                'platform_fee': platform_fee,
+                'tax_rate': parsed['tax_rate'],
+                'tax_amount_cents': parsed['tax_amount_cents']
+            }
+        )
+        return obj, created
