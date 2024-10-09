@@ -113,6 +113,14 @@ class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
     def __str__(self):
         return self.name
 
+    def ensure_point_account(self):
+        ProductPointAccount = apps.get_model('commerce', 'ProductPointAccount')
+        ProductPointAccount.objects.get_or_create(product=self)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.ensure_point_account()
+
     @property
     def point_account(self):
         return self.product_point_account
@@ -123,15 +131,6 @@ class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
             return self.product_point_account.balance
         except AttributeError:
             return 0
-
-    def ensure_point_account(self):
-        ProductPointAccount = apps.get_model("commerce", "ProductPointAccount")
-        ProductPointAccount.objects.get_or_create(product=self)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.ensure_point_account()
-
 
 class Initiative(TimeStampMixin, UUIDMixin):
     class InitiativeStatus(models.TextChoices):
@@ -423,6 +422,7 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
     reward_amount = models.PositiveIntegerField(
         default=0, help_text="Amount in points if reward_type is POINTS, or cents if reward_type is USD"
     )
+    final_reward_amount = models.PositiveIntegerField(null=True, blank=True)
 
     claimed_by = models.ForeignKey(
         "talent.Person",
@@ -618,7 +618,7 @@ class ProductContributorAgreement(TimeStampMixin):
 
 
 # Signal receivers
-@receiver(post_save, sender="product_management.Bounty")
+@receiver(post_save, sender=Bounty)
 def update_challenge_status(sender, instance, **kwargs):
     if instance.challenge:
         instance.challenge.update_status()

@@ -16,6 +16,7 @@ from treebeard.mp_tree import MP_Node
 from apps.common.models import AttachmentAbstract
 from django.apps import apps
 from apps.openunited.mixins import AncestryMixin, TimeStampMixin, UUIDMixin
+from django.db import transaction
 
 
 class Person(TimeStampMixin):
@@ -248,6 +249,105 @@ class BountyBid(TimeStampMixin, UUIDMixin):
 
     def __str__(self):
         return f"Bid on {self.bounty.title} by {self.person.get_full_name()}"
+
+    @transaction.atomic
+    def accept_bid(self):
+        if self.status != self.Status.PENDING:
+            raise ValidationError("Only pending bids can be accepted.")
+        
+        self.status = self.Status.ACCEPTED
+        self.save()
+        
+        # Create a BountyClaim
+        BountyClaim.objects.create(bounty=self.bounty, person=self.person, accepted_bid=self)
+        
+        # Update the Bounty
+        self.bounty.final_reward_amount = self.amount
+        self.bounty.status = self.bounty.BountyStatus.IN_PROGRESS
+        self.bounty.save()
+        
+        # Process the reward adjustment
+        self._process_reward_adjustment()
+
+    def _process_reward_adjustment(self):
+        from apps.commerce.models import SalesOrder
+        try:
+            original_order = SalesOrder.objects.get(cart__items__bounty=self.bounty, adjustment_type="INITIAL")
+            difference = self.amount - self.bounty.reward_amount
+            if difference > 0:
+                self._create_increase_adjustment(original_order, difference)
+            elif difference < 0:
+                self._create_decrease_adjustment(original_order, abs(difference))
+        except SalesOrder.DoesNotExist:
+            # Handle the case where there's no original order (e.g., for point-based bounties)
+            pass
+    
+    @transaction.atomic
+    def _create_increase_adjustment(self, original_order, amount):
+        Cart = apps.get_model('commerce', 'Cart')
+        new_cart = Cart.objects.create(
+            user=original_order.cart.user,
+            organisation=original_order.cart.organisation,
+            product=self.bounty.product,
+            status=Cart.CartStatus.COMPLETED
+        )
+        
+        SalesOrder = apps.get_model('commerce', 'SalesOrder')
+        new_order = SalesOrder.objects.create(
+            cart=new_cart,
+            status=SalesOrder.OrderStatus.COMPLETED,
+            total_usd_cents=amount * 100,  # Convert to cents
+            parent_sales_order=original_order
+        )
+        
+        SalesOrderLineItem = apps.get_model('commerce', 'SalesOrderLineItem')
+        SalesOrderLineItem.objects.create(
+            sales_order=new_order,
+            item_type=SalesOrderLineItem.ItemType.INCREASE_ADJUSTMENT,
+            quantity=1,
+            unit_price_cents=amount * 100,
+            bounty=self.bounty,
+            related_bounty_bid=self
+        )
+        
+        # Process payment for increase
+        new_order.process_payment()
+
+    @transaction.atomic
+    def _create_decrease_adjustment(self, original_order, amount):
+        Cart = apps.get_model('commerce', 'Cart')
+        new_cart = Cart.objects.create(
+            user=original_order.cart.user,
+            organisation=original_order.cart.organisation,
+            product=self.bounty.product,
+            status=Cart.CartStatus.COMPLETED
+        )
+        
+        SalesOrder = apps.get_model('commerce', 'SalesOrder')
+        new_order = SalesOrder.objects.create(
+            cart=new_cart,
+            status=SalesOrder.OrderStatus.COMPLETED,
+            total_usd_cents=amount * 100,  # Convert to cents
+            parent_sales_order=original_order
+        )
+        
+        SalesOrderLineItem = apps.get_model('commerce', 'SalesOrderLineItem')
+        SalesOrderLineItem.objects.create(
+            sales_order=new_order,
+            item_type=SalesOrderLineItem.ItemType.DECREASE_ADJUSTMENT,
+            quantity=1,
+            unit_price_cents=amount * 100,
+            bounty=self.bounty,
+            related_bounty_bid=self
+        )
+        
+        # Process refund for decrease
+        organisation_wallet = original_order.cart.organisation.wallet
+        organisation_wallet.add_funds(
+            amount_cents=amount * 100,
+            description=f"Refund for bounty adjustment: {self.bounty.title}",
+            related_order=new_order
+        )
 
 
 class BountyClaim(TimeStampMixin, UUIDMixin):
