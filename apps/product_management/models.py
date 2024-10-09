@@ -229,7 +229,6 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         choices=ChallengePriority.choices,
         default=ChallengePriority.HIGH,
     )
-    published_id = models.IntegerField(default=0, blank=True, editable=False)
     auto_approve_bounty_claims = models.BooleanField(default=False)
     created_by = models.ForeignKey(
         "talent.Person",

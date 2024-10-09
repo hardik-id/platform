@@ -78,9 +78,13 @@ seed:
 setup:
 	python reset_database.py
 	make migrate
+
+setup_and_seed:
+	python reset_database.py
+	make migrate
 	make seed
 
-setupandtest:
+full_setup:
 	python reset_database.py
 	make migrate
 	make seed
