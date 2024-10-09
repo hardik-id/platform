@@ -1,1 +1,4 @@
-id,sales_order_id,product_id,quantity,price,created_at,updated_at
+id,sales_order,item_type,quantity,unit_price_cents,bounty,fee_rate,tax_rate
+1,1,BOUNTY,2,5000,1,,0.0725
+2,1,PLATFORM_FEE,1,2000,,0.05,
+3,2,SALES_TAX,1,300,,,
