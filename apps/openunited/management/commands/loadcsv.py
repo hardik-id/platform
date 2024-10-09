@@ -1,10 +1,14 @@
-
 from django.core.management.base import BaseCommand
 from django.apps import apps
 import csv
 from django.db import transaction, models
 from datetime import datetime
-from django.utils.timezone import make_aware
+from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
+import traceback
+
+def debug_print(message):
+    print(f"DEBUG: {message}")
 
 class Command(BaseCommand):
     help = 'Load data from a CSV file into the specified model.'
@@ -25,6 +29,7 @@ class Command(BaseCommand):
             'skill': SkillParser(),
             'expertise': ExpertiseParser(),
             'bounty': BountyParser(),
+            'bountybid': BountyBidParser(),
         }
         return parsers.get(model._meta.model_name, ModelParser())
 
@@ -32,13 +37,17 @@ class Command(BaseCommand):
         created_objects = []
         for row in data:
             try:
-                obj, created = parser.create_object(model, row)
-                created_objects.append(obj)
+                with transaction.atomic():
+                    obj, created = parser.create_object(model, row)
+                    created_objects.append(obj)
+                    action = "Created" if created else "Updated"
+                    self.stdout.write(self.style.SUCCESS(f"{action} object: {obj}"))
             except Exception as e:
-                self.stdout.write(self.style.ERROR(f"Error creating/updating object: {e}. Row: {row}"))
+                self.stdout.write(self.style.ERROR(f"Error creating/updating object: {str(e)}"))
+                self.stdout.write(self.style.ERROR(f"Row data: {row}"))
+                self.stdout.write(self.style.ERROR(f"Traceback: {traceback.format_exc()}"))
         return created_objects
 
-    @transaction.atomic
     def handle(self, *args, **options):
         csv_file = options['csv_file']
         model_name = options['model']
@@ -46,6 +55,7 @@ class Command(BaseCommand):
         try:
             # Load the specified model
             model = apps.get_model(model_name)
+            debug_print(f"Loaded model: {model}")
         except LookupError:
             self.stdout.write(self.style.ERROR(f'Model {model_name} not found.'))
             return
@@ -57,7 +67,7 @@ class Command(BaseCommand):
         parser = self.get_parser(model)
         objects = self.create_objects(model, data, parser)
 
-        self.stdout.write(self.style.SUCCESS(f'Successfully loaded data from {csv_file} into {model_name}'))
+        self.stdout.write(self.style.SUCCESS(f'Successfully processed {len(objects)} objects from {csv_file} into {model_name}'))
 
 class ModelParser:
     def create_object(self, model, row):
@@ -83,7 +93,7 @@ class ModelParser:
                 parsed_row[key] = value.lower() == 'true'
             elif 'deadline' in key.lower() and value:  # Check if the field is a deadline
                 # Convert string to aware datetime object
-                parsed_row[key] = make_aware(datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ"))
+                parsed_row[key] = timezone.make_aware(datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ"))
             else:
                 parsed_row[key] = value
         return parsed_row
@@ -145,3 +155,63 @@ class BountyParser(ModelParser):
             defaults=parsed
         )
         return obj, created
+
+class BountyBidParser(ModelParser):
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        try:
+            debug_print(f"Processing row: {parsed}")
+            
+            # Get the Bounty and Person models
+            Bounty = apps.get_model('product_management.Bounty')
+            Person = apps.get_model('talent.Person')
+            debug_print(f"Bounty model: {Bounty}")
+            debug_print(f"Person model: {Person}")
+            
+            # Ensure bounty_id and person_id are integers
+            parsed['bounty_id'] = int(parsed['bounty_id'])
+            parsed['person_id'] = int(parsed['person_id'])
+            
+            # Check if the bounty and person exist
+            try:
+                bounty = Bounty.objects.get(id=parsed['bounty_id'])
+                person = Person.objects.get(id=parsed['person_id'])
+                debug_print(f"Found bounty: {bounty}")
+                debug_print(f"Found person: {person}")
+            except ObjectDoesNotExist as e:
+                debug_print(f"Object does not exist: {str(e)}")
+                raise ValueError(f"Bounty with id {parsed['bounty_id']} or Person with id {parsed['person_id']} does not exist")
+            
+            # Convert amount to integer
+            parsed['amount'] = int(parsed['amount'])
+            
+            # Convert expected_finish_date to date object
+            parsed['expected_finish_date'] = datetime.strptime(parsed['expected_finish_date'], "%d/%m/%Y").date()
+            
+            # Convert created_at and updated_at to timezone-aware datetime objects
+            parsed['created_at'] = timezone.make_aware(datetime.strptime(parsed['created_at'], "%Y-%m-%dT%H:%M:%SZ"))
+            parsed['updated_at'] = timezone.make_aware(datetime.strptime(parsed['updated_at'], "%Y-%m-%dT%H:%M:%SZ"))
+            
+            # Try to get existing object or create a new one
+            obj, created = model.objects.update_or_create(
+                id=int(parsed['id']),
+                defaults={
+                    'bounty': bounty,
+                    'person': person,
+                    'amount': parsed['amount'],
+                    'expected_finish_date': parsed['expected_finish_date'],
+                    'status': parsed['status'],
+                    'message': parsed['message'],
+                    'created_at': parsed['created_at'],
+                    'updated_at': parsed['updated_at'],
+                }
+            )
+            debug_print(f"{'Created' if created else 'Updated'} object: {obj}")
+            
+            return obj, created
+        
+        except Exception as e:
+            debug_print(f"Error in BountyBidParser: {str(e)}")
+            debug_print(f"Traceback: {traceback.format_exc()}")
+            raise ValueError(f"Error processing row: {str(e)}")

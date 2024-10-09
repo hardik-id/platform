@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from treebeard.mp_tree import MP_Node
 
 from apps.common.models import AttachmentAbstract
+from django.apps import apps
 from apps.openunited.mixins import AncestryMixin, TimeStampMixin, UUIDMixin
 
 
@@ -335,10 +336,10 @@ class Feedback(models.Model):
         return f"{self.recipient} - {self.provider} - {self.stars} - {self.message[:10]}..."
 
 
-# Signal receivers
 @receiver(post_save, sender="talent.BountyBid")
 def handle_accepted_bid(sender, instance, **kwargs):
     if instance.status == BountyBid.Status.ACCEPTED:
         BountyClaim.objects.create(bounty=instance.bounty, person=instance.person, accepted_bid=instance)
+        Bounty = apps.get_model('product_management.Bounty')
         instance.bounty.status = Bounty.BountyStatus.IN_PROGRESS
         instance.bounty.save()
