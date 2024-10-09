@@ -377,11 +377,15 @@ class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
 
     def update_status(self):
         now = timezone.now()
+        new_status = self.status
         if now >= self.entry_deadline and self.status == self.CompetitionStatus.ACTIVE:
-            self.status = self.CompetitionStatus.ENTRIES_CLOSED
+            new_status = self.CompetitionStatus.ENTRIES_CLOSED
         elif now >= self.judging_deadline and self.status == self.CompetitionStatus.ENTRIES_CLOSED:
-            self.status = self.CompetitionStatus.JUDGING
-        self.save()
+            new_status = self.CompetitionStatus.JUDGING
+        
+        if new_status != self.status:
+            self.status = new_status
+            self.save(update_fields=['status'])
 
 
 class Bounty(TimeStampMixin, common.AttachmentAbstract):

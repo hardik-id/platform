@@ -3,6 +3,8 @@ from django.core.management.base import BaseCommand
 from django.apps import apps
 import csv
 from django.db import transaction, models
+from datetime import datetime
+from django.utils.timezone import make_aware
 
 class Command(BaseCommand):
     help = 'Load data from a CSV file into the specified model.'
@@ -75,11 +77,13 @@ class ModelParser:
         return obj, created
 
     def parse_row(self, row):
-        # Parsing logic including boolean handling
         parsed_row = {}
         for key, value in row.items():
             if value.lower() in ['true', 'false']:
                 parsed_row[key] = value.lower() == 'true'
+            elif 'deadline' in key.lower() and value:  # Check if the field is a deadline
+                # Convert string to aware datetime object
+                parsed_row[key] = make_aware(datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ"))
             else:
                 parsed_row[key] = value
         return parsed_row
