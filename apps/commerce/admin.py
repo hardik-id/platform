@@ -8,10 +8,10 @@ from .models import (
     PointTransaction,
     OrganisationPointGrant,
     PlatformFeeConfiguration,
-    PlatformFee,
-    BountyCart,
-    BountyCartItem,
+    Cart,
+    CartItem,
     SalesOrder,
+    SalesOrderLineItem,
     PointOrder
 )
 
@@ -54,41 +54,56 @@ class PlatformFeeConfigurationAdmin(admin.ModelAdmin):
     list_display = ('percentage', 'applies_from_date')
     ordering = ('-applies_from_date',)
 
-@admin.register(PlatformFee)
-class PlatformFeeAdmin(admin.ModelAdmin):
-    list_display = ('bounty_cart', 'amount', 'fee_rate')
-    search_fields = ('bounty_cart__id',)
-
-class BountyCartItemInline(admin.TabularInline):
-    model = BountyCartItem
+class CartItemInline(admin.TabularInline):
+    model = CartItem
     extra = 0
 
-@admin.register(BountyCart)
-class BountyCartAdmin(admin.ModelAdmin):
-    list_display = ('user', 'organisation', 'product', 'status', 'created_at')
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'organisation', 'product', 'status', 'created_at', 'total_amount')
     list_filter = ('status',)
     search_fields = ('user__username', 'organisation__name', 'product__name')
-    inlines = [BountyCartItemInline]
+    inlines = [CartItemInline]
 
-@admin.register(BountyCartItem)
-class BountyCartItemAdmin(admin.ModelAdmin):
+    def total_amount(self, obj):
+        return f"${obj.total_amount:.2f}"
+    total_amount.short_description = 'Total Amount'
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
     list_display = ('cart', 'bounty', 'funding_amount', 'funding_type')
     list_filter = ('funding_type',)
     search_fields = ('cart__id', 'bounty__title')
 
+class SalesOrderLineItemInline(admin.TabularInline):
+    model = SalesOrderLineItem
+    extra = 0
+    readonly_fields = ('total_price_cents',)
+
 @admin.register(SalesOrder)
 class SalesOrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'bounty_cart', 'status', 'total_usd', 'created_at')
+    list_display = ('id', 'cart', 'status', 'total_usd', 'created_at')
     list_filter = ('status',)
-    search_fields = ('id', 'bounty_cart__id')
-    readonly_fields = ('total_usd_cents', 'platform_fee', 'tax_amount_cents')
+    search_fields = ('id', 'cart__id')
+    readonly_fields = ('total_usd_cents', 'tax_amount_cents')
+    inlines = [SalesOrderLineItemInline]
 
     def total_usd(self, obj):
         return f"${obj.total_usd:.2f}"
     total_usd.short_description = 'Total USD'
 
+@admin.register(SalesOrderLineItem)
+class SalesOrderLineItemAdmin(admin.ModelAdmin):
+    list_display = ('sales_order', 'item_type', 'quantity', 'unit_price_cents', 'total_price_cents')
+    list_filter = ('item_type',)
+    search_fields = ('sales_order__id', 'bounty__title')
+
 @admin.register(PointOrder)
 class PointOrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'product_account', 'bounty', 'amount', 'status', 'created_at')
+    list_display = ('id', 'cart', 'product_account', 'total_points', 'status', 'created_at')
     list_filter = ('status',)
-    search_fields = ('id', 'product_account__product__name', 'bounty__title')
+    search_fields = ('id', 'cart__id', 'product_account__product__name')
+
+    def total_points(self, obj):
+        return f"{obj.total_points:,}"
+    total_points.short_description = 'Total Points'

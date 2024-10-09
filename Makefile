@@ -66,10 +66,8 @@ FIXTURES = \
     apps/commerce/fixtures/bounty-cart-fixture.csv:commerce.BountyCart \
     apps/commerce/fixtures/bounty-cart-item-fixture.csv:commerce.BountyCartItem \
     apps/commerce/fixtures/platform-fee-fixture.csv:commerce.PlatformFee \
-	
+
     apps/commerce/fixtures/sales-order-fixture.csv:commerce.SalesOrder \
-
-
     apps/commerce/fixtures/point-transaction-fixture.csv:commerce.PointTransaction \
     apps/commerce/fixtures/point-order-fixture.csv:commerce.PointOrder \
     apps/product_management/fixtures/competition-entry-fixture.csv:product_management.CompetitionEntry \
