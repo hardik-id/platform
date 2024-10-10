@@ -222,6 +222,47 @@ class PlatformFeeConfiguration(TimeStampMixin, UUIDMixin):
     class Meta:
         get_latest_by = "applies_from_date"
 
+class CartLineItem(PolymorphicModel, TimeStampMixin, UUIDMixin):
+    class ItemType(models.TextChoices):
+        BOUNTY = "BOUNTY", "Bounty"
+        PLATFORM_FEE = "PLATFORM_FEE", "Platform Fee"
+        SALES_TAX = "SALES_TAX", "Sales Tax"
+        INCREASE_ADJUSTMENT = "INCREASE_ADJUSTMENT", "Increase Adjustment"
+        DECREASE_ADJUSTMENT = "DECREASE_ADJUSTMENT", "Decrease Adjustment"
+
+    cart = models.ForeignKey('Cart', related_name='items', on_delete=models.CASCADE)
+    item_type = models.CharField(max_length=25, choices=ItemType.choices)
+    quantity = models.PositiveIntegerField(default=1)
+    unit_price_cents = models.IntegerField()
+    unit_price_points = models.PositiveIntegerField(default=0)
+    bounty = models.ForeignKey('product_management.Bounty', on_delete=models.SET_NULL, null=True, blank=True)
+    related_bounty_bid = models.ForeignKey(BountyBid, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def total_price_cents(self):
+        return self.quantity * self.unit_price_cents
+
+    @property
+    def total_price_points(self):
+        return self.quantity * self.unit_price_points
+
+    def __str__(self):
+        return f"{self.get_item_type_display()} for Cart {self.cart.id}"
+
+    def clean(self):
+        if self.item_type in [self.ItemType.INCREASE_ADJUSTMENT, self.ItemType.DECREASE_ADJUSTMENT]:
+            if not self.related_bounty_bid:
+                raise ValidationError("Adjustment line items must be associated with a bounty bid.")
+        elif self.related_bounty_bid:
+            raise ValidationError("Only adjustment line items can be associated with a bounty bid.")
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ('cart', 'bounty')
 
 class Cart(TimeStampMixin, UUIDMixin):
     class CartStatus(models.TextChoices):
@@ -307,6 +348,33 @@ class Cart(TimeStampMixin, UUIDMixin):
     def get_default_european_tax_rate(self):
         # Placeholder implementation
         return 0.21  # 21% tax rate as an example
+    
+    def add_adjustment(self, bounty_bid, amount_cents, is_increase=True):
+        item_type = CartLineItem.ItemType.INCREASE_ADJUSTMENT if is_increase else CartLineItem.ItemType.DECREASE_ADJUSTMENT
+        adjustment = CartLineItem.objects.create(
+            cart=self,
+            item_type=item_type,
+            quantity=1,
+            unit_price_cents=abs(amount_cents),
+            related_bounty_bid=bounty_bid
+        )
+        return adjustment
+
+    def remove_adjustment(self, bounty_bid):
+        self.items.filter(
+            item_type__in=[CartLineItem.ItemType.INCREASE_ADJUSTMENT, CartLineItem.ItemType.DECREASE_ADJUSTMENT],
+            related_bounty_bid=bounty_bid
+        ).delete()
+
+    @property
+    def total_amount_cents(self):
+        total = sum(item.total_price_cents for item in self.items.exclude(
+            item_type=CartLineItem.ItemType.DECREASE_ADJUSTMENT
+        ))
+        deductions = sum(item.total_price_cents for item in self.items.filter(
+            item_type=CartLineItem.ItemType.DECREASE_ADJUSTMENT
+        ))
+        return total - deductions
 
     def is_user_in_europe(self):
         european_countries = [
