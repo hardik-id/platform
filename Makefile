@@ -22,7 +22,7 @@ FIXTURES = \
     apps/talent/fixtures/bounty-claim-fixture.csv:talent.BountyClaim \
     apps/talent/fixtures/bounty-delivery-attempt-fixture.csv:talent.BountyDeliveryAttempt \
     apps/commerce/fixtures/cart-fixture.csv:commerce.Cart \
-    apps/commerce/fixtures/cart-item-fixture.csv:commerce.CartItem \
+    apps/commerce/fixtures/cart-line-item-fixture.csv:commerce.CartLineItem \
     apps/commerce/fixtures/platform-fee-cart-item-fixture.csv:commerce.PlatformFeeCartItem \
     apps/commerce/fixtures/sales-tax-cart-item-fixture.csv:commerce.SalesTaxCartItem \
     apps/commerce/fixtures/sales-order-fixture.csv:commerce.SalesOrder \
