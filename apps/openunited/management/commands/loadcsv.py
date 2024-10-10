@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.apps import apps
 import csv
-from django.db import transaction, models
+from django.db import transaction, models, connection
 from datetime import datetime
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
@@ -51,26 +51,33 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f"Traceback: {traceback.format_exc()}"))
         return created_objects
 
+    def update_sequence(self, model):
+        table_name = model._meta.db_table
+        sequence_name = f'{table_name}_id_seq'
+        with connection.cursor() as cursor:
+            cursor.execute(f"""
+                SELECT setval('{sequence_name}', COALESCE((SELECT MAX(id) FROM {table_name}), 1));
+            """)
+
     def handle(self, *args, **options):
         csv_file = options['csv_file']
         model_name = options['model']
 
         try:
-            # Load the specified model
             model = apps.get_model(model_name)
-            #debug_print(f"Loaded model: {model}")
         except LookupError:
             self.stdout.write(self.style.ERROR(f'Model {model_name} not found.'))
             return
 
-        # Parse the CSV file
         data = self.parse_csv(csv_file)
-
-        # Create objects
         parser = self.get_parser(model)
         objects = self.create_objects(model, data, parser)
 
+        # Update the sequence after creating/updating objects
+        self.update_sequence(model)
+
         self.stdout.write(self.style.SUCCESS(f'Successfully processed {len(objects)} objects from {csv_file} into {model_name}'))
+        self.stdout.write(self.style.SUCCESS(f'Sequence for {model_name} has been updated.'))
 
 class ModelParser:
     def create_object(self, model, row):

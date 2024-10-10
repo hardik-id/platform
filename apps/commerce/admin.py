@@ -9,6 +9,7 @@ from .models import (
     OrganisationPointGrant,
     PlatformFeeConfiguration,
     Cart,
+    CartLineItem,
     SalesOrder,
     SalesOrderLineItem,
     PointOrder,
@@ -20,10 +21,20 @@ class OrganisationAdmin(admin.ModelAdmin):
     search_fields = ("name", "tax_id")
     list_filter = ("country",)
 
+class OrganisationWalletTransactionInline(admin.TabularInline):
+    model = OrganisationWalletTransaction
+    extra = 0
+    readonly_fields = ("created_at", "transaction_type", "amount_usd", "description")
+
+    def amount_usd(self, obj):
+        return f"${obj.amount_cents / 100:.2f}"
+    amount_usd.short_description = "Amount (USD)"
+
 @admin.register(OrganisationWallet)
 class OrganisationWalletAdmin(admin.ModelAdmin):
     list_display = ("organisation", "balance_usd", "created_at")
     search_fields = ("organisation__name",)
+    inlines = [OrganisationWalletTransactionInline]
 
     def balance_usd(self, obj):
         return f"${obj.balance_usd_cents / 100:.2f}"
@@ -65,15 +76,31 @@ class PlatformFeeConfigurationAdmin(admin.ModelAdmin):
     list_display = ("percentage", "applies_from_date")
     ordering = ("-applies_from_date",)
 
+class CartLineItemInline(admin.TabularInline):
+    model = CartLineItem
+    extra = 0
+    readonly_fields = ("total_price_cents", "total_price_points")
+
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ("user", "organisation", "product", "status", "created_at", "total_amount", "user_country")
     list_filter = ("status",)
     search_fields = ("user__username", "organisation__name", "product__name")
+    inlines = [CartLineItemInline]
 
     def total_amount(self, obj):
         return f"${obj.total_amount:.2f}"
     total_amount.short_description = "Total Amount"
+
+@admin.register(CartLineItem)
+class CartLineItemAdmin(admin.ModelAdmin):
+    list_display = ("cart", "item_type", "quantity", "unit_price_usd", "unit_price_points", "bounty", "related_bounty_bid")
+    list_filter = ("item_type",)
+    search_fields = ("cart__id", "bounty__title")
+
+    def unit_price_usd(self, obj):
+        return f"${obj.unit_price_cents / 100:.2f}"
+    unit_price_usd.short_description = "Unit Price (USD)"
 
 class SalesOrderLineItemInline(admin.TabularInline):
     model = SalesOrderLineItem

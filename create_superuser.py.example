@@ -2,59 +2,54 @@ import os
 import sys
 import django
 
-# Add the project root and its parent to the Python path
+# Add the project root to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.extend([current_dir, parent_dir])
 
 # Set up Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apps.openunited.settings.development")
-
-# Print debug information
-print(f"Current directory: {current_dir}")
-print(f"Parent directory: {parent_dir}")
-print(f"Python path: {sys.path}")
-print(f"DJANGO_SETTINGS_MODULE: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
-
-try:
-    django.setup()
-except ImportError as e:
-    print(f"Error during django.setup(): {e}")
-    sys.exit(1)
+django.setup()
 
 from django.contrib.auth import get_user_model
 from apps.talent.models import Person
+from django.db import IntegrityError
 
 def create_superuser_and_person():
     User = get_user_model()
 
-    # Create or get superuser
-    user, created = User.objects.get_or_create(
-        username='dawson',
-        email='dawson@dawsonscreek.90s',
-        defaults={'is_staff': True, 'is_superuser': True}
-    )
-    
-    if created:
-        user.set_password('password!')
+    username = 'adrian'
+    email = 'adrian@openunited.com'
+
+    # Try to get the user first
+    try:
+        user = User.objects.get(username=username)
+        print(f"User '{username}' already exists.")
+    except User.DoesNotExist:
+        # If the user doesn't exist, create a new one
+        try:
+            user = User.objects.create_superuser(username=username, email=email, password='password!')
+            print(f"Superuser '{username}' created successfully.")
+        except IntegrityError:
+            # If there's still an integrity error, try to find the next available ID
+            max_id = User.objects.all().order_by('-id').first().id
+            user = User.objects.create_superuser(username=username, email=email, password='password!', id=max_id + 1)
+            print(f"Superuser '{username}' created with ID {user.id}.")
+
+    # Ensure the user is a superuser
+    if not user.is_superuser or not user.is_staff:
+        user.is_superuser = True
+        user.is_staff = True
+        user.set_password('the best passwords have spaces')
         user.save()
-        print("Superuser created:", user)
-    else:
-        print("User already exists:", user)
-        # Ensure the existing user is a superuser
-        if not user.is_superuser or not user.is_staff:
-            user.is_superuser = True
-            user.is_staff = True
-            user.set_password('password!')
-            user.save()
-            print("Existing user updated to superuser status")
+        print(f"User '{username}' updated to superuser status.")
 
     # Create or get associated Person
     person, person_created = Person.objects.get_or_create(
         user=user,
         defaults={
-            'full_name': 'Dawson Leery',
-            'preferred_name': 'Dawson',
+            'full_name': 'Adrian McPhee',
+            'preferred_name': 'Adrian',
             'headline': '',
             'overview': ''
         }
@@ -69,7 +64,7 @@ def create_superuser_and_person():
 
     # Verify authentication
     from django.contrib.auth import authenticate
-    auth_user = authenticate(username='dawson', password='password!')
+    auth_user = authenticate(username=username, password='password!')
     if auth_user is not None:
         print("Authentication successful")
     else:

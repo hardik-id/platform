@@ -42,7 +42,7 @@ class User(AbstractUser, TimeStampMixin):
         self.save()
 
     def __str__(self):
-        return f"{self.username} - {self.remaining_budget_for_failed_logins} - {self.password_reset_required}"
+        return f"{self.username}"
 
 
 class SignUpRequest(TimeStampMixin):
