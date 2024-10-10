@@ -52,12 +52,13 @@ class Command(BaseCommand):
         return created_objects
 
     def update_sequence(self, model):
-        table_name = model._meta.db_table
-        sequence_name = f'{table_name}_id_seq'
-        with connection.cursor() as cursor:
-            cursor.execute(f"""
-                SELECT setval('{sequence_name}', COALESCE((SELECT MAX(id) FROM {table_name}), 1));
-            """)
+        if model._meta.model_name != "producttree":
+            table_name = model._meta.db_table
+            sequence_name = f'{table_name}_id_seq'
+            with connection.cursor() as cursor:
+                cursor.execute(f"""
+                    SELECT setval('{sequence_name}', COALESCE((SELECT MAX(id) FROM {table_name}), 1));
+                """)
 
     def handle(self, *args, **options):
         csv_file = options['csv_file']
