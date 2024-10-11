@@ -1,15 +1,6 @@
 import json
-import uuid
 
 from django.db import models
-
-from .fields import Base58UUIDField
-
-class Base58UUIDMixin:
-    """
-    Mixin to add a Base58 encoded UUID primary key to a Django model.
-    """
-    id = Base58UUIDField(primary_key=True)
 
 class AttachmentMixin:
     attachment_model = None
@@ -86,19 +77,14 @@ class PersonSearchMixin:
         return context
 
 class TimeStampMixin(models.Model):
+    """
+    Abstract base class to add timestamp fields to a Django model.
+    """
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, editable=True)
 
     class Meta:
         abstract = True
-
-
-class UUIDMixin(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-
-    class Meta:
-        abstract = True
-
 
 class AncestryMixin(models.Model):
     class Meta:
@@ -121,7 +107,7 @@ class AncestryMixin(models.Model):
             return __class__.s_ancestry(obj.parent, lineage)
 
 
-class VoteMixin(TimeStampMixin, UUIDMixin):
+class VoteMixin(TimeStampMixin):
     VOTE_TYPES = ((0, "Up"), (1, "Down"))
     vote_type = models.IntegerField(choices=VOTE_TYPES)
     person = models.ForeignKey("talent.Person", on_delete=models.SET_NULL, null=True)

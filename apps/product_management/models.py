@@ -13,21 +13,23 @@ from model_utils import FieldTracker
 from treebeard.mp_tree import MP_Node
 
 from apps.common import models as common
-from apps.common.mixins import TimeStampMixin, UUIDMixin
+from apps.common.mixins import TimeStampMixin
 
 from django.core.exceptions import ValidationError
 
 from django.db.models import Sum
+from apps.common.fields import Base58UUIDField
 
 
-class FileAttachment(models.Model):
+class FileAttachment(TimeStampMixin):
     file = models.FileField(upload_to="attachments")
 
     def __str__(self):
         return f"{self.file.name}"
 
 
-class ProductTree(common.AbstractModel):
+class ProductTree(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     name = models.CharField(max_length=255, unique=True)
     session_id = models.CharField(max_length=255, blank=True, null=True)
     product = models.ForeignKey(
@@ -42,8 +44,8 @@ class ProductTree(common.AbstractModel):
         return self.name
 
 
-class ProductArea(MP_Node, common.AbstractModel, common.AttachmentAbstract):
-    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")
+class ProductArea(common.AttachmentAbstract, MP_Node, TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     name = models.CharField(max_length=255)
     description = models.TextField(max_length=1000, blank=True, null=True, default="")
     video_link = models.URLField(max_length=255, blank=True, null=True)
@@ -61,7 +63,8 @@ class ProductArea(MP_Node, common.AbstractModel, common.AttachmentAbstract):
         return self.name
 
 
-class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
+class Product(TimeStampMixin, common.AttachmentAbstract):
+    id = Base58UUIDField(primary_key=True)
     person = models.ForeignKey("talent.Person", on_delete=models.CASCADE, null=True, blank=True)
     organisation = models.ForeignKey("commerce.Organisation", on_delete=models.SET_NULL, null=True, blank=True)
     photo = models.ImageField(upload_to="products/", blank=True, null=True)
@@ -132,13 +135,15 @@ class Product(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         except AttributeError:
             return 0
 
-class Initiative(TimeStampMixin, UUIDMixin):
+class Initiative(TimeStampMixin):
+    
     class InitiativeStatus(models.TextChoices):
         DRAFT = "Draft"
         ACTIVE = "Active"
         COMPLETED = "Completed"
         CANCELLED = "Cancelled"
 
+    id = Base58UUIDField(primary_key=True)  
     name = models.TextField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -198,7 +203,7 @@ class Initiative(TimeStampMixin, UUIDMixin):
         return queryset.distinct("id").all()
 
 
-class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
+class Challenge(TimeStampMixin, common.AttachmentAbstract):
     class ChallengeStatus(models.TextChoices):
         DRAFT = "Draft"
         BLOCKED = "Blocked"
@@ -211,6 +216,7 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         MEDIUM = "Medium"
         LOW = "Low"
 
+    id = Base58UUIDField(primary_key=True)
     initiative = models.ForeignKey(Initiative, on_delete=models.SET_NULL, blank=True, null=True)
     product_area = models.ForeignKey(ProductArea, on_delete=models.SET_NULL, blank=True, null=True)
     title = models.TextField()
@@ -346,7 +352,7 @@ class Challenge(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
             self.save()
 
 
-class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
+class Competition(TimeStampMixin, common.AttachmentAbstract):
     class CompetitionStatus(models.TextChoices):
         DRAFT = "Draft"
         ACTIVE = "Active"
@@ -355,6 +361,7 @@ class Competition(TimeStampMixin, UUIDMixin, common.AttachmentAbstract):
         COMPLETED = "Completed"
         CANCELLED = "Cancelled"
 
+    id = Base58UUIDField(primary_key=True)
     product_area = models.ForeignKey("ProductArea", on_delete=models.SET_NULL, blank=True, null=True)
     product = models.ForeignKey("Product", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
@@ -400,6 +407,7 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         POINTS = "Points"
         USD = "USD"
 
+    id = Base58UUIDField(primary_key=True)
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, null=True, blank=True)
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=400)
@@ -483,7 +491,7 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
             self.save()
 
 
-class CompetitionEntry(TimeStampMixin, UUIDMixin):
+class CompetitionEntry(TimeStampMixin):
     from apps.security.models import ProductRoleAssignment
 
     class EntryStatus(models.TextChoices):
@@ -492,6 +500,7 @@ class CompetitionEntry(TimeStampMixin, UUIDMixin):
         WINNER = "Winner"
         REJECTED = "Rejected"
 
+    id = Base58UUIDField(primary_key=True)
     bounty = models.ForeignKey(Bounty, on_delete=models.CASCADE, related_name="competition_entries")
     submitter = models.ForeignKey("talent.Person", on_delete=models.CASCADE, related_name="competition_entries")
     content = models.TextField()
@@ -513,7 +522,8 @@ class CompetitionEntry(TimeStampMixin, UUIDMixin):
         return is_admin_or_judge and not has_rated
 
 
-class CompetitionEntryRating(TimeStampMixin, UUIDMixin):
+class CompetitionEntryRating(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     entry = models.ForeignKey(CompetitionEntry, on_delete=models.CASCADE, related_name="ratings")
     rater = models.ForeignKey("talent.Person", on_delete=models.CASCADE, related_name="given_ratings")
     rating = models.PositiveSmallIntegerField(help_text="Rating from 1 to 5")
@@ -527,6 +537,7 @@ class CompetitionEntryRating(TimeStampMixin, UUIDMixin):
 
 
 class ChallengeDependency(models.Model):
+    id = Base58UUIDField(primary_key=True)
     preceding_challenge = models.ForeignKey(to=Challenge, on_delete=models.CASCADE)
     subsequent_challenge = models.ForeignKey(to=Challenge, on_delete=models.CASCADE, related_name="Challenge")
 
@@ -535,6 +546,7 @@ class ChallengeDependency(models.Model):
 
 
 class ContributorGuide(models.Model):
+    id = Base58UUIDField(primary_key=True)
     product = models.ForeignKey(
         to=Product,
         on_delete=models.CASCADE,
@@ -556,6 +568,7 @@ class ContributorGuide(models.Model):
 
 
 class Idea(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     title = models.CharField(max_length=256)
     description = models.TextField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -568,7 +581,8 @@ class Idea(TimeStampMixin):
         return f"{self.person} - {self.title}"
 
 
-class Bug(TimeStampMixin):
+class Bug(TimeStampMixin,models.Model):
+    id = Base58UUIDField(primary_key=True)
     title = models.CharField(max_length=256)
     description = models.TextField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -582,6 +596,7 @@ class Bug(TimeStampMixin):
 
 
 class ProductContributorAgreementTemplate(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     product = models.ForeignKey(
         "product_management.Product",
         related_name="contributor_agreement_templates",
@@ -600,6 +615,7 @@ class ProductContributorAgreementTemplate(TimeStampMixin):
 
 
 class IdeaVote(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     voter = models.ForeignKey("security.User", on_delete=models.CASCADE)
     idea = models.ForeignKey(Idea, on_delete=models.CASCADE)
 
@@ -608,6 +624,7 @@ class IdeaVote(TimeStampMixin):
 
 
 class ProductContributorAgreement(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     agreement_template = models.ForeignKey(to=ProductContributorAgreementTemplate, on_delete=models.CASCADE)
     person = models.ForeignKey(
         to="talent.Person",

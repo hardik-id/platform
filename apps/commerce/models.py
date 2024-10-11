@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.utils import timezone
 from polymorphic.models import PolymorphicModel
-from apps.common.mixins import TimeStampMixin, UUIDMixin
+from apps.common.fields import Base58UUIDField
+from apps.common.mixins import TimeStampMixin
 from apps.talent.models import BountyBid
 from django.db.models import Sum
 from django.apps import apps
@@ -55,7 +56,8 @@ class Organisation(TimeStampMixin):
         return self.name
 
 
-class OrganisationWallet(TimeStampMixin, UUIDMixin):
+class OrganisationWallet(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     organisation = models.OneToOneField(Organisation, on_delete=models.CASCADE, related_name="wallet")
     balance_usd_cents = models.IntegerField(default=0)
 
@@ -88,11 +90,12 @@ class OrganisationWallet(TimeStampMixin, UUIDMixin):
         return f"Wallet for {self.organisation.name}: ${self.balance_usd_cents / 100:.2f}"
 
 
-class OrganisationWalletTransaction(TimeStampMixin, UUIDMixin):
+class OrganisationWalletTransaction(TimeStampMixin):
     class TransactionType(models.TextChoices):
         CREDIT = "Credit", "Credit"
         DEBIT = "Debit", "Debit"
 
+    id = Base58UUIDField(primary_key=True)
     wallet = models.ForeignKey(OrganisationWallet, on_delete=models.CASCADE, related_name="transactions")
     amount_cents = models.IntegerField()
     transaction_type = models.CharField(max_length=10, choices=TransactionType.choices)
@@ -104,6 +107,7 @@ class OrganisationWalletTransaction(TimeStampMixin, UUIDMixin):
 
 
 class OrganisationPointAccount(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     organisation = models.OneToOneField(Organisation, on_delete=models.CASCADE, related_name="point_account")
     balance = models.PositiveIntegerField(default=0)
 
@@ -138,6 +142,7 @@ class OrganisationPointAccount(TimeStampMixin):
 
 
 class ProductPointAccount(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     product = models.OneToOneField(
         "product_management.Product", on_delete=models.CASCADE, related_name="product_point_account"
     )
@@ -158,9 +163,9 @@ class ProductPointAccount(TimeStampMixin):
         return False
 
 
-class PointTransaction(TimeStampMixin, UUIDMixin):
+class PointTransaction(TimeStampMixin):
     TRANSACTION_TYPES = [("GRANT", "Grant"), ("USE", "Use"), ("REFUND", "Refund"), ("TRANSFER", "Transfer")]
-
+    id = Base58UUIDField(primary_key=True)
     account = models.ForeignKey(
         OrganisationPointAccount, on_delete=models.CASCADE, related_name="org_transactions", null=True, blank=True
     )
@@ -182,7 +187,8 @@ class PointTransaction(TimeStampMixin, UUIDMixin):
             )
 
 
-class OrganisationPointGrant(TimeStampMixin, UUIDMixin):
+class OrganisationPointGrant(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name="point_grants")
     amount = models.PositiveIntegerField()
     granted_by = models.ForeignKey(
@@ -204,7 +210,8 @@ class OrganisationPointGrant(TimeStampMixin, UUIDMixin):
         )
 
 
-class PlatformFeeConfiguration(TimeStampMixin, UUIDMixin):
+class PlatformFeeConfiguration(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     percentage = models.PositiveIntegerField(default=10, validators=[MinValueValidator(1), MaxValueValidator(100)])
     applies_from_date = models.DateTimeField()
 
@@ -222,7 +229,7 @@ class PlatformFeeConfiguration(TimeStampMixin, UUIDMixin):
     class Meta:
         get_latest_by = "applies_from_date"
 
-class CartLineItem(PolymorphicModel, TimeStampMixin, UUIDMixin):
+class CartLineItem(PolymorphicModel, TimeStampMixin):
     class ItemType(models.TextChoices):
         BOUNTY = "BOUNTY", "Bounty"
         PLATFORM_FEE = "PLATFORM_FEE", "Platform Fee"
@@ -230,6 +237,7 @@ class CartLineItem(PolymorphicModel, TimeStampMixin, UUIDMixin):
         INCREASE_ADJUSTMENT = "INCREASE_ADJUSTMENT", "Increase Adjustment"
         DECREASE_ADJUSTMENT = "DECREASE_ADJUSTMENT", "Decrease Adjustment"
 
+    id = Base58UUIDField(primary_key=True)
     cart = models.ForeignKey('Cart', related_name='items', on_delete=models.CASCADE)
     item_type = models.CharField(max_length=25, choices=ItemType.choices)
     quantity = models.PositiveIntegerField(default=1)
@@ -264,13 +272,14 @@ class CartLineItem(PolymorphicModel, TimeStampMixin, UUIDMixin):
     class Meta:
         unique_together = ('cart', 'bounty')
 
-class Cart(TimeStampMixin, UUIDMixin):
+class Cart(TimeStampMixin):
     class CartStatus(models.TextChoices):
         OPEN = "Open", "Open"
         CHECKOUT = "Checkout", "Checkout"
         COMPLETED = "Completed", "Completed"
         ABANDONED = "Abandoned", "Abandoned"
 
+    id = Base58UUIDField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     organisation = models.ForeignKey(Organisation, on_delete=models.SET_NULL, null=True, blank=True)
     product = models.OneToOneField("product_management.Product", on_delete=models.CASCADE)  # Use string reference
@@ -426,7 +435,7 @@ class Cart(TimeStampMixin, UUIDMixin):
         return self.total_amount_cents / 100
 
 
-class SalesOrder(TimeStampMixin, UUIDMixin):
+class SalesOrder(TimeStampMixin):
     class OrderStatus(models.TextChoices):
         PENDING = "Pending", "Pending"
         PAYMENT_PROCESSING = "Payment Processing", "Payment Processing"
@@ -434,6 +443,7 @@ class SalesOrder(TimeStampMixin, UUIDMixin):
         PAYMENT_FAILED = "Payment Failed", "Payment Failed"
         REFUNDED = "Refunded", "Refunded"
 
+    id = Base58UUIDField(primary_key=True)
     cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name="sales_order")
     status = models.CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
     total_usd_cents = models.PositiveIntegerField(default=0)
@@ -539,7 +549,7 @@ class SalesOrder(TimeStampMixin, UUIDMixin):
         # TODO: Add additional activation logic (e.g., setting start date, notifications)
 
 
-class SalesOrderLineItem(PolymorphicModel, TimeStampMixin, UUIDMixin):
+class SalesOrderLineItem(PolymorphicModel, TimeStampMixin):
     class ItemType(models.TextChoices):
         BOUNTY = "BOUNTY", "Bounty"
         PLATFORM_FEE = "PLATFORM_FEE", "Platform Fee"
@@ -547,6 +557,7 @@ class SalesOrderLineItem(PolymorphicModel, TimeStampMixin, UUIDMixin):
         INCREASE_ADJUSTMENT = "INCREASE_ADJUSTMENT", "Increase Adjustment"
         DECREASE_ADJUSTMENT = "DECREASE_ADJUSTMENT", "Decrease Adjustment"
 
+    id = Base58UUIDField(primary_key=True)
     sales_order = models.ForeignKey(SalesOrder, related_name="line_items", on_delete=models.CASCADE)
     item_type = models.CharField(max_length=20, choices=ItemType.choices)
     quantity = models.PositiveIntegerField(default=1)
@@ -582,7 +593,8 @@ class SalesOrderLineItem(PolymorphicModel, TimeStampMixin, UUIDMixin):
         super().save(*args, **kwargs)
 
 
-class PointOrder(TimeStampMixin, UUIDMixin):
+class PointOrder(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     cart = models.OneToOneField(Cart, on_delete=models.CASCADE, related_name="point_order")
     product_account = models.ForeignKey(ProductPointAccount, on_delete=models.CASCADE, related_name="point_orders")
     total_points = models.PositiveIntegerField()

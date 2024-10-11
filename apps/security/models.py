@@ -6,7 +6,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from apps.common.mixins import TimeStampMixin, UUIDMixin
+from apps.common.mixins import TimeStampMixin
 
 from apps.talent.models import Person
 
@@ -15,13 +15,14 @@ from .managers import UserManager
 from random import randrange
 from .utils import extract_device_info
 from django.contrib.auth import get_user_model
-
+from apps.common.fields import Base58UUIDField
 
 def generate_verification_code():
     return str(randrange(100_000, 1_000_000))
 
 
 class User(AbstractUser, TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     remaining_budget_for_failed_logins = models.PositiveSmallIntegerField(default=3)
     password_reset_required = models.BooleanField(default=False)
     is_test_user = models.BooleanField(_("Test User"), default=False)
@@ -46,6 +47,7 @@ class User(AbstractUser, TimeStampMixin):
 
 
 class SignUpRequest(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     device_identifier = models.CharField(max_length=64, null=True, blank=True)
     verification_code = models.CharField(max_length=6)
@@ -63,6 +65,7 @@ class SignUpRequest(TimeStampMixin):
 
 
 class SignInAttempt(TimeStampMixin):
+    id = Base58UUIDField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     device_identifier = models.CharField(max_length=64, null=True, blank=True)
     successful = models.BooleanField(default=True)
@@ -71,7 +74,7 @@ class SignInAttempt(TimeStampMixin):
         return f"{self.user if self.user else 'Unknown User'} - {'Successful' if self.successful else 'Failed'}"
 
 
-class ProductRoleAssignment(TimeStampMixin, UUIDMixin):
+class ProductRoleAssignment(TimeStampMixin):
     from apps.product_management.models import Product
 
     class ProductRoles(models.TextChoices):
@@ -79,6 +82,7 @@ class ProductRoleAssignment(TimeStampMixin, UUIDMixin):
         MANAGER = "Manager"
         ADMIN = "Admin"
 
+    id = Base58UUIDField(primary_key=True)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, default="")
     role = models.CharField(
@@ -92,6 +96,7 @@ class ProductRoleAssignment(TimeStampMixin, UUIDMixin):
 
 
 class BlacklistedUsername(models.Model):
+    id = Base58UUIDField(primary_key=True)
     username = models.CharField(max_length=30, unique=True, blank=False)
 
     def __str__(self):
@@ -101,12 +106,12 @@ class BlacklistedUsername(models.Model):
         db_table = "black_listed_usernames"
 
 
-class OrganisationPersonRoleAssignment(TimeStampMixin, UUIDMixin):
+class OrganisationPersonRoleAssignment(TimeStampMixin):
     class OrganisationRoles(models.TextChoices):
         OWNER = "Owner"
         MANAGER = "Manager"
         MEMBER = "Member"
-
+    id = Base58UUIDField(primary_key=True)
     person = models.ForeignKey("talent.Person", on_delete=models.CASCADE)
     organisation = models.ForeignKey("commerce.Organisation", on_delete=models.CASCADE)
     role = models.CharField(
