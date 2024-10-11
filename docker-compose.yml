@@ -22,7 +22,7 @@ services:
   pgdb:
     container_name: pgdb
     network_mode: ${NETWORK_MODE}
-    image: postgres:12
+    image: postgres:16
     restart: unless-stopped
     volumes:
       - type: volume
