@@ -51,15 +51,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f"Traceback: {traceback.format_exc()}"))
         return created_objects
 
-    def update_sequence(self, model):
-        if model._meta.model_name != "producttree":
-            table_name = model._meta.db_table
-            sequence_name = f'{table_name}_id_seq'
-            with connection.cursor() as cursor:
-                cursor.execute(f"""
-                    SELECT setval('{sequence_name}', COALESCE((SELECT MAX(id) FROM {table_name}), 1));
-                """)
-
     def handle(self, *args, **options):
         csv_file = options['csv_file']
         model_name = options['model']
@@ -74,40 +65,37 @@ class Command(BaseCommand):
         parser = self.get_parser(model)
         objects = self.create_objects(model, data, parser)
 
-        # Update the sequence after creating/updating objects
-        self.update_sequence(model)
-
         self.stdout.write(self.style.SUCCESS(f'Successfully processed {len(objects)} objects from {csv_file} into {model_name}'))
         self.stdout.write(self.style.SUCCESS(f'Sequence for {model_name} has been updated.'))
 
 class ModelParser:
-    def create_object(self, model, row):
-        parsed = self.parse_row(row)
-        
-        # Check if the 'id' field is a UUID or integer
-        if isinstance(model._meta.get_field('id'), models.UUIDField):
-            obj, created = model.objects.update_or_create(
-                id=parsed['id'],  # Don't cast to int if it's a UUID
-                defaults=parsed
-            )
-        else:
-            obj, created = model.objects.update_or_create(
-                id=int(parsed['id']),
-                defaults=parsed
-            )
-        return obj, created
-
     def parse_row(self, row):
         parsed_row = {}
         for key, value in row.items():
             if value.lower() in ['true', 'false']:
                 parsed_row[key] = value.lower() == 'true'
-            elif 'deadline' in key.lower() and value:  # Check if the field is a deadline
-                # Convert string to aware datetime object
+            elif 'deadline' in key.lower() and value:
                 parsed_row[key] = timezone.make_aware(datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ"))
+            elif key == 'parent_id' and value == '':
+                parsed_row[key] = None  # Explicitly set empty string to None for parent_id
             else:
                 parsed_row[key] = value
         return parsed_row
+
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        # For Skill model, handle parent_id specially
+        if model._meta.model_name == 'skill':
+            parent_id = parsed.pop('parent_id', None)
+            if parent_id:
+                parsed['parent_id'] = parent_id
+        
+        obj, created = model.objects.update_or_create(
+            id=parsed['id'],
+            defaults=parsed
+        )
+        return obj, created
 
 class PersonParser(ModelParser):
     pass
