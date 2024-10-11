@@ -8,7 +8,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.extend([current_dir, parent_dir])
 
 # Set up Django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apps.openunited.settings.development")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apps.common.settings.development")
 django.setup()
 
 from django.contrib.auth import get_user_model

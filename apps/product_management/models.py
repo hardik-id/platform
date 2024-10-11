@@ -13,7 +13,7 @@ from model_utils import FieldTracker
 from treebeard.mp_tree import MP_Node
 
 from apps.common import models as common
-from apps.openunited.mixins import TimeStampMixin, UUIDMixin
+from apps.common.mixins import TimeStampMixin, UUIDMixin
 
 from django.core.exceptions import ValidationError
 

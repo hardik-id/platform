@@ -21,14 +21,13 @@ if allowed_hosts := os.environ.get("DJANGO_ALLOWED_HOSTS"):
     ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")
 
 ACTUAL_APPS = [
-    "apps.openunited",
+    "apps.common",
     "apps.product_management",
     "apps.security",
     "apps.talent",
     "apps.engagement",
     "apps.commerce",
-    "apps.canopy",
-    "apps.common"
+    "apps.canopy"
 ]
 THIRD_PARTIES = [
     "django_htmx",
@@ -66,7 +65,7 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = "apps.openunited.urls"
+ROOT_URLCONF = "apps.common.urls"
 
 
 TEMPLATES = [
@@ -75,7 +74,7 @@ TEMPLATES = [
         "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
-            "environment": "apps.openunited.jinja2.environment",
+            "environment": "apps.common.jinja2.environment",
             "match_extension": ".html",
             "match_regex": r"^(?!admin/|registration/|debug_toolbar/).*",
             # Can be set to "jinja2.Undefined" or any other subclass.
@@ -124,7 +123,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "apps.openunited.wsgi.application"
+WSGI_APPLICATION = "apps.common.wsgi.application"
 
 
 # Database

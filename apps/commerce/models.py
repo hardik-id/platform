@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.utils import timezone
 from polymorphic.models import PolymorphicModel
-from apps.openunited.mixins import TimeStampMixin, UUIDMixin
+from apps.common.mixins import TimeStampMixin, UUIDMixin
 from apps.talent.models import BountyBid
 from django.db.models import Sum
 from django.apps import apps

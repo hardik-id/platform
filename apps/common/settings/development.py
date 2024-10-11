@@ -1,4 +1,4 @@
-from apps.openunited.settings.base import *
+from apps.common.settings.base import *
 
 DEBUG = True
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
@@ -26,9 +26,9 @@ if AWS_STORAGE_BUCKET_NAME := os.getenv("AWS_STORAGE_BUCKET_NAME"):
     ]
 
     STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/{AWS_STATIC_LOCATION}/"
-    STATICFILES_STORAGE = "apps.openunited.storage_backends.StaticStorage"
+    STATICFILES_STORAGE = "apps.common.storage_backends.StaticStorage"
     MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/{AWS_MEDIA_LOCATION}/"
-    DEFAULT_FILE_STORAGE = "apps.openunited.storage_backends.PublicMediaStorage"
+    DEFAULT_FILE_STORAGE = "apps.common.storage_backends.PublicMediaStorage"
 
 # When running in a DigitalOcean app, Django sits behind a proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

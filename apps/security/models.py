@@ -6,7 +6,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from apps.openunited.mixins import TimeStampMixin, UUIDMixin
+from apps.common.mixins import TimeStampMixin, UUIDMixin
 
 from apps.talent.models import Person
 

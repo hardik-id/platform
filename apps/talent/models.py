@@ -15,7 +15,7 @@ from treebeard.mp_tree import MP_Node
 
 from apps.common.models import AttachmentAbstract
 from django.apps import apps
-from apps.openunited.mixins import AncestryMixin, TimeStampMixin, UUIDMixin
+from apps.common.mixins import AncestryMixin, TimeStampMixin, UUIDMixin
 from django.db import transaction
 
 

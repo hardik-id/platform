@@ -9,7 +9,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '.'))  # 
 sys.path.append(project_root)
 
 # Set up Django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apps.openunited.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apps.common.settings")
 django.setup()
 
 from django.apps import apps
