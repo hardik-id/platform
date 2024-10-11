@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="BlacklistedUsername",
             fields=[
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("username", models.CharField(max_length=30, unique=True)),
             ],
             options={
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 (
                     "role",
                     models.CharField(
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("device_identifier", models.CharField(blank=True, max_length=64, null=True)),
                 ("successful", models.BooleanField(default=True)),
             ],
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("device_identifier", models.CharField(blank=True, max_length=64, null=True)),
                 ("verification_code", models.CharField(max_length=6)),
                 ("successful", models.BooleanField(default=False)),
@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
                 ("date_joined", models.DateTimeField(default=django.utils.timezone.now, verbose_name="date joined")),
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("remaining_budget_for_failed_logins", models.PositiveSmallIntegerField(default=3)),
                 ("password_reset_required", models.BooleanField(default=False)),
                 ("is_test_user", models.BooleanField(default=False, verbose_name="Test User")),
@@ -161,7 +161,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 (
                     "role",
                     models.CharField(

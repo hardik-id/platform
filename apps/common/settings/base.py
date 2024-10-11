@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 import sentry_sdk
+import uuid
 
 DEBUG = True
 
@@ -193,6 +194,9 @@ SESSION_COOKIE_AGE = 30 * 24 * 60 * 60  # 30 days in seconds
 # be accessible via http://<domain_name>/abc/admin
 # Note: Don't include slash
 ADMIN_CONTEXT = os.getenv("ADMIN_CONTEXT", None)
+
+# this variable is used to set the namespace for the UUID5-based Base58UUIDv5Field used for primary keys
+PLATFORM_NAMESPACE = uuid.UUID(os.getenv('PLATFORM_NAMESPACE', 'bc7980a8-5d44-4ba6-872c-b3c5a0fe763b'))
 
 AUTHENTICATION_BACKENDS = []
 

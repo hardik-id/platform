@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from treebeard.mp_tree import MP_Node
 
-from apps.common.fields import Base58UUIDField
+from apps.common.fields import Base58UUIDv5Field
 from apps.common.models import AttachmentAbstract
 from django.apps import apps
 from apps.common.mixins import AncestryMixin, TimeStampMixin
@@ -44,7 +44,7 @@ class Person(TimeStampMixin):
         PersonStatus.BEEKEEPER: _("Invite new products to openunited.com and grant points"),
     }
     
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     full_name = models.CharField(max_length=256)
     preferred_name = models.CharField(max_length=128)
     user = models.OneToOneField("security.User", on_delete=models.CASCADE, related_name="person")
@@ -144,7 +144,7 @@ class Person(TimeStampMixin):
 
 
 class PersonSkill(models.Model):
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     person = models.ForeignKey(Person, related_name="skills", on_delete=models.CASCADE)
     skill = models.ForeignKey("talent.Skill", on_delete=models.CASCADE)
     expertise = models.ManyToManyField("talent.Expertise")
@@ -154,7 +154,7 @@ class PersonSkill(models.Model):
 
 
 class Skill(AncestryMixin):
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     parent = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
@@ -189,7 +189,7 @@ class Skill(AncestryMixin):
 
 
 class Expertise(AncestryMixin):
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     parent = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
@@ -241,7 +241,7 @@ class BountyBid(TimeStampMixin):
         REJECTED = "Rejected"
         WITHDRAWN = "Withdrawn"
 
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     bounty = models.ForeignKey("product_management.Bounty", on_delete=models.CASCADE, related_name="bids")
     person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="bounty_bids")
     amount = models.PositiveIntegerField()
@@ -362,7 +362,7 @@ class BountyClaim(TimeStampMixin):
         COMPLETED = "Completed"
         FAILED = "Failed"
 
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     bounty = models.ForeignKey("product_management.Bounty", on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     accepted_bid = models.OneToOneField(

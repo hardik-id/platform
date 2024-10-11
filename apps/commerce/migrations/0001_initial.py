@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 (
                     "status",
                     models.CharField(
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 (
                     "item_type",
                     models.CharField(
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("balance", models.PositiveIntegerField(default=0)),
             ],
             options={
@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("amount", models.PositiveIntegerField()),
                 ("rationale", models.TextField()),
             ],
@@ -111,7 +111,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("balance_usd_cents", models.IntegerField(default=0)),
             ],
             options={
@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("amount_cents", models.IntegerField()),
                 (
                     "transaction_type",
@@ -140,7 +140,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 (
                     "percentage",
                     models.PositiveIntegerField(
@@ -162,7 +162,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("total_points", models.PositiveIntegerField()),
                 (
                     "status",
@@ -182,7 +182,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("amount", models.PositiveIntegerField()),
                 (
                     "transaction_type",
@@ -202,7 +202,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("balance", models.PositiveIntegerField(default=0)),
             ],
             options={
@@ -214,7 +214,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 (
                     "status",
                     models.CharField(
@@ -241,7 +241,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 (
                     "item_type",
                     models.CharField(

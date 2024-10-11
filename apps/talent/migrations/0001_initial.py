@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("amount", models.PositiveIntegerField()),
                 ("expected_finish_date", models.DateField()),
                 (
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 (
                     "status",
                     models.CharField(
@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Expertise",
             fields=[
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("selectable", models.BooleanField(default=False)),
                 ("name", models.CharField(max_length=100)),
                 ("fa_icon", models.CharField(max_length=100)),
@@ -112,7 +112,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("full_name", models.CharField(max_length=256)),
                 ("preferred_name", models.CharField(max_length=128)),
                 ("photo", models.ImageField(blank=True, null=True, upload_to="avatars/")),
@@ -231,7 +231,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Skill",
             fields=[
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("active", models.BooleanField(db_index=True, default=False)),
                 ("selectable", models.BooleanField(default=False)),
                 ("display_boost_factor", models.PositiveSmallIntegerField(default=1)),
@@ -255,7 +255,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="PersonSkill",
             fields=[
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("expertise", models.ManyToManyField(to="talent.expertise")),
                 (
                     "person",

@@ -15,14 +15,14 @@ from .managers import UserManager
 from random import randrange
 from .utils import extract_device_info
 from django.contrib.auth import get_user_model
-from apps.common.fields import Base58UUIDField
+from apps.common.fields import Base58UUIDv5Field
 
 def generate_verification_code():
     return str(randrange(100_000, 1_000_000))
 
 
 class User(AbstractUser, TimeStampMixin):
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     remaining_budget_for_failed_logins = models.PositiveSmallIntegerField(default=3)
     password_reset_required = models.BooleanField(default=False)
     is_test_user = models.BooleanField(_("Test User"), default=False)
@@ -47,7 +47,7 @@ class User(AbstractUser, TimeStampMixin):
 
 
 class SignUpRequest(TimeStampMixin):
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     device_identifier = models.CharField(max_length=64, null=True, blank=True)
     verification_code = models.CharField(max_length=6)
@@ -65,7 +65,7 @@ class SignUpRequest(TimeStampMixin):
 
 
 class SignInAttempt(TimeStampMixin):
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     device_identifier = models.CharField(max_length=64, null=True, blank=True)
     successful = models.BooleanField(default=True)
@@ -82,7 +82,7 @@ class ProductRoleAssignment(TimeStampMixin):
         MANAGER = "Manager"
         ADMIN = "Admin"
 
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, default="")
     role = models.CharField(
@@ -96,7 +96,7 @@ class ProductRoleAssignment(TimeStampMixin):
 
 
 class BlacklistedUsername(models.Model):
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     username = models.CharField(max_length=30, unique=True, blank=False)
 
     def __str__(self):
@@ -111,7 +111,7 @@ class OrganisationPersonRoleAssignment(TimeStampMixin):
         OWNER = "Owner"
         MANAGER = "Manager"
         MEMBER = "Member"
-    id = Base58UUIDField(primary_key=True)
+    id = Base58UUIDv5Field(primary_key=True)
     person = models.ForeignKey("talent.Person", on_delete=models.CASCADE)
     organisation = models.ForeignKey("commerce.Organisation", on_delete=models.CASCADE)
     role = models.CharField(

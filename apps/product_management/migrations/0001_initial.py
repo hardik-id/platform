@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("title", models.CharField(max_length=400)),
                 ("description", models.TextField()),
                 (
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("title", models.CharField(max_length=256)),
                 ("description", models.TextField()),
             ],
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("title", models.TextField()),
                 ("description", models.TextField()),
                 ("short_description", models.TextField(max_length=256)),
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="ChallengeDependency",
             fields=[
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
             ],
             options={
                 "db_table": "product_management_challenge_dependencies",
@@ -116,7 +116,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("title", models.CharField(max_length=255)),
                 ("description", models.TextField()),
                 ("short_description", models.CharField(max_length=256)),
@@ -148,7 +148,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("content", models.TextField()),
                 ("entry_time", models.DateTimeField(auto_now_add=True)),
                 (
@@ -174,7 +174,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("rating", models.PositiveSmallIntegerField(help_text="Rating from 1 to 5")),
                 ("comment", models.TextField(blank=True)),
             ],
@@ -182,7 +182,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="ContributorGuide",
             fields=[
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("title", models.CharField(max_length=60, unique=True)),
                 ("description", models.TextField(blank=True, null=True)),
             ],
@@ -204,7 +204,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("title", models.CharField(max_length=256)),
                 ("description", models.TextField()),
             ],
@@ -217,7 +217,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
             ],
         ),
         migrations.CreateModel(
@@ -225,7 +225,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("name", models.TextField()),
                 ("description", models.TextField(blank=True, null=True)),
                 (
@@ -252,7 +252,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("photo", models.ImageField(blank=True, null=True, upload_to="products/")),
                 ("name", models.TextField()),
                 ("short_description", models.TextField()),
@@ -275,7 +275,7 @@ class Migration(migrations.Migration):
                 ("numchild", models.PositiveIntegerField(default=0)),
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("name", models.CharField(max_length=255)),
                 ("description", models.TextField(blank=True, default="", max_length=1000, null=True)),
                 ("video_link", models.URLField(blank=True, max_length=255, null=True)),
@@ -291,7 +291,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("accepted_at", models.DateTimeField(auto_now_add=True, null=True)),
             ],
             options={
@@ -303,7 +303,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("title", models.CharField(max_length=256)),
                 ("content", models.TextField()),
                 ("effective_date", models.DateField()),
@@ -317,7 +317,7 @@ class Migration(migrations.Migration):
             fields=[
                 ("created_at", models.DateTimeField(auto_now_add=True, null=True)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("id", apps.common.fields.Base58UUIDField(primary_key=True, serialize=False)),
+                ("id", apps.common.fields.Base58UUIDv5Field(primary_key=True, serialize=False)),
                 ("name", models.CharField(max_length=255, unique=True)),
                 ("session_id", models.CharField(blank=True, max_length=255, null=True)),
             ],
