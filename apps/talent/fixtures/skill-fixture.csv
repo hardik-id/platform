@@ -1,132 +1,132 @@
 id,parent_id,active,selectable,display_boost_factor,name
-1,,false,false,1,Art & Creative
-2,1,false,false,1,2D Animation
-3,1,false,false,1,Acting
-4,1,false,false,1,AR/VR Design
-5,1,false,false,1,Art Direction
-6,1,false,false,1,Audio Editing
-7,1,false,false,1,Audio Production
-8,1,false,false,1,Brand Design
-9,1,false,false,1,Caricatures & Portraits
-10,1,false,false,1,Cartoons & Comics
-11,1,false,false,1,Creative Direction
-12,1,false,false,1,Editorial Design
-13,1,false,false,1,Game Art
-14,1,false,false,1,Local Photography
-15,1,false,false,1,Motion Graphics
-16,1,false,false,1,Image Editing
-17,1,false,false,1,Music Composition
-18,1,false,false,1,Music Production
-19,1,false,false,1,Musician
-20,1,false,false,1,Packaging Design
-21,1,false,false,1,Pattern Design
-22,1,false,false,1,Presentation Design
-23,1,false,false,1,Product & Industrial Design
-24,1,false,false,1,Product Photography
-25,1,false,false,1,Video Editing
-26,1,false,false,1,Video Production
-27,1,false,false,1,3D Animation
-28,1,false,false,1,Videography
-29,1,false,false,1,Visual Effects
-30,,false,false,1,Customer Service & Support
-31,30,false,false,1,Customer Service
-32,30,false,false,1,Tech Support
-33,,false,false,1,Data Science & Analytics
-34,33,false,false,1,Data Analytics
-35,33,false,false,1,Data Engineering
-36,33,false,false,1,Data Extraction
-37,33,false,false,1,Data Mining
-38,33,false,false,1,Data Processing
-39,33,false,false,1,Data Visualization
-40,33,false,false,1,Deep Learning
-41,33,false,false,1,Experimentation & Testing
-42,33,false,false,1,Knowledge Representation
-43,33,false,false,1,Machine Learning
-44,,false,false,1,"Engineering, Science & Building"
-45,44,false,false,1,3D Modelling & Rendering
-46,44,false,false,1,Building Information Modelling
-47,44,false,false,1,Mathematics
-48,44,false,false,1,Sourcing & Procurement
-49,,false,false,1,General Support
-50,49,false,false,1,Accounting & Finance
-51,49,false,false,1,Legal Support
-52,49,false,false,1,Project Management
-53,49,false,false,1,Agile Coach
-54,,true,false,1,Information Systems & Networking
-55,54,false,false,1,Business Applications Development
-56,54,true,true,1,Cloud Engineering
-57,54,false,false,1,Database Administration
-58,54,true,true,1,DevOps Engineering
-59,54,true,true,1,Information Security
-60,54,false,false,1,IT Compliance
-61,54,false,false,1,IT Support
-62,54,false,false,1,Network Administration
-63,54,false,false,1,Network Security
-64,54,true,true,1,Solutions Architecture
-65,54,false,false,1,Systems Administration
-66,54,false,false,1,Systems Engineering
-67,,false,false,1,"Marketing, Sales & Communications"
-68,67,false,false,1,Brand Strategy
-69,67,false,false,1,Campaign Management
-70,67,false,false,1,Community Management
-71,67,false,false,1,Content Strategy
-72,67,false,false,1,Digital Marketing
-73,67,false,false,1,Email Marketing
-74,67,false,false,1,Lead Generation
-75,67,false,false,1,Market Research
-76,67,false,false,1,Marketing Automation
-77,67,false,false,1,Marketing Strategy
-78,67,false,false,1,Public relations
-79,67,false,false,1,Sales & Business Development
-80,67,false,false,1,Search Engine Marketing
-81,67,false,false,1,Search Engine Optimisation
-82,67,false,false,1,Social Media Marketing
-83,67,false,false,1,Social Media Strategy
-84,67,false,false,1,Telemarketing
-85,,true,false,49,"Product, User Experience & Research"
-86,85,true,true,1,Business Analysis
-87,85,true,true,1,Graphic Design
-88,85,false,false,1,Illustration
-89,85,false,false,1,Initiative Management
-90,85,false,false,1,Logo Design
-91,85,true,true,50,Product Management
-92,85,true,true,1,UI Mockups
-93,85,true,true,1,User Research
-94,85,true,true,1,UX/UI Design
-95,,true,false,100,"Software Development (inc. Web, Mobile)"
-96,95,false,false,1,AR/VR Development
-97,95,true,true,1,Backend Development
-98,95,false,false,1,Blockchain Development
-99,95,false,false,1,CMS Development
-100,95,false,false,1,Database Development
-101,95,false,false,1,Desktop Software Development
-102,95,false,false,1,E-commerce Development
-103,95,false,false,1,Emerging Tech
-104,95,false,false,1,Firmware Development
-105,95,true,true,1,Frontend Development
-106,95,true,true,1,Full-stack Development
-107,95,false,false,1,Game Development
-108,95,false,false,1,Manual Testing
-109,95,false,false,1,Mobile App Development
-110,95,false,false,1,Mobile Design
-111,95,false,false,1,Mobile Game Development
-112,95,false,false,1,Prototyping
-113,95,false,false,1,Scripting & Automation
-114,95,true,true,1,Test Automation
-115,95,false,false,1,Web Design
-116,,false,false,1,Translation
-117,116,false,false,1,General Language Translation
-118,116,false,false,1,Language Localisation
-119,116,false,false,1,Language Tutoring
-120,116,false,false,1,Legal Translation
-121,116,false,false,1,Technical Translation
-122,116,false,false,1,Business Writing
-123,,false,false,1,Writing
-124,123,false,false,1,Content Writing
-125,123,false,false,1,Copywriting
-126,123,false,false,1,Creative Writing
-127,123,false,false,1,Editing & Proofreading
-128,123,false,false,1,Ghostwriting
-129,123,false,false,1,Grant Writing
-130,123,false,false,1,Scriptwriting
-131,123,false,false,1,Technical Writing
+XK4aHpFFv8vabTjZpJ1Li4,,false,false,1,Art & Creative
+A5aRbGz6wexdYoCuP5uphb,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,2D Animation
+DY12H3vAsv7JdEyE25VCii,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Acting
+3AHn4eXrSC5Qo58EqF86SU,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,AR/VR Design
+88QPLKPdevwu4dKkeuwgio,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Art Direction
+zrhKmDfqR7b3W4afQaXPq,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Audio Editing
+ST1JUQXgZjHyfnE7KKVpFM,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Audio Production
+Sw9pxC8Nn2rXRvXWRb1J2Q,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Brand Design
+JFbHTwzij3iEr2CBzb5MrH,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Caricatures & Portraits
+NS9NXDguwegzjtmyrtavb2,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Cartoons & Comics
+SU7JYuos1aCrfhvrRPjQpo,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Creative Direction
+HDM7zVtinax8ETx2wpqogA,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Editorial Design
+AWbBMsuLn3c6Eu3ouVkU32,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Game Art
+5vKumykb2andfj5DcTLpZU,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Local Photography
+9L7pPNrW8zZTYL7Svwzxdh,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Motion Graphics
+CEopLu2vTQepTjGiuExpjZ,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Image Editing
+365KYBu2sU1sKfvhng59Tv,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Music Composition
+ToVD5CMcVWmMjcN6V3qfFn,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Music Production
+3goTGoSwqi53wpMDnQt72o,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Musician
+C41huDksmZoKBcxzgPyd2B,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Packaging Design
+S6ALC3w7yNA1rN14bW2CVT,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Pattern Design
+Sf3RUh1zj1T3rZEJqhrhCg,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Presentation Design
+3fSeJBQyQwmsGbkSH6eGKD,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Product & Industrial Design
+ESwXAqmoVa779ebjLhmJW4,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Product Photography
+DT9ts3KEH2sU8FnDbToPWz,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Video Editing
+DjnfNgGQL9JnR5SkrCf2oR,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Video Production
+NRXqd19BmQfDLGHdBz7xcu,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,3D Animation
+J4Yt1Z8ArPMdacYMVoJZF2,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Videography
+WF1MeaBXCsTQr634xM91F8,XK4aHpFFv8vabTjZpJ1Li4,false,false,1,Visual Effects
+2iXEqaFnnuYWUJ4y5h7bME,,false,false,1,Customer Service & Support
+XUNswQU9TGChLgjT9WJAbw,2iXEqaFnnuYWUJ4y5h7bME,false,false,1,Customer Service
+UqTXZPcRTs3tcffoNSKncp,2iXEqaFnnuYWUJ4y5h7bME,false,false,1,Tech Support
+EyZMsqMv6zhwMQJdeBADht,,false,false,1,Data Science & Analytics
+E9ZPNXCChfjSKqchKhhjkS,EyZMsqMv6zhwMQJdeBADht,false,false,1,Data Analytics
+ELzSYCQn3XfADiGtTcjAFs,EyZMsqMv6zhwMQJdeBADht,false,false,1,Data Engineering
+G8XUppvSHiCo355iTutHkc,EyZMsqMv6zhwMQJdeBADht,false,false,1,Data Extraction
+Km4UMjmXorfKijo13hWqEG,EyZMsqMv6zhwMQJdeBADht,false,false,1,Data Mining
+KbouLGYo9ZxuCPxVonTFHp,EyZMsqMv6zhwMQJdeBADht,false,false,1,Data Processing
+Gp95mqvR69qQkDiA9RuSUp,EyZMsqMv6zhwMQJdeBADht,false,false,1,Data Visualization
+59HT5FXs6XQvY2mrkJV7ba,EyZMsqMv6zhwMQJdeBADht,false,false,1,Deep Learning
+84Qzfu3C5ABj3Lc5e57iEQ,EyZMsqMv6zhwMQJdeBADht,false,false,1,Experimentation & Testing
+AEy6KaWchvn1unYwjQKhHR,EyZMsqMv6zhwMQJdeBADht,false,false,1,Knowledge Representation
+VZrQ7MyRm4pEbfnycWXUL5,EyZMsqMv6zhwMQJdeBADht,false,false,1,Machine Learning
+9nxM91cvNP64SGQT3N8Xrf,,false,false,1,"Engineering, Science & Building"
+8eEdjuwMW2WGuVBJCzthZq,9nxM91cvNP64SGQT3N8Xrf,false,false,1,3D Modelling & Rendering
+RpfStVGNfCKggz2a6hKv3Z,9nxM91cvNP64SGQT3N8Xrf,false,false,1,Building Information Modelling
+4Yg9mQ8Vry9AoU7ft7moaW,9nxM91cvNP64SGQT3N8Xrf,false,false,1,Mathematics
+F9erQEo5RNPqfXFS4WH8uT,9nxM91cvNP64SGQT3N8Xrf,false,false,1,Sourcing & Procurement
+HCQ9CC841wEJ5yogQhqCMW,,false,false,1,General Support
+WkRrNaww5vqtSRnUf3NCi1,HCQ9CC841wEJ5yogQhqCMW,false,false,1,Accounting & Finance
+DNF3besdcrgcgYv7QcWKox,HCQ9CC841wEJ5yogQhqCMW,false,false,1,Legal Support
+UXhVLpg2mQoh4iPBbm9HK2,HCQ9CC841wEJ5yogQhqCMW,false,false,1,Project Management
+JthQHvX1V82tgfPLhinVmU,HCQ9CC841wEJ5yogQhqCMW,false,false,1,Agile Coach
+4FCvHyNzSDow7a3YiVU39y,,true,false,1,Information Systems & Networking
+CeTNqNbyNQAQcJGWeb8Giv,4FCvHyNzSDow7a3YiVU39y,false,false,1,Business Applications Development
+HmwpSG5foUh4WfUUgbPgKr,4FCvHyNzSDow7a3YiVU39y,true,true,1,Cloud Engineering
+UpAqDgBsHqWGGDSvvbKmCJ,4FCvHyNzSDow7a3YiVU39y,false,false,1,Database Administration
+3deHUUpQEAd1erRckurzZs,4FCvHyNzSDow7a3YiVU39y,true,true,1,DevOps Engineering
+ELXHxYvMQfd7LPLChaGHBx,4FCvHyNzSDow7a3YiVU39y,true,true,1,Information Security
+84RGAWfqWgPdAFKgp9Aobf,4FCvHyNzSDow7a3YiVU39y,false,false,1,IT Compliance
+UdKkyfVBkfa1oFp7dg9iEA,4FCvHyNzSDow7a3YiVU39y,false,false,1,IT Support
+SV5JjuTYjEddczWkp2ysPX,4FCvHyNzSDow7a3YiVU39y,false,false,1,Network Administration
+GeGDNbFsDVRBKH6RNeJdjX,4FCvHyNzSDow7a3YiVU39y,false,false,1,Network Security
+P4mjDjgxt2BymKRE4YHM2h,4FCvHyNzSDow7a3YiVU39y,true,true,1,Solutions Architecture
+P6gWWAayR28U5MTCAxgtKG,4FCvHyNzSDow7a3YiVU39y,false,false,1,Systems Administration
+Y7ArGam9UYxUEjHuBmDCU7,4FCvHyNzSDow7a3YiVU39y,false,false,1,Systems Engineering
+N722NJvZTpyHwrFxtEBPFV,,false,false,1,"Marketing, Sales & Communications"
+FudnbMhmzck6zMwEit1Rv8,N722NJvZTpyHwrFxtEBPFV,false,false,1,Brand Strategy
+6U2gCuvxnu4o9fvUzFtmmE,N722NJvZTpyHwrFxtEBPFV,false,false,1,Campaign Management
+A6HNa4GKHx11DJy6cWgf4Z,N722NJvZTpyHwrFxtEBPFV,false,false,1,Community Management
+9bLDTMoxCedg9HAy1oHbCW,N722NJvZTpyHwrFxtEBPFV,false,false,1,Content Strategy
+NdqsgTf3KxwEqWiKuFBwas,N722NJvZTpyHwrFxtEBPFV,false,false,1,Digital Marketing
+JLQVUTq3qGyQcH6FdL6Nbh,N722NJvZTpyHwrFxtEBPFV,false,false,1,Email Marketing
+GWK52F7z6F8pSwu6Ks4mPS,N722NJvZTpyHwrFxtEBPFV,false,false,1,Lead Generation
+5XJy7pTXBoBRrHPJNhTx9M,N722NJvZTpyHwrFxtEBPFV,false,false,1,Market Research
+QPs9H6tHQxviw41HD7YUaC,N722NJvZTpyHwrFxtEBPFV,false,false,1,Marketing Automation
+W9rJd6Nmg3sfvDULvQr8QH,N722NJvZTpyHwrFxtEBPFV,false,false,1,Marketing Strategy
+UmTH99EeybonoSi4RuZhRv,N722NJvZTpyHwrFxtEBPFV,false,false,1,Public relations
+WnhwgadVz7NwvuPyCZ8BRW,N722NJvZTpyHwrFxtEBPFV,false,false,1,Sales & Business Development
+9u7634ENCDXNh3Y4cdqp7D,N722NJvZTpyHwrFxtEBPFV,false,false,1,Search Engine Marketing
+ETLrRJoNmJ9SXRNZrrTytx,N722NJvZTpyHwrFxtEBPFV,false,false,1,Search Engine Optimisation
+BvWtu8jdJCRH5e1b7JdbWR,N722NJvZTpyHwrFxtEBPFV,false,false,1,Social Media Marketing
+YBSBuATSh3pdsc2Qbor4XZ,N722NJvZTpyHwrFxtEBPFV,false,false,1,Social Media Strategy
+Y3aRC9vKcKiREaDYX4oMm5,N722NJvZTpyHwrFxtEBPFV,false,false,1,Telemarketing
+4iddUSFv19ikydX1m15d2Z,,true,false,49,"Product, User Experience & Research"
+9opWVjBziLfK8pVyb4sR8g,4iddUSFv19ikydX1m15d2Z,true,true,1,Business Analysis
+4cc6vnMM6s9wbrHAsGayGr,4iddUSFv19ikydX1m15d2Z,true,true,1,Graphic Design
+DsHYxRdqQSWiWe4SP7E13F,4iddUSFv19ikydX1m15d2Z,false,false,1,Illustration
+5rQunGnNhkY1MnrrRcr5oJ,4iddUSFv19ikydX1m15d2Z,false,false,1,Initiative Management
+Q19Gp9zRgjmHZTE6JSMHuW,4iddUSFv19ikydX1m15d2Z,false,false,1,Logo Design
+TuAACDfzGERsgos6RUNGAx,4iddUSFv19ikydX1m15d2Z,true,true,50,Product Management
+2ZCwc8XRzuvtQwDDuHj5LP,4iddUSFv19ikydX1m15d2Z,true,true,1,UI Mockups
+SnSj7hpZwbZHNuW26uSJo3,4iddUSFv19ikydX1m15d2Z,true,true,1,User Research
+WKm7reW5MuxR8xbtyDMkkd,4iddUSFv19ikydX1m15d2Z,true,true,1,UX/UI Design
+8QH3e7bCXywwbYQvd4Uy8W,,true,false,100,"Software Development (inc. Web, Mobile)"
+W6pFzxYkoTDD5jyRhYAHjf,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,AR/VR Development
+EAYbaFWKRKvxyVJFsyK7v4,8QH3e7bCXywwbYQvd4Uy8W,true,true,1,Backend Development
+FbVBuuUsy4QArM7bq3UDQS,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Blockchain Development
+Q86EjxsFkNfdCU4X1w8Wqa,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,CMS Development
+8Nfg6ikpRbVf1EvMwra7gY,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Database Development
+PpRHAJ9JfXcVWWY9ytQHmo,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Desktop Software Development
+URkiaLefu3NgHH2NQbLVxt,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,E-commerce Development
+UHkEGce932z4tDeBweocHR,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Emerging Tech
+B1pSvp7Ju3GkxdvS7AyUvj,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Firmware Development
+PpPToH72Ng1rbWvV7mh5Mk,8QH3e7bCXywwbYQvd4Uy8W,true,true,1,Frontend Development
+AnL2GnAWDircPWzgVGXPZq,8QH3e7bCXywwbYQvd4Uy8W,true,true,1,Full-stack Development
+WW2GXrLFrSXgedX27t5SFY,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Game Development
+8cwRGHaiLmd7mLJwp81EWn,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Manual Testing
+4tz6f5gPF5pRjCXfo8mDpW,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Mobile App Development
+X3f1nCZeSqeXX34f214ZYc,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Mobile Design
+6tg3badv3xvaDeWooroXqB,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Mobile Game Development
+CoBiQWisbPgH7q2MXUNnfC,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Prototyping
+Y7tc8Z2NxryVn6iKEgecaa,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Scripting & Automation
+BxnJFMmfBj3pKcQuFBHKQt,8QH3e7bCXywwbYQvd4Uy8W,true,true,1,Test Automation
+TFFiKsXSfCWjPXMfqQ5KqF,8QH3e7bCXywwbYQvd4Uy8W,false,false,1,Web Design
+2wuGkHuknD69ghsAmpwzEt,,false,false,1,Translation
+2QCXfpdHUq6iF11UyZqjJk,2wuGkHuknD69ghsAmpwzEt,false,false,1,General Language Translation
+PFrJqZLhoHLa2jTaEMABG5,2wuGkHuknD69ghsAmpwzEt,false,false,1,Language Localisation
+7NZSY7hC4gFveqrzzAWcvq,2wuGkHuknD69ghsAmpwzEt,false,false,1,Language Tutoring
+VQEApsSDKf2HEhmw94xkw5,2wuGkHuknD69ghsAmpwzEt,false,false,1,Legal Translation
+DbqgTM7EnFgxnCScV8QYrc,2wuGkHuknD69ghsAmpwzEt,false,false,1,Technical Translation
+XCVAqC7JxwopFtqPHSz1nZ,2wuGkHuknD69ghsAmpwzEt,false,false,1,Business Writing
+PcVjKM6NW87u2ToomV3emE,,false,false,1,Writing
+21e3Fb5NWYWmJA1sWxy4ct,PcVjKM6NW87u2ToomV3emE,false,false,1,Content Writing
+8C6CUnBRg2NbcorM9Hixuz,PcVjKM6NW87u2ToomV3emE,false,false,1,Copywriting
+7LsoXs5gGE375reRuwF5Y9,PcVjKM6NW87u2ToomV3emE,false,false,1,Creative Writing
+HXr2EmzgPWspwRkkoc2qEU,PcVjKM6NW87u2ToomV3emE,false,false,1,Editing & Proofreading
+7oo6KR8JDPKkTsTtj1d26p,PcVjKM6NW87u2ToomV3emE,false,false,1,Ghostwriting
+TdW5h4qZXiSQsQaSFNBRN1,PcVjKM6NW87u2ToomV3emE,false,false,1,Grant Writing
+VvYNz3onZri2YTvczjSSdj,PcVjKM6NW87u2ToomV3emE,false,false,1,Scriptwriting
+Ny5xRcgcBe8E1bcTQNwndf,PcVjKM6NW87u2ToomV3emE,false,false,1,Technical Writing

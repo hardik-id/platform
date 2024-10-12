@@ -1,0 +1,11 @@
+id,title,description,person_id,product_id
+1,Login page crash,App crashes when attempting to log in with certain special characters,1,1
+2,Incorrect AI predictions,AI model providing inaccurate predictions for certain data sets,2,2
+3,Security vulnerability in API,Potential XSS vulnerability discovered in API endpoint,3,3
+4,Performance degradation,Significant slowdown observed in data processing module,4,4
+5,UI rendering issue,UI elements overlapping on smaller screen sizes,5,5
+6,Memory leak,Memory usage steadily increases over time causing slowdowns,6,1
+7,Inconsistent data sync,Data synchronization issues between mobile and web versions,7,2
+8,Broken file upload,File upload feature fails for files larger than 10MB,8,3
+9,Incorrect calculation,Tax calculation module producing incorrect results for certain scenarios,9,4
+10,Accessibility issue,Screen reader compatibility problems on key pages,10,5

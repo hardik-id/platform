@@ -1,0 +1,16 @@
+id,name,short_description,full_description,website,person_id,organisation_id,created_at,updated_at,slug
+1,CodeCollab,Collaborative coding platform,CodeCollab is a powerful platform for teams to code together in real-time.,https://codecollab.com,2,,2023-12-31T19:00:00-05:00,2023-12-31T19:00:00-05:00,codecollab
+2,DataViz,Data visualization tool,"DataViz turns complex data into beautiful, interactive visualizations.",https://dataviz.io,3,3,2024-01-01T09:00:00+09:00,2024-01-01T09:00:00+09:00,dataviz
+3,CloudSync,Cloud storage solution,CloudSync provides secure and scalable cloud storage for businesses.,https://cloudsync.net,4,,2023-12-31T19:00:00-05:00,2023-12-31T19:00:00-05:00,cloudsync
+4,AIAssist,AI-powered coding assistant,AIAssist uses machine learning to help developers write better code faster.,https://aiassist.dev,5,,2024-01-01T11:00:00+11:00,2024-01-01T11:00:00+11:00,aiassist
+5,SecureNet,Network security suite,SecureNet offers comprehensive protection for enterprise networks.,https://securenet.io,6,6,2024-01-01T00:00:00+00:00,2024-01-01T00:00:00+00:00,securenet
+6,QuickBooks,Accounting software,QuickBooks simplifies financial management for small businesses.,https://quickbooks.com,7,,2024-01-01T00:00:00+00:00,2024-01-01T00:00:00+00:00,quickbooks
+7,HealthTrack,Health monitoring app,HealthTrack helps users monitor and improve their overall well-being.,https://healthtrack.app,8,,2024-01-01T00:00:00+00:00,2024-01-01T00:00:00+00:00,healthtrack
+8,EduLearn,E-learning platform,EduLearn provides interactive online courses for various subjects.,https://edulearn.com,9,9,2024-01-01T00:00:00+00:00,2024-01-01T00:00:00+00:00,edulearn
+9,GreenEnergy,Renewable energy management,GreenEnergy optimizes renewable energy sources for maximum efficiency.,https://greenenergy.tech,10,10,2024-01-01T00:00:00+00:00,2024-01-01T00:00:00+00:00,greenenergy
+10,SmartHome,Home automation system,SmartHome connects and controls all your smart devices in one place.,https://smarthome.io,11,,2024-01-01T00:00:00+00:00,2024-01-01T00:00:00+00:00,smarthome
+11,GEnergy,Renewable energy management,GreenEnergy optimizes renewable energy sources for maximum efficiency.,https://greenenergy.tech,11,,2024-10-08T22:10:20.957627,2024-10-08T22:10:20.957627,genergy
+12,StHome,Home automation system,SmartHome connects and controls all your smart devices in one place.,https://smarthome.io,5,,2024-10-08T22:10:20.957627,2024-10-08T22:10:20.957627,shome
+13,ELearn,E-learning platform,EduLearn provides interactive online courses for various subjects.,https://edulearn.com,10,,2024-10-08T22:10:20.957627,2024-10-08T22:10:20.957627,elearn
+14,QBooks,Accounting software,QuickBooks simplifies financial management for small businesses.,https://quickbooks.com,11,,2024-10-08T22:10:20.957627,2024-10-08T22:10:20.957627,qbooks
+15,HTrack,Health monitoring app,HealthTrack helps users monitor and improve their overall well-being.,https://healthtrack.app,7,,2024-10-08T22:10:20.957627,2024-10-08T22:10:20.957627,htrack

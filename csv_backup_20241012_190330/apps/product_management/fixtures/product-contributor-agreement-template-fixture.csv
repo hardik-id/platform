@@ -1,0 +1,6 @@
+id,title,content,effective_date,created_by_id,product_id
+1,Standard Contributor Agreement,This agreement outlines the terms and conditions for contributing to our open-source project...,2024-01-01,1,1
+2,AI Contributor Guidelines,Specific guidelines and agreements for contributors working on AI-related features...,2024-02-01,2,2
+3,Security Contributor Protocol,Detailed protocol for contributors working on security-related aspects of the product...,2024-03-01,3,3
+4,Performance Optimization Agreement,Agreement for contributors focusing on performance optimization tasks...,2024-04-01,4,4
+5,Innovation Contributor Terms,Terms and conditions for contributors proposing and developing innovative features...,2024-05-01,5,5

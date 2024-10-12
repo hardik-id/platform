@@ -1,11 +1,11 @@
 id,title,description,short_description,status,blocked,featured,priority,auto_approve_bounty_claims,video_url,created_by_id,updated_by_id,initiative_id,product_id,product_area_id
-1,Implement Single Sign-On,Integrate SSO functionality for enterprise clients,Add SSO support,active,FALSE,TRUE,high,FALSE,https://youtu.be/sso_example1,2,2,1,1,1
-2,Optimize Database Queries,Improve performance of main dashboard queries,Speed up dashboard,active,FALSE,FALSE,medium,TRUE,https://youtu.be/db_optimize,3,3,,2,2
-3,Mobile App Redesign,Overhaul the mobile app UI/UX for better user engagement,Redesign mobile app,planning,FALSE,TRUE,high,FALSE,https://youtu.be/mobile_redesign,4,4,,3,3
-4,Implement AI Chatbot,Develop an AI-powered chatbot for customer support,Add AI chatbot,active,FALSE,TRUE,medium,TRUE,https://youtu.be/ai_chatbot,5,5,2,4,4
-5,Enhance Security Measures,Implement additional security features to protect user data,Improve security,active,FALSE,FALSE,high,FALSE,https://youtu.be/security_enhance,6,6,,5,5
-6,Develop API Documentation,Create comprehensive API documentation for developers,API documentation,planning,FALSE,FALSE,low,TRUE,https://youtu.be/api_docs,7,7,,6,6
-7,Implement Dark Mode,Add dark mode option to improve user experience,Add dark mode,active,FALSE,TRUE,medium,FALSE,https://youtu.be/dark_mode,8,8,3,7,7
-8,Optimize Image Processing,Improve image processing speed and quality,Enhance image processing,active,FALSE,FALSE,high,TRUE,https://youtu.be/image_optimize,9,9,,8,8
-9,Implement Multilingual Support,Add support for multiple languages in the platform,Add language support,planning,FALSE,TRUE,high,FALSE,https://youtu.be/multilingual,10,10,4,9,9
-10,Develop Offline Mode,Create offline functionality for mobile app users,Add offline mode,active,FALSE,FALSE,medium,TRUE,https://youtu.be/offline_mode,11,11,5,10,10
+3TC4zwY4pDVgHvsyCVsBZv,Implement Single Sign-On,Integrate SSO functionality for enterprise clients,Add SSO support,active,FALSE,TRUE,high,FALSE,https://youtu.be/sso_example1,2,2,AHmdsRxSU6Jet3UTZ56jdK,3trKw35JC6kqiiJMGaoET7,1
+Xx8oaqfv9hyxWkJtqbJfQF,Optimize Database Queries,Improve performance of main dashboard queries,Speed up dashboard,active,FALSE,FALSE,medium,TRUE,https://youtu.be/db_optimize,3,3,,Qrr881rBrVcXuUPD9rfpAu,2
+UQ5G5EYYJqiJp8CfjaSujJ,Mobile App Redesign,Overhaul the mobile app UI/UX for better user engagement,Redesign mobile app,planning,FALSE,TRUE,high,FALSE,https://youtu.be/mobile_redesign,4,4,,QgNWurbk6QANXZ58ZbsiPw,3
+RzEGLrRkR2x2uMRPMG6JsZ,Implement AI Chatbot,Develop an AI-powered chatbot for customer support,Add AI chatbot,active,FALSE,TRUE,medium,TRUE,https://youtu.be/ai_chatbot,5,5,HatbktHJ391RdN6Nsji3xT,V1b3PhSKcjj4FpkUG7oajm,4
+7puBaQJrXoWEPdgaxNRXQU,Enhance Security Measures,Implement additional security features to protect user data,Improve security,active,FALSE,FALSE,high,FALSE,https://youtu.be/security_enhance,6,6,,NCyQd9sJjzktabhFok9Q2W,5
+MPEALaA76mPGy9yKSLe74,Develop API Documentation,Create comprehensive API documentation for developers,API documentation,planning,FALSE,FALSE,low,TRUE,https://youtu.be/api_docs,7,7,,BTTwJ2zxY4kMz2JntRy1PW,6
+YXxywcFbYc1keJL1cs7nMf,Implement Dark Mode,Add dark mode option to improve user experience,Add dark mode,active,FALSE,TRUE,medium,FALSE,https://youtu.be/dark_mode,8,8,Grjar72Jnoqr39eT1oLTUY,3eLpbpmZ86kRLYadqR7MCS,7
+MCGdcwKXijC3hcEfK7WArF,Optimize Image Processing,Improve image processing speed and quality,Enhance image processing,active,FALSE,FALSE,high,TRUE,https://youtu.be/image_optimize,9,9,,JqJftnKEcsn9XzNQgGCc1b,8
+EquggDpAzwQKvSb7XLacJ3,Implement Multilingual Support,Add support for multiple languages in the platform,Add language support,planning,FALSE,TRUE,high,FALSE,https://youtu.be/multilingual,10,10,8Pxv1tXfR4YigFCDsBjSjP,PjXh8wFrDXFhPobEW4sLkD,9
+FgYLBGEHiJbcC5VP3xz4EJ,Develop Offline Mode,Create offline functionality for mobile app users,Add offline mode,active,FALSE,FALSE,medium,TRUE,https://youtu.be/offline_mode,11,11,45zsqkdk3PXRxzjS1MEvhW,RgDkyrCSvptLCR4YhwmPva,10

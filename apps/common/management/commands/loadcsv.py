@@ -3,8 +3,8 @@ from django.core.management.base import BaseCommand
 from django.apps import apps
 import csv
 from django.db import transaction, models, connection
-from datetime import datetime
-from django.utils import timezone
+from datetime import datetime, timezone
+from django.utils import timezone as django_timezone
 from django.core.exceptions import ObjectDoesNotExist
 import traceback
 
@@ -33,6 +33,7 @@ class Command(BaseCommand):
             'bountybid': BountyBidParser(),
             'platformfee': PlatformFeeParser(),
             'salesorder': SalesOrderParser(),
+            'organisation': OrganisationParser(),
         }
         return parsers.get(model._meta.model_name, ModelParser())
 
@@ -66,7 +67,6 @@ class Command(BaseCommand):
         objects = self.create_objects(model, data, parser)
 
         self.stdout.write(self.style.SUCCESS(f'Successfully processed {len(objects)} objects from {csv_file} into {model_name}'))
-        self.stdout.write(self.style.SUCCESS(f'Sequence for {model_name} has been updated.'))
 
 class ModelParser:
     def parse_row(self, row):
@@ -84,13 +84,6 @@ class ModelParser:
 
     def create_object(self, model, row):
         parsed = self.parse_row(row)
-        
-        # For Skill model, handle parent_id specially
-        if model._meta.model_name == 'skill':
-            parent_id = parsed.pop('parent_id', None)
-            if parent_id:
-                parsed['parent_id'] = parent_id
-        
         obj, created = model.objects.update_or_create(
             id=parsed['id'],
             defaults=parsed
@@ -113,11 +106,11 @@ class PersonSkillParser(ModelParser):
         # Extract expertise IDs and remove them from parsed data
         expertise_ids = parsed.pop('expertise_ids', '')
         if isinstance(expertise_ids, str):
-            expertise_ids = [int(x.strip()) for x in expertise_ids.split(',') if x]
+            expertise_ids = [x.strip() for x in expertise_ids.split(',') if x]
 
         # Create or update the PersonSkill object
         obj, created = model.objects.update_or_create(
-            id=int(parsed['id']),
+            id=parsed['id'],
             defaults={
                 'person_id': parsed['person_id'],
                 'skill_id': parsed['skill_id']
@@ -141,45 +134,26 @@ class BountyParser(ModelParser):
                 parsed_row[field] = None
         
         # Ensure numeric fields are properly typed
-        for field in ['reward_amount', 'skill_id', 'challenge_id']:
+        for field in ['reward_amount']:
             if parsed_row.get(field):
                 parsed_row[field] = int(parsed_row[field])
         
         return parsed_row
-
-    def create_object(self, model, row):
-        parsed = self.parse_row(row)
-        obj, created = model.objects.update_or_create(
-            id=int(parsed['id']),
-            defaults=parsed
-        )
-        return obj, created
 
 class BountyBidParser(ModelParser):
     def create_object(self, model, row):
         parsed = self.parse_row(row)
         
         try:
-            #debug_print(f"Processing row: {parsed}")
-            
             # Get the Bounty and Person models
             Bounty = apps.get_model('product_management.Bounty')
             Person = apps.get_model('talent.Person')
-            #debug_print(f"Bounty model: {Bounty}")
-            #debug_print(f"Person model: {Person}")
-            
-            # Ensure bounty_id and person_id are integers
-            parsed['bounty_id'] = int(parsed['bounty_id'])
-            parsed['person_id'] = int(parsed['person_id'])
             
             # Check if the bounty and person exist
             try:
                 bounty = Bounty.objects.get(id=parsed['bounty_id'])
                 person = Person.objects.get(id=parsed['person_id'])
-                #debug_print(f"Found bounty: {bounty}")
-                #debug_print(f"Found person: {person}")
             except ObjectDoesNotExist as e:
-                #debug_print(f"Object does not exist: {str(e)}")
                 raise ValueError(f"Bounty with id {parsed['bounty_id']} or Person with id {parsed['person_id']} does not exist")
             
             # Convert amount to integer
@@ -194,7 +168,7 @@ class BountyBidParser(ModelParser):
             
             # Try to get existing object or create a new one
             obj, created = model.objects.update_or_create(
-                id=int(parsed['id']),
+                id=parsed['id'],
                 defaults={
                     'bounty': bounty,
                     'person': person,
@@ -206,13 +180,10 @@ class BountyBidParser(ModelParser):
                     'updated_at': parsed['updated_at'],
                 }
             )
-            #debug_print(f"{'Created' if created else 'Updated'} object: {obj}")
             
             return obj, created
         
         except Exception as e:
-            #debug_print(f"Error in BountyBidParser: {str(e)}")
-            #debug_print(f"Traceback: {traceback.format_exc()}")
             raise ValueError(f"Error processing row: {str(e)}")
         
 class PlatformFeeParser(ModelParser):
@@ -227,33 +198,15 @@ class PlatformFeeParser(ModelParser):
         if 'fee_rate' in parsed_row:
             parsed_row['fee_rate'] = Decimal(parsed_row['fee_rate'])
         
-        # Convert bounty_cart_id to integer
-        if 'bounty_cart_id' in parsed_row:
-            parsed_row['bounty_cart_id'] = int(parsed_row['bounty_cart_id'])
-        
         return parsed_row
-
-    def create_object(self, model, row):
-        parsed = self.parse_row(row)
-        obj, created = model.objects.update_or_create(
-            id=int(parsed['id']),
-            defaults=parsed
-        )
-        return obj, created
     
 class SalesOrderParser(ModelParser):
     def parse_row(self, row):
         parsed_row = super().parse_row(row)
         
         # Convert numeric fields to appropriate types
-        if 'bounty_cart_id' in parsed_row:
-            parsed_row['bounty_cart_id'] = int(parsed_row['bounty_cart_id'])
-        
         if 'total_usd_cents' in parsed_row:
             parsed_row['total_usd_cents'] = int(parsed_row['total_usd_cents'])
-        
-        if 'platform_fee_id' in parsed_row:
-            parsed_row['platform_fee_id'] = int(parsed_row['platform_fee_id'])
         
         if 'tax_rate' in parsed_row:
             parsed_row['tax_rate'] = Decimal(parsed_row['tax_rate'])
@@ -273,7 +226,7 @@ class SalesOrderParser(ModelParser):
         platform_fee = PlatformFee.objects.get(id=parsed['platform_fee_id'])
         
         obj, created = model.objects.update_or_create(
-            id=int(parsed['id']),
+            id=parsed['id'],
             defaults={
                 'bounty_cart': bounty_cart,
                 'status': parsed['status'],
@@ -284,3 +237,18 @@ class SalesOrderParser(ModelParser):
             }
         )
         return obj, created
+
+class OrganisationParser(ModelParser):
+    def parse_row(self, row):
+        parsed_row = super().parse_row(row)
+        
+        # Convert datetime strings to timezone-aware datetime objects
+        for field in ['created_at', 'updated_at']:
+            if parsed_row.get(field):
+                # Parse the datetime string and keep its timezone information
+                dt = datetime.strptime(parsed_row[field], "%Y-%m-%d %H:%M:%S%z")
+                # Convert to UTC
+                parsed_row[field] = dt.astimezone(timezone.utc)
+        
+        return parsed_row
+    

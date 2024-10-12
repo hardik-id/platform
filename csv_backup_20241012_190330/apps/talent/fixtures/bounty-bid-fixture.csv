@@ -1,0 +1,19 @@
+id,created_at,updated_at,bounty_id,person_id,amount,expected_finish_date,status,message
+1,2024-05-10T09:00:00Z,2024-05-10T09:00:00Z,1,3,500,15/06/2024,Accepted,I can fix this login bug efficiently within a month.
+2,2024-05-10T10:30:00Z,2024-05-10T10:30:00Z,1,7,600,20/06/2024,Rejected,I have experience with similar login issues and can deliver high-quality results.
+3,2024-05-11T11:15:00Z,2024-05-11T11:15:00Z,2,5,1000,10/07/2024,Accepted,I'm familiar with the codebase and can implement dark mode quickly.
+4,2024-05-12T13:45:00Z,2024-05-12T13:45:00Z,3,2,750,30/06/2024,Pending,I can optimize the database queries to improve dashboard performance significantly.
+5,2024-05-13T14:20:00Z,2024-05-13T14:20:00Z,4,9,1200,25/07/2024,Accepted,I have expertise in technical writing and can develop comprehensive user documentation.
+6,2024-05-14T15:10:00Z,2024-05-14T15:10:00Z,5,2,800,25/06/2024,Pending,I can implement the API endpoints with best practices in mind.
+7,2024-05-15T16:30:00Z,2024-05-15T16:30:00Z,6,8,950,05/07/2024,Accepted,I can create a user-friendly interface for social login integration.
+8,2024-05-16T17:45:00Z,2024-05-16T17:45:00Z,7,4,1100,20/07/2024,Pending,I have a creative approach to design a modern and impactful logo.
+9,2024-05-17T09:20:00Z,2024-05-17T09:20:00Z,8,6,700,18/06/2024,Pending,I can quickly implement and thoroughly test the refactored authentication system.
+10,2024-05-18T10:40:00Z,2024-05-18T10:40:00Z,10,10,1500,01/08/2024,Pending,I have extensive experience with test automation and can create a comprehensive suite.
+11,2024-05-19T11:30:00Z,2024-05-19T11:30:00Z,9,11,1100,15/07/2024,Accepted,I'm fluent in multiple languages and can implement robust i18n support.
+12,2024-05-20T12:15:00Z,2024-05-20T12:15:00Z,1,5,550,30/06/2024,Pending,I have a unique approach to solving this login bug efficiently.
+13,2024-05-21T13:00:00Z,2024-05-21T13:00:00Z,3,7,800,10/07/2024,Pending,I can optimize the queries using advanced database techniques.
+14,2024-05-22T14:45:00Z,2024-05-22T14:45:00Z,5,9,1050,20/07/2024,Pending,I have extensive experience in RESTful API development and can deliver robust endpoints.
+15,2024-05-23T15:30:00Z,2024-05-23T15:30:00Z,7,3,350,25/06/2024,Accepted,I have a background in graphic design and can create a striking logo for the rebrand.
+16,2024-05-24T16:15:00Z,2024-05-24T16:15:00Z,8,4,2600,15/08/2024,Pending,I specialize in secure authentication systems and can significantly improve the current setup.
+17,2024-05-25T17:00:00Z,2024-05-25T17:00:00Z,10,6,1900,10/08/2024,Pending,I can develop a comprehensive automated test suite covering all critical functionality.
+18,2024-05-26T09:30:00Z,2024-05-26T09:30:00Z,2,8,1050,05/07/2024,Pending,I have implemented dark mode in several projects and can deliver an elegant solution.

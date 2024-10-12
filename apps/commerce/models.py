@@ -14,6 +14,7 @@ from django.db import transaction
 
 
 class Organisation(TimeStampMixin):
+    id = Base58UUIDv5Field(primary_key=True)
     name = models.CharField(max_length=512, unique=True)
     country = models.CharField(max_length=2, help_text="ISO 3166-1 alpha-2 country code")
     tax_id = models.CharField(max_length=50, blank=True, null=True, help_text="Tax Identification Number")
