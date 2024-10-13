@@ -8,6 +8,7 @@ from django.utils import timezone as django_timezone
 from django.core.exceptions import ObjectDoesNotExist
 import traceback
 
+
 def debug_print(message):
     print(f"DEBUG: {message}")
 
@@ -35,23 +36,23 @@ class Command(BaseCommand):
             'salesorder': SalesOrderParser(),
             'organisation': OrganisationParser(),
             'productarea': ProductAreaParser(),
+            'productpointaccount': ProductPointAccountParser(),
         }
         return parsers.get(model._meta.model_name, ModelParser())
 
     def create_objects(self, model, data, parser):
-        created_objects = []
+        updated_objects = []
         for row in data:
             try:
-                with transaction.atomic():
-                    obj, created = parser.create_object(model, row)
-                    created_objects.append(obj)
-                    action = "Created" if created else "Updated"
-                    self.stdout.write(self.style.SUCCESS(f"{action} object: {obj}"))
+                obj, _ = parser.create_object(model, row)
+                if obj is not None:
+                    updated_objects.append(obj)
+                    self.stdout.write(self.style.SUCCESS(f"Updated object: {obj}"))
             except Exception as e:
-                self.stdout.write(self.style.ERROR(f"Error creating/updating object: {str(e)}"))
+                self.stdout.write(self.style.ERROR(f"Error updating object: {str(e)}"))
                 self.stdout.write(self.style.ERROR(f"Row data: {row}"))
                 self.stdout.write(self.style.ERROR(f"Traceback: {traceback.format_exc()}"))
-        return created_objects
+        return updated_objects
 
     def handle(self, *args, **options):
         csv_file = options['csv_file']
@@ -290,3 +291,22 @@ class ProductAreaParser(ModelParser):
                     print(f"Warning: Parent with path {parent_path} does not exist for {obj}.")
 
         return obj, created
+    
+class ProductPointAccountParser(ModelParser):
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        Product = apps.get_model('product_management.Product')
+        
+        try:
+            product = Product.objects.get(id=parsed['product_id'])
+            point_account = product.product_point_account
+            point_account.balance = int(parsed['balance'])
+            point_account.save()
+            print(f"Updated ProductPointAccount for product {product.id}: balance = {point_account.balance}")
+            return point_account, False
+        except Product.DoesNotExist:
+            print(f"WARNING: Product with id {parsed['product_id']} does not exist. Skipping this ProductPointAccount.")
+            return None, False
+        except model.DoesNotExist:
+            print(f"WARNING: ProductPointAccount for product {parsed['product_id']} does not exist. This shouldn't happen due to the OneToOne relationship.")
+            return None, False

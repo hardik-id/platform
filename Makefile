@@ -69,21 +69,22 @@ migrate:
 	$(MANAGE) migrate
 
 seed:
+	@echo "Starting seed process"
+	@echo "Recreating database"
+	python reset_database.py
+	@echo "Running migrations"
+	make migrate
+	@echo "Loading fixtures"
 	for fixture in $(FIXTURES); do \
 		file=$$(echo $$fixture | cut -d: -f1); \
 		model=$$(echo $$fixture | cut -d: -f2); \
 		echo "Running command: ${MANAGE} loadcsv $$file --model $$model"; \
-		${MANAGE} loadcsv $$file --model $$model; \
+		${MANAGE} loadcsv $$file --model $$model || exit 1; \
 	done
 
 setup:
 	python reset_database.py
 	make migrate
-
-setup_and_seed:
-	python reset_database.py
-	make migrate
-	make seed
 
 full_setup:
 	python reset_database.py
