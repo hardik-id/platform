@@ -328,29 +328,18 @@ class BountyClaimParser(ModelParser):
         except ObjectDoesNotExist as e:
             raise ValueError(f"Related object does not exist: {str(e)}")
 
-        with transaction.atomic():
-            try:
-                # Try to get an existing claim with this accepted_bid
-                obj = model.objects.get(accepted_bid=accepted_bid)
-                
-                # Update the existing claim
-                obj.bounty = bounty
-                obj.person = person
-                obj.status = parsed['status']
-                obj.updated_at = parsed['updated_at']
-                obj.save()
-                created = False
-            except model.DoesNotExist:
-                # Create a new claim if one doesn't exist
-                obj = model.objects.create(
-                    id=parsed['id'],
-                    bounty=bounty,
-                    person=person,
-                    accepted_bid=accepted_bid,
-                    status=parsed['status'],
-                    created_at=parsed['created_at'],
-                    updated_at=parsed['updated_at']
-                )
-                created = True
+        defaults = {
+            'accepted_bid': accepted_bid,
+            'status': parsed['status'],
+            'created_at': django_timezone.make_aware(datetime.strptime(parsed['created_at'], "%Y-%m-%dT%H:%M:%SZ")),
+            'updated_at': django_timezone.make_aware(datetime.strptime(parsed['updated_at'], "%Y-%m-%dT%H:%M:%SZ")),
+        }
+
+        obj, created = model.objects.update_or_create(
+            id=parsed['id'],
+            bounty=bounty,
+            person=person,
+            defaults=defaults
+        )
 
         return obj, created

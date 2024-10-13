@@ -265,8 +265,12 @@ class BountyBid(TimeStampMixin):
         self.status = self.Status.ACCEPTED
         self.save()
         
-        # Create a BountyClaim
-        BountyClaim.objects.create(bounty=self.bounty, person=self.person, accepted_bid=self)
+        # Create a BountyClaim if it doesn't already exist
+        BountyClaim.objects.get_or_create(
+            bounty=self.bounty,
+            person=self.person,
+            defaults={'accepted_bid': self}
+        )
         
         # Update the Bounty
         self.bounty.final_reward_amount = self.amount
@@ -366,9 +370,8 @@ class BountyClaim(TimeStampMixin):
     id = Base58UUIDv5Field(primary_key=True)
     bounty = models.ForeignKey("product_management.Bounty", on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    accepted_bid = models.OneToOneField(
-        BountyBid, on_delete=models.SET_NULL, null=True, related_name="resulting_claim"
-    )
+    accepted_bid = models.ForeignKey('BountyBid', on_delete=models.SET_NULL, null=True, blank=True)
+
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
 
     class Meta:
@@ -393,6 +396,7 @@ class BountyDeliveryAttempt(TimeStampMixin, AttachmentAbstract):
         REJECTED = "Rejected"
         CANCELLED = "Cancelled"
 
+    id = Base58UUIDv5Field(primary_key=True)
     status = models.CharField(choices=BountyDeliveryStatus.choices, default=BountyDeliveryStatus.NEW)
     bounty_claim = models.ForeignKey(
         BountyClaim,
@@ -421,6 +425,7 @@ class BountyDeliveryAttempt(TimeStampMixin, AttachmentAbstract):
         return f"{self.bounty_claim.person} - {self.get_status_display()}"
 
 class Feedback(models.Model):
+    id = Base58UUIDv5Field(primary_key=True)
     # Person who recevies the feedback
     recipient = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="feedback_recipient")
     # Person who sends the feedback
@@ -442,12 +447,3 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"{self.recipient} - {self.provider} - {self.stars} - {self.message[:10]}..."
-
-
-@receiver(post_save, sender="talent.BountyBid")
-def handle_accepted_bid(sender, instance, **kwargs):
-    if instance.status == BountyBid.Status.ACCEPTED:
-        BountyClaim.objects.create(bounty=instance.bounty, person=instance.person, accepted_bid=instance)
-        Bounty = apps.get_model('product_management.Bounty')
-        instance.bounty.status = Bounty.BountyStatus.IN_PROGRESS
-        instance.bounty.save()
