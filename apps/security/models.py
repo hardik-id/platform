@@ -21,7 +21,7 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
-class AuditTrail(models.Model):
+class AuditEvent(models.Model):
     ACTION_CHOICES = (
         ('CREATE', 'Create'),
         ('UPDATE', 'Update'),

@@ -23,4 +23,4 @@ class SecurityConfig(AppConfig):
                     sender=model
                 )
         
-        print("AuditTrail signals connected successfully.")
+        print("AuditEvent signals connected successfully.")

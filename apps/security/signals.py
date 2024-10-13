@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
-from .models import AuditTrail
+from .models import AuditEvent
 import json
 
 from .models import User
@@ -43,7 +43,7 @@ def get_current_user():
 def should_audit_model(model):
     return (
         model._meta.app_label not in ['contenttypes', 'auth', 'sessions', 'admin'] and
-        model is not AuditTrail
+        model is not AuditEvent
     )
 
 def get_serializable_fields(instance):
@@ -66,7 +66,7 @@ def log_change(sender, instance, created=False, deleted=False):
     action = 'CREATE' if created else 'DELETE' if deleted else 'UPDATE'
 
     try:
-        AuditTrail.objects.create(
+        AuditEvent.objects.create(
             user=get_current_user(),
             action=action,
             content_type=content_type,
@@ -74,6 +74,6 @@ def log_change(sender, instance, created=False, deleted=False):
             changes=json.dumps(get_serializable_fields(instance))
         )
     except Exception as e:
-        print(f"Error creating AuditTrail entry: {e}")
+        print(f"Error creating AuditEvent entry: {e}")
 
 # Signal handlers will be connected in apps.py after migrations
