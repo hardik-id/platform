@@ -18,6 +18,7 @@ from apps.common.models import AttachmentAbstract
 from django.apps import apps
 from apps.common.mixins import AncestryMixin, TimeStampMixin
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class Person(TimeStampMixin):

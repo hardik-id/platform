@@ -37,8 +37,9 @@ class Command(BaseCommand):
             'organisation': OrganisationParser(),
             'productarea': ProductAreaParser(),
             'productpointaccount': ProductPointAccountParser(),
+            'bountyclaim': BountyClaimParser(),
         }
-        return parsers.get(model._meta.model_name, ModelParser())
+        return parsers.get(model._meta.model_name.lower(), ModelParser())
 
     def create_objects(self, model, data, parser):
         updated_objects = []
@@ -165,8 +166,8 @@ class BountyBidParser(ModelParser):
             parsed['expected_finish_date'] = datetime.strptime(parsed['expected_finish_date'], "%d/%m/%Y").date()
             
             # Convert created_at and updated_at to timezone-aware datetime objects
-            parsed['created_at'] = timezone.make_aware(datetime.strptime(parsed['created_at'], "%Y-%m-%dT%H:%M:%SZ"))
-            parsed['updated_at'] = timezone.make_aware(datetime.strptime(parsed['updated_at'], "%Y-%m-%dT%H:%M:%SZ"))
+            parsed['created_at'] = django_timezone.make_aware(datetime.strptime(parsed['created_at'], "%Y-%m-%dT%H:%M:%SZ"))
+            parsed['updated_at'] = django_timezone.make_aware(datetime.strptime(parsed['updated_at'], "%Y-%m-%dT%H:%M:%SZ"))
             
             # Try to get existing object or create a new one
             obj, created = model.objects.update_or_create(
@@ -310,3 +311,46 @@ class ProductPointAccountParser(ModelParser):
         except model.DoesNotExist:
             print(f"WARNING: ProductPointAccount for product {parsed['product_id']} does not exist. This shouldn't happen due to the OneToOne relationship.")
             return None, False
+        
+class BountyClaimParser(ModelParser):
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        # Fetch related objects
+        Bounty = apps.get_model('product_management.Bounty')
+        Person = apps.get_model('talent.Person')
+        BountyBid = apps.get_model('talent.BountyBid')
+        
+        try:
+            bounty = Bounty.objects.get(id=parsed['bounty_id'])
+            person = Person.objects.get(id=parsed['person_id'])
+            accepted_bid = BountyBid.objects.get(id=parsed['accepted_bid_id']) if parsed['accepted_bid_id'] else None
+        except ObjectDoesNotExist as e:
+            raise ValueError(f"Related object does not exist: {str(e)}")
+
+        with transaction.atomic():
+            try:
+                # Try to get an existing claim with this accepted_bid
+                obj = model.objects.get(accepted_bid=accepted_bid)
+                
+                # Update the existing claim
+                obj.bounty = bounty
+                obj.person = person
+                obj.status = parsed['status']
+                obj.updated_at = parsed['updated_at']
+                obj.save()
+                created = False
+            except model.DoesNotExist:
+                # Create a new claim if one doesn't exist
+                obj = model.objects.create(
+                    id=parsed['id'],
+                    bounty=bounty,
+                    person=person,
+                    accepted_bid=accepted_bid,
+                    status=parsed['status'],
+                    created_at=parsed['created_at'],
+                    updated_at=parsed['updated_at']
+                )
+                created = True
+
+        return obj, created
