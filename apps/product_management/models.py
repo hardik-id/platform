@@ -235,20 +235,6 @@ class Challenge(TimeStampMixin, common.AttachmentAbstract):
         default=ChallengePriority.HIGH,
     )
     auto_approve_bounty_claims = models.BooleanField(default=False)
-    created_by = models.ForeignKey(
-        "talent.Person",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name="created_by",
-    )
-    updated_by = models.ForeignKey(
-        "talent.Person",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name="updated_by",
-    )
     tracker = FieldTracker()
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
     video_url = models.URLField(blank=True, null=True)
@@ -321,9 +307,6 @@ class Challenge(TimeStampMixin, common.AttachmentAbstract):
 
         if priority:
             filter_data["priority__in"] = priority
-
-        if task_creator:
-            filter_data["created_by__in"] = task_creator
 
         if assignee:
             filter_data["bountyclaim__status__in"] = [0, 1]
@@ -605,7 +588,6 @@ class ProductContributorAgreementTemplate(TimeStampMixin):
     title = models.CharField(max_length=256)
     content = models.TextField()
     effective_date = models.DateField()
-    created_by = models.ForeignKey("talent.Person", on_delete=models.CASCADE)
 
     class Meta:
         ordering = ("-created_at",)

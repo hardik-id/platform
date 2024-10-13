@@ -92,7 +92,6 @@ class CreateChallengeView(LoginRequiredMixin, utils.BaseProductDetailView, Creat
 
     def form_valid(self, form):
         form.instance.product = get_object_or_404(Product, slug=self.kwargs.get("product_slug"))
-        form.instance.created_by = self.request.user.person
         return super().form_valid(form)
 
 class UpdateChallengeView(LoginRequiredMixin, utils.BaseProductDetailView, UpdateView):
@@ -110,7 +109,6 @@ class UpdateChallengeView(LoginRequiredMixin, utils.BaseProductDetailView, Updat
         return context
 
     def form_valid(self, form):
-        form.instance.updated_by = self.request.user.person
         return super().form_valid(form)
 
 class DeleteChallengeView(LoginRequiredMixin, DeleteView):

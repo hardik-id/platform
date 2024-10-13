@@ -137,8 +137,8 @@ class BugAdmin(admin.ModelAdmin):
 
 @admin.register(product.ProductContributorAgreementTemplate)
 class ProductContributorAgreementTemplateAdmin(admin.ModelAdmin):
-    list_display = ["title", "product", "effective_date", "created_by"]
-    search_fields = ["title", "product__name", "created_by__user__username"]
+    list_display = ["title", "product", "effective_date"]
+    search_fields = ["title", "product__name"]
 
 @admin.register(product.IdeaVote)
 class IdeaVoteAdmin(admin.ModelAdmin):

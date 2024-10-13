@@ -530,7 +530,7 @@ class ContributorAgreementTemplateForm(forms.ModelForm):
     class Meta:
         model = ProductContributorAgreementTemplate
         fields = "__all__"
-        exclude = ["created_by"]
+        exclude = []
 
         widgets = {
             "title": forms.TextInput(

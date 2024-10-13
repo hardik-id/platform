@@ -72,8 +72,7 @@ def setup_bounty(db, create_user):
         status="Active",
         title="Pet Emergency Alert System",
         short_description="Introduce pet grooming scheduler feature.",
-        priority="High",
-        created_by=person,
+        priority="High"
     )
     bounty = baker.make(
         "product_management.Bounty",
