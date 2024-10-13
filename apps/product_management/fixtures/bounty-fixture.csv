@@ -1,11 +1,11 @@
-id,title,description,status,reward_type,reward_amount,claimed_by_id,skill_id,challenge_id,competition_id
-MiK6qwWTG6x7uDL3LbHY43,Fix login bug,Resolve issue with user login on mobile devices,open,USD,500,null,XK4aHpFFv8vabTjZpJ1Li4,3TC4zwY4pDVgHvsyCVsBZv,null
-5oyAnd2Tea9oThG5LciDoE,Implement dark mode,Add dark mode option to the user interface,in_progress,Points,1000,2,A5aRbGz6wexdYoCuP5uphb,Xx8oaqfv9hyxWkJtqbJfQF,null
-LU3npoyLctcnmAeaQmWgeF,Optimize database queries,Improve performance of main dashboard queries,open,USD,750,null,DY12H3vAsv7JdEyE25VCii,UQ5G5EYYJqiJp8CfjaSujJ,null
-37CEoTwyhjWDqULXvUxu7T,Create user documentation,Write comprehensive user guide for new features,completed,Points,1500,4,3AHn4eXrSC5Qo58EqF86SU,RzEGLrRkR2x2uMRPMG6JsZ,null
-Sa4UHQ5WxpUqtvvvT4PSGT,Develop API endPoints,Create RESTful API endPoints for mobile app integration,open,USD,1000,null,88QPLKPdevwu4dKkeuwgio,7puBaQJrXoWEPdgaxNRXQU,null
-DFeFJtmiaqnzgPpX8PRWsV,Implement social login,Add options for Google and Facebook login,in_progress,Points,2000,6,zrhKmDfqR7b3W4afQaXPq,MPEALaA76mPGy9yKSLe74,null
-49476c73rp4zanehPGzTc6,Design new logo,Create a modern logo for the product rebrand,open,USD,300,null,ST1JUQXgZjHyfnE7KKVpFM,YXxywcFbYc1keJL1cs7nMf,A5uCYQQZLFnHMiQqnqAuoP
-7AsnpkaYjGzTfeuJ4mbCuZ,Refactor authentication system,Improve security and scalability of auth system,open,Points,2500,null,Sw9pxC8Nn2rXRvXWRb1J2Q,MCGdcwKXijC3hcEfK7WArF,null
-9KDULNy893KgEwn7insRQS,Add multi-language support,Implement i18n for supporting multiple languages,in_progress,USD,1200,9,JFbHTwzij3iEr2CBzb5MrH,EquggDpAzwQKvSb7XLacJ3,null
-PNvkUvT6irfYyrJX9At2X3,Create automated tests,Develop comprehensive automated test suite,open,Points,1800,null,NS9NXDguwegzjtmyrtavb2,FgYLBGEHiJbcC5VP3xz4EJ,null
+id,title,description,status,reward_type,reward_amount,skill_id,challenge_id,competition_id
+MiK6qwWTG6x7uDL3LbHY43,Fix login bug,Resolve issue with user login on mobile devices,open,USD,500,XK4aHpFFv8vabTjZpJ1Li4,3TC4zwY4pDVgHvsyCVsBZv,null
+5oyAnd2Tea9oThG5LciDoE,Implement dark mode,Add dark mode option to the user interface,in_progress,Points,1000,A5aRbGz6wexdYoCuP5uphb,Xx8oaqfv9hyxWkJtqbJfQF,null
+LU3npoyLctcnmAeaQmWgeF,Optimize database queries,Improve performance of main dashboard queries,open,USD,750,DY12H3vAsv7JdEyE25VCii,UQ5G5EYYJqiJp8CfjaSujJ,null
+37CEoTwyhjWDqULXvUxu7T,Create user documentation,Write comprehensive user guide for new features,completed,Points,1500,3AHn4eXrSC5Qo58EqF86SU,RzEGLrRkR2x2uMRPMG6JsZ,null
+Sa4UHQ5WxpUqtvvvT4PSGT,Develop API endPoints,Create RESTful API endPoints for mobile app integration,open,USD,1000,88QPLKPdevwu4dKkeuwgio,7puBaQJrXoWEPdgaxNRXQU,null
+DFeFJtmiaqnzgPpX8PRWsV,Implement social login,Add options for Google and Facebook login,in_progress,Points,2000,zrhKmDfqR7b3W4afQaXPq,MPEALaA76mPGy9yKSLe74,null
+49476c73rp4zanehPGzTc6,Design new logo,Create a modern logo for the product rebrand,open,USD,300,ST1JUQXgZjHyfnE7KKVpFM,YXxywcFbYc1keJL1cs7nMf,A5uCYQQZLFnHMiQqnqAuoP
+7AsnpkaYjGzTfeuJ4mbCuZ,Refactor authentication system,Improve security and scalability of auth system,open,Points,2500,Sw9pxC8Nn2rXRvXWRb1J2Q,MCGdcwKXijC3hcEfK7WArF,null
+9KDULNy893KgEwn7insRQS,Add multi-language support,Implement i18n for supporting multiple languages,in_progress,USD,1200,JFbHTwzij3iEr2CBzb5MrH,EquggDpAzwQKvSb7XLacJ3,null
+PNvkUvT6irfYyrJX9At2X3,Create automated tests,Develop comprehensive automated test suite,open,Points,1800,NS9NXDguwegzjtmyrtavb2,FgYLBGEHiJbcC5VP3xz4EJ,null

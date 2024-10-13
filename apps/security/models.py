@@ -17,6 +17,32 @@ from .utils import extract_device_info
 from django.contrib.auth import get_user_model
 from apps.common.fields import Base58UUIDv5Field
 
+from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+
+class AuditTrail(models.Model):
+    ACTION_CHOICES = (
+        ('CREATE', 'Create'),
+        ('UPDATE', 'Update'),
+        ('DELETE', 'Delete'),
+    )
+
+    id = Base58UUIDv5Field(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    action = models.CharField(max_length=6, choices=ACTION_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    
+    changes = models.TextField(null=True)  # Changed from JSONField to TextField
+
+    def __str__(self):
+        return f"{self.action} on {self.content_object} by {self.user or 'system'} at {self.timestamp}"
+
+
 def generate_verification_code():
     return str(randrange(100_000, 1_000_000))
 

@@ -415,14 +415,6 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
     )
     final_reward_amount = models.PositiveIntegerField(null=True, blank=True)
 
-    claimed_by = models.ForeignKey(
-        "talent.Person",
-        on_delete=models.CASCADE,
-        related_name="bounty_claimed_by",
-        blank=True,
-        null=True,
-    )
-
     class Meta:
         ordering = ("-created_at",)
 
