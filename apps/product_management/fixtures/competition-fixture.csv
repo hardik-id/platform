@@ -1,11 +1,11 @@
 id,title,description,short_description,status,entry_deadline,judging_deadline,max_entries,product_id,product_area_id
-A5uCYQQZLFnHMiQqnqAuoP,AI Innovation Challenge,Develop innovative AI solutions for real-world problems,AI Innovation Contest,active,2024-12-31T23:59:59Z,2025-01-31T23:59:59Z,100,3trKw35JC6kqiiJMGaoET7,1
-4V9Z5LRnsWkJpzHcmpBmYy,Mobile App UI Design Contest,Create stunning and intuitive mobile app interfaces,Mobile UI Design,active,2024-11-30T23:59:59Z,2024-12-31T23:59:59Z,50,Qrr881rBrVcXuUPD9rfpAu,2
-FDgQXLEzEW533sarDXX9pV,Code Optimization Challenge,Optimize code for better performance and efficiency,Code Optimization,planning,2025-01-31T23:59:59Z,2025-02-28T23:59:59Z,75,QgNWurbk6QANXZ58ZbsiPw,3
-93XTbqrZF1roLup4Hkr9L1,Data Visualization Hackathon,Create insightful data visualizations from complex datasets,Data Viz Hackathon,active,2024-10-31T23:59:59Z,2024-11-30T23:59:59Z,60,V1b3PhSKcjj4FpkUG7oajm,4
-Sy2ozxzutRSyuazaWDF7a,Cybersecurity Innovation Contest,Develop new approaches to enhance digital security,Security Innovation,planning,2025-03-31T23:59:59Z,2025-04-30T23:59:59Z,80,NCyQd9sJjzktabhFok9Q2W,5
-QFWTApkqPAsTERDG8DF3VM,Cloud Architecture Challenge,Design scalable and efficient cloud infrastructure,Cloud Architecture,active,2024-09-30T23:59:59Z,2024-10-31T23:59:59Z,40,BTTwJ2zxY4kMz2JntRy1PW,6
-HwuwGqX8iRqXAyf8zmH7eB,IoT Solutions Showcase,Create innovative IoT solutions for smart cities,IoT Innovation,planning,2025-02-28T23:59:59Z,2025-03-31T23:59:59Z,70,3eLpbpmZ86kRLYadqR7MCS,7
-VrDJtsPNXf7Ek8fwrT92TQ,Blockchain Use Case Competition,Develop practical blockchain applications for industries,Blockchain Innovation,active,2024-11-15T23:59:59Z,2024-12-15T23:59:59Z,55,JqJftnKEcsn9XzNQgGCc1b,8
-9kUYvBT2h2pnDwXX2cP5TY,UX Writing Challenge,Craft clear and engaging user interface copy,UX Writing Contest,planning,2025-01-15T23:59:59Z,2025-02-15T23:59:59Z,65,PjXh8wFrDXFhPobEW4sLkD,9
-KPz41rwjbdJACunScDZrU7,DevOps Automation Challenge,Create innovative DevOps automation solutions,DevOps Innovation,active,2024-10-15T23:59:59Z,2024-11-15T23:59:59Z,45,RgDkyrCSvptLCR4YhwmPva,10
+A5uCYQQZLFnHMiQqnqAuoP,AI Innovation Challenge,Develop innovative AI solutions for real-world problems,AI Innovation Contest,active,2024-12-31T23:59:59Z,2025-01-31T23:59:59Z,100,3trKw35JC6kqiiJMGaoET7,6aQWzXS94nMGcLTaNqRYtP
+4V9Z5LRnsWkJpzHcmpBmYy,Mobile App UI Design Contest,Create stunning and intuitive mobile app interfaces,Mobile UI Design,active,2024-11-30T23:59:59Z,2024-12-31T23:59:59Z,50,Qrr881rBrVcXuUPD9rfpAu,KgqZHhE53oLtMrHuPYzCxK
+FDgQXLEzEW533sarDXX9pV,Code Optimization Challenge,Optimize code for better performance and efficiency,Code Optimization,planning,2025-01-31T23:59:59Z,2025-02-28T23:59:59Z,75,QgNWurbk6QANXZ58ZbsiPw,KgqZHhE53oLtMrHuPYzCxK
+93XTbqrZF1roLup4Hkr9L1,Data Visualization Hackathon,Create insightful data visualizations from complex datasets,Data Viz Hackathon,active,2024-10-31T23:59:59Z,2024-11-30T23:59:59Z,60,V1b3PhSKcjj4FpkUG7oajm,PF66V4Cx6d2WPADzsUj9gd
+Sy2ozxzutRSyuazaWDF7a,Cybersecurity Innovation Contest,Develop new approaches to enhance digital security,Security Innovation,planning,2025-03-31T23:59:59Z,2025-04-30T23:59:59Z,80,NCyQd9sJjzktabhFok9Q2W,PF66V4Cx6d2WPADzsUj9gd
+QFWTApkqPAsTERDG8DF3VM,Cloud Architecture Challenge,Design scalable and efficient cloud infrastructure,Cloud Architecture,active,2024-09-30T23:59:59Z,2024-10-31T23:59:59Z,40,BTTwJ2zxY4kMz2JntRy1PW,6aQWzXS94nMGcLTaNqRYtP
+HwuwGqX8iRqXAyf8zmH7eB,IoT Solutions Showcase,Create innovative IoT solutions for smart cities,IoT Innovation,planning,2025-02-28T23:59:59Z,2025-03-31T23:59:59Z,70,3eLpbpmZ86kRLYadqR7MCS,PF66V4Cx6d2WPADzsUj9gd
+VrDJtsPNXf7Ek8fwrT92TQ,Blockchain Use Case Competition,Develop practical blockchain applications for industries,Blockchain Innovation,active,2024-11-15T23:59:59Z,2024-12-15T23:59:59Z,55,JqJftnKEcsn9XzNQgGCc1b,PF66V4Cx6d2WPADzsUj9gd
+9kUYvBT2h2pnDwXX2cP5TY,UX Writing Challenge,Craft clear and engaging user interface copy,UX Writing Contest,planning,2025-01-15T23:59:59Z,2025-02-15T23:59:59Z,65,PjXh8wFrDXFhPobEW4sLkD,PF66V4Cx6d2WPADzsUj9gd
+KPz41rwjbdJACunScDZrU7,DevOps Automation Challenge,Create innovative DevOps automation solutions,DevOps Innovation,active,2024-10-15T23:59:59Z,2024-11-15T23:59:59Z,45,RgDkyrCSvptLCR4YhwmPva,PF66V4Cx6d2WPADzsUj9gd

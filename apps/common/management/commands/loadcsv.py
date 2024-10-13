@@ -77,7 +77,7 @@ class ModelParser:
             if value.lower() in ['true', 'false']:
                 parsed_row[key] = value.lower() == 'true'
             elif 'deadline' in key.lower() and value:
-                parsed_row[key] = timezone.make_aware(datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ"))
+                parsed_row[key] = django_timezone.make_aware(datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ"))
             elif value == '':
                 parsed_row[key] = None  # Convert empty strings to None for all fields
             else:
