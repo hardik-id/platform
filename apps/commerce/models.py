@@ -281,14 +281,13 @@ class Cart(TimeStampMixin):
         ABANDONED = "Abandoned", "Abandoned"
 
     id = Base58UUIDv5Field(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    person = models.ForeignKey("talent.Person", on_delete=models.SET_NULL, null=True, blank=True)
     organisation = models.ForeignKey(Organisation, on_delete=models.SET_NULL, null=True, blank=True)
-    product = models.OneToOneField("product_management.Product", on_delete=models.CASCADE)  # Use string reference
     status = models.CharField(max_length=20, choices=CartStatus.choices, default=CartStatus.OPEN)
-    user_country = models.CharField(max_length=2, help_text="ISO 3166-1 alpha-2 country code of the user")
+    country = models.CharField(max_length=2, help_text="ISO 3166-1 alpha-2 country code of the user")
 
     def __str__(self):
-        return f"Cart for {self.user.username} - {self.product.name} ({self.status})"
+        return f"Cart {self.id} - ({self.status})"
 
     def calculate_platform_fee(self):
         PlatformFeeConfiguration = apps.get_model("commerce", "PlatformFeeConfiguration")

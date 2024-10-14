@@ -83,9 +83,7 @@ class CartLineItemInline(admin.TabularInline):
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ("user", "organisation", "product", "status", "created_at", "total_amount", "user_country")
-    list_filter = ("status",)
-    search_fields = ("user__username", "organisation__name", "product__name")
+    list_display = ("person", "organisation", "status", "created_at", "total_amount", "country")
     inlines = [CartLineItemInline]
 
     def total_amount(self, obj):
