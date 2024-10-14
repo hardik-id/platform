@@ -446,21 +446,20 @@ class SalesOrder(TimeStampMixin):
     id = Base58UUIDv5Field(primary_key=True)
     cart = models.OneToOneField(Cart, on_delete=models.PROTECT, related_name="sales_order")
     status = models.CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
-    total_usd_cents = models.PositiveIntegerField(default=0)
-    fee_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    parent_sales_order = models.ForeignKey(
-        "self", null=True, blank=True, on_delete=models.SET_NULL, related_name="adjustments"
-    )
+    total_usd_cents_excluding_fees_and_taxes = models.PositiveIntegerField(default=0)
+    total_fees_usd_cents = models.PositiveIntegerField(default=0)
+    total_taxes_usd_cents = models.PositiveIntegerField(default=0)
+    total_usd_cents_including_fees_and_taxes = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Sales Order {self.id} for Cart {self.cart.id}"
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # If this is a new SalesOrder
-            super().save(*args, **kwargs)  # Save first to get a pk
-            self.create_line_items()
-
-        self.update_totals()
+        self.total_usd_cents_including_fees_and_taxes = (
+            self.total_usd_cents_excluding_fees_and_taxes +
+            self.total_fees_usd_cents +
+            self.total_taxes_usd_cents
+        )
         super().save(*args, **kwargs)
 
     def create_line_items(self):
@@ -558,16 +557,13 @@ class SalesOrderLineItem(PolymorphicModel, TimeStampMixin):
         DECREASE_ADJUSTMENT = "DECREASE_ADJUSTMENT", "Decrease Adjustment"
 
     id = Base58UUIDv5Field(primary_key=True)
-    sales_order = models.ForeignKey(SalesOrder, related_name="line_items", on_delete=models.CASCADE)
-    item_type = models.CharField(max_length=20, choices=ItemType.choices)
+    sales_order = models.ForeignKey(SalesOrder, related_name='line_items', on_delete=models.CASCADE)
+    item_type = models.CharField(max_length=25, choices=CartLineItem.ItemType.choices)
     quantity = models.PositiveIntegerField(default=1)
     unit_price_cents = models.IntegerField()
-    unit_price_tax_cents = models.PositiveIntegerField(default=0)
-    unit_price_tax_label = models.CharField(max_length=255, blank=True, null=True)
-    fee_rate = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    bounty = models.ForeignKey('product_management.Bounty', on_delete=models.SET_NULL, null=True, blank=True)
+    fee_rate = models.DecimalField(max_digits=5, decimal_places=4, null=True, blank=True)
     tax_rate = models.DecimalField(max_digits=5, decimal_places=4, null=True, blank=True)
-    bounty = models.ForeignKey("product_management.Bounty", on_delete=models.SET_NULL, null=True, blank=True)
-    related_bounty_bid = models.ForeignKey(BountyBid, on_delete=models.SET_NULL, null=True, blank=True)
 
     @property
     def total_price_cents(self):

@@ -1,11 +1,11 @@
-id,bounty_cart_id,status,total_usd_cents,platform_fee_id,tax_rate,tax_amount_cents
-HvdRuLfmUMGXcVYT6byPvH,1,Completed,1800,1,0.08,800
-Sk5Sx51YCfQUzhkLVudGi3,2,Pending,2850,2,0.09,1350
-9rbLdAuhd8WWvzTTumdemJ,3,Payment Processing,4000,3,0.1,2000
-PPQBLMNSNrPtYPKsFLcWEb,4,Completed,3300,4,0.07,1750
-BQXiZx7C77Xtx5GMVawBc5,5,Payment Failed,4500,5,0.06,1800
-6kmaxL5eknfAgbx8sMzTL1,6,Completed,4550,6,0.08,2800
-Et7iKfa87JMSp5niS9NX46,7,Pending,5600,7,0.09,3600
-No2uHn7oWpV9Z5bBhMifa3,8,Payment Processing,6750,8,0.1,4500
-SYyV2cnEfZ6z3CvGTRW3CK,9,Completed,6000,9,0.07,3500
-BSv1VZWU9m2CtCXJXsvYpJ,10,Payment Failed,6050,10,0.06,3300
+id,cart_id,status,total_usd_cents_excluding_fees_and_taxes,total_fees_usd_cents,total_taxes_usd_cents,platform_fee_rate
+HvdRuLfmUMGXcVYT6byPvH,FFTpuXy3SfEa8BjZWjv61r,Completed,910,90,800,0.05
+Sk5Sx51YCfQUzhkLVudGi3,Rh6o8nm2AFo9vr2z4XD5Xq,Pending,1358,142,1350,0.05
+9rbLdAuhd8WWvzTTumdemJ,QkKR3xCSM9M5GqHHQ8hCBb,Payment Processing,1800,200,2000,0.05
+PPQBLMNSNrPtYPKsFLcWEb,71YME2FtJJoGYNQ3ejmcBp,Completed,1385,165,1750,0.06
+BQXiZx7C77Xtx5GMVawBc5,HRA5FLToKrNXWuxmpygRmL,Payment Failed,2475,225,1800,0.05
+6kmaxL5eknfAgbx8sMzTL1,RgpNwkgPAVsVuqPBCt6iir,Completed,1523,227,2800,0.07
+Et7iKfa87JMSp5niS9NX46,9GfJJtempof6EUtF3RkKdN,Pending,1720,280,3600,0.08
+No2uHn7oWpV9Z5bBhMifa3,EbdkQvkGSjfinqNsCR389F,Payment Processing,1913,337,4500,0.09
+SYyV2cnEfZ6z3CvGTRW3CK,W1hdnDmsU9FrcwP5q9Zo2s,Completed,2200,300,3500,0.07
+BSv1VZWU9m2CtCXJXsvYpJ,EXEt1n5bXS1zZqdNHqCsnj,Payment Failed,2447,303,3300,0.06

@@ -205,42 +205,54 @@ class PlatformFeeParser(ModelParser):
         return parsed_row
     
 class SalesOrderParser(ModelParser):
-    def parse_row(self, row):
-        parsed_row = super().parse_row(row)
-        
-        # Convert numeric fields to appropriate types
-        if 'total_usd_cents' in parsed_row:
-            parsed_row['total_usd_cents'] = int(parsed_row['total_usd_cents'])
-        
-        if 'tax_rate' in parsed_row:
-            parsed_row['tax_rate'] = Decimal(parsed_row['tax_rate'])
-        
-        if 'tax_amount_cents' in parsed_row:
-            parsed_row['tax_amount_cents'] = int(parsed_row['tax_amount_cents'])
-        
-        return parsed_row
-
     def create_object(self, model, row):
         parsed = self.parse_row(row)
-        
-        BountyCart = apps.get_model('commerce.BountyCart')
-        PlatformFee = apps.get_model('commerce.PlatformFee')
-        
-        bounty_cart = BountyCart.objects.get(id=parsed['bounty_cart_id'])
-        platform_fee = PlatformFee.objects.get(id=parsed['platform_fee_id'])
-        
-        obj, created = model.objects.update_or_create(
-            id=parsed['id'],
-            defaults={
-                'bounty_cart': bounty_cart,
-                'status': parsed['status'],
-                'total_usd_cents': parsed['total_usd_cents'],
-                'platform_fee': platform_fee,
-                'tax_rate': parsed['tax_rate'],
-                'tax_amount_cents': parsed['tax_amount_cents']
-            }
-        )
-        return obj, created
+        Cart = apps.get_model('commerce.Cart')
+        SalesOrderLineItem = apps.get_model('commerce.SalesOrderLineItem')
+
+        with transaction.atomic():
+            cart = Cart.objects.get(id=parsed['cart_id'])
+            
+            # Calculate totals
+            total_excluding_fees_and_taxes = int(parsed['total_usd_cents_excluding_fees_and_taxes'])
+            platform_fee_cents = int(parsed['platform_fee_cents'])
+            tax_amount_cents = int(parsed['tax_amount_cents'])
+
+            sales_order, created = model.objects.update_or_create(
+                id=parsed['id'],
+                defaults={
+                    'cart': cart,
+                    'status': parsed['status'],
+                    'total_usd_cents_excluding_fees_and_taxes': total_excluding_fees_and_taxes,
+                    'total_fees_usd_cents': platform_fee_cents,
+                    'total_taxes_usd_cents': tax_amount_cents,
+                    # The total including fees and taxes will be calculated in the save method
+                }
+            )
+
+            # Create platform fee line item
+            SalesOrderLineItem.objects.update_or_create(
+                sales_order=sales_order,
+                item_type=SalesOrderLineItem.ItemType.PLATFORM_FEE,
+                defaults={
+                    'quantity': 1,
+                    'unit_price_cents': platform_fee_cents,
+                    'fee_rate': Decimal(parsed['platform_fee_rate']),
+                }
+            )
+
+            # Create sales tax line item
+            SalesOrderLineItem.objects.update_or_create(
+                sales_order=sales_order,
+                item_type=SalesOrderLineItem.ItemType.SALES_TAX,
+                defaults={
+                    'quantity': 1,
+                    'unit_price_cents': tax_amount_cents,
+                    'tax_rate': Decimal(parsed['tax_rate']),
+                }
+            )
+
+        return sales_order, created
 
 class OrganisationParser(ModelParser):
     def parse_row(self, row):

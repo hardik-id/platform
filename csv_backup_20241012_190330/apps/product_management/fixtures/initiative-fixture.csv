@@ -1,6 +1,0 @@
-id,name,description,status,video_url,product_id
-1,Mobile App Redesign,Redesign our mobile app for better user experience,In Progress,https://youtu.be/app-redesign,1
-2,AI-Powered Recommendations,Implement AI algorithms for personalized recommendations,Planning,https://youtu.be/ai-recommendations,2
-3,Cloud Migration,Migrate our infrastructure to the cloud for better scalability,Completed,https://youtu.be/cloud-migration,3
-4,Security Enhancement,Improve overall system security and implement new encryption methods,In Progress,https://youtu.be/security-enhancement,4
-5,Performance Optimization,Optimize database queries and frontend rendering,Planning,https://youtu.be/performance-optimization,5

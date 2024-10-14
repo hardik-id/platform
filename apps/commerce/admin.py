@@ -92,7 +92,7 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(CartLineItem)
 class CartLineItemAdmin(admin.ModelAdmin):
-    list_display = ("cart", "item_type", "quantity", "unit_price_usd", "unit_price_points", "bounty", "related_bounty_bid")
+    list_display = ("cart", "item_type", "quantity", "unit_price_usd", "unit_price_points", "bounty")
     list_filter = ("item_type",)
     search_fields = ("cart__id", "bounty__title")
 
@@ -107,19 +107,19 @@ class SalesOrderLineItemInline(admin.TabularInline):
 
 @admin.register(SalesOrder)
 class SalesOrderAdmin(admin.ModelAdmin):
-    list_display = ("id", "cart", "status", "total_usd", "created_at", "parent_sales_order")
+    list_display = ("id", "cart", "status", "total_usd", "created_at")
     list_filter = ("status",)
     search_fields = ("id", "cart__id")
-    readonly_fields = ("total_usd_cents",)
+    readonly_fields = ("total_usd_cents_including_fees_and_taxes",)
     inlines = [SalesOrderLineItemInline]
 
     def total_usd(self, obj):
-        return f"${obj.total_usd_cents / 100:.2f}"
+        return f"${obj.total_usd_cents_including_fees_and_taxes / 100:.2f}"
     total_usd.short_description = "Total USD"
 
 @admin.register(SalesOrderLineItem)
 class SalesOrderLineItemAdmin(admin.ModelAdmin):
-    list_display = ("sales_order", "item_type", "quantity", "unit_price_usd", "total_price_usd", "bounty", "related_bounty_bid")
+    list_display = ("sales_order", "item_type", "quantity", "unit_price_usd", "total_price_usd", "bounty")
     list_filter = ("item_type",)
     search_fields = ("sales_order__id", "bounty__title")
 
