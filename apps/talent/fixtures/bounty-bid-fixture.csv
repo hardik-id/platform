@@ -1,7 +1,7 @@
 id,created_at,updated_at,bounty_id,person_id,amount,expected_finish_date,status,message
-hkWTg1ADZQk5CYMVN1gXb,2024-05-10T09:00:00Z,2024-05-10T09:00:00Z,MiK6qwWTG6x7uDL3LbHY43,5awxzEZRKBCUB2Z6aARJiG,500,15/06/2024,Accepted,I can fix this login bug efficiently within a month.
+hkWTg1ADZQk5CYMVN1gXb,2024-05-10T09:00:00Z,2024-09-10T18:30:00Z,MiK6qwWTG6x7uDL3LbHY43,5awxzEZRKBCUB2Z6aARJiG,510,15/06/2024,Accepted,Increased bid for the login bug fix.
 3eUphDekph8WFnxfSN51Pm,2024-05-10T10:30:00Z,2024-05-10T10:30:00Z,MiK6qwWTG6x7uDL3LbHY43,69pszWq4Dqt9v1owDvuWoS,600,20/06/2024,Rejected,I have experience with similar login issues and can deliver high-quality results.
-YAzzC5fkPrz1qg7DCNqarm,2024-05-11T11:15:00Z,2024-05-11T11:15:00Z,5oyAnd2Tea9oThG5LciDoE,GTWK7A95whVQ4ZwrBo2jci,1000,10/07/2024,Accepted,I'm familiar with the codebase and can implement dark mode quickly.
+YAzzC5fkPrz1qg7DCNqarm,2024-05-11T11:15:00Z,2024-09-10T18:31:00Z,5oyAnd2Tea9oThG5LciDoE,GTWK7A95whVQ4ZwrBo2jci,950,10/07/2024,Accepted,Slightly decreased bid for the dark mode implementation.
 7jPoJSwSNNH3PEyqrQZgw7,2024-05-12T13:45:00Z,2024-05-12T13:45:00Z,LU3npoyLctcnmAeaQmWgeF,K8BimufUsEu2m8aREjA2Uo,750,30/06/2024,Accepted,I can optimize the database queries to improve dashboard performance significantly.
 QyFbNKS2fzh2WMhRysLXxk,2024-05-13T14:20:00Z,2024-05-13T14:20:00Z,37CEoTwyhjWDqULXvUxu7T,2Fg9Fv6QSKCko2TeiYyinB,1200,25/07/2024,Accepted,I have expertise in technical writing and can develop comprehensive user documentation.
 FuaD6fViJbcu2Qzz1jgWFf,2024-05-14T15:10:00Z,2024-05-14T15:10:00Z,Sa4UHQ5WxpUqtvvvT4PSGT,K8BimufUsEu2m8aREjA2Uo,800,25/06/2024,Accepted,I can implement the API endpoints with best practices in mind.

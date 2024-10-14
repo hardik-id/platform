@@ -38,6 +38,7 @@ class Command(BaseCommand):
             'productarea': ProductAreaParser(),
             'productpointaccount': ProductPointAccountParser(),
             'bountyclaim': BountyClaimParser(),
+            'cartlineitem': CartLineItemParser(),
         }
         return parsers.get(model._meta.model_name.lower(), ModelParser())
 
@@ -343,3 +344,79 @@ class BountyClaimParser(ModelParser):
         )
 
         return obj, created
+    
+class CartLineItemParser(ModelParser):
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        try:
+            with transaction.atomic():
+                # Parse the date strings correctly
+                for date_field in ['created_at', 'updated_at']:
+                    if parsed[date_field]:
+                        parsed[date_field] = django_timezone.make_aware(
+                            datetime.strptime(parsed[date_field], "%Y-%m-%d %H:%M:%S")
+                        )
+
+                # Handle adjustments
+                if parsed['item_type'] in ['INCREASE_ADJUSTMENT', 'DECREASE_ADJUSTMENT']:
+                    Bounty = apps.get_model('product_management.Bounty')
+                    BountyBid = apps.get_model('talent.BountyBid')
+                    
+                    try:
+                        bounty = Bounty.objects.get(id=parsed['bounty_id'])
+                        bounty_bid = BountyBid.objects.get(id=parsed['related_bounty_bid_id'])
+                        
+                        # Check if a cart line item for this bounty already exists
+                        existing_item = model.objects.filter(cart_id=parsed['cart_id'], bounty_id=parsed['bounty_id']).first()
+                        
+                        if existing_item:
+                            # Update the existing item
+                            existing_item.item_type = parsed['item_type']
+                            existing_item.quantity = int(parsed['quantity'])
+                            existing_item.unit_price_cents = int(parsed['unit_price_cents'])
+                            existing_item.unit_price_points = int(parsed['unit_price_points'])
+                            existing_item.updated_at = parsed['updated_at']
+                            existing_item.metadata = existing_item.metadata or {}
+                            existing_item.metadata['related_bounty_bid_id'] = parsed['related_bounty_bid_id']
+                            existing_item.save()
+                            return existing_item, False
+                        else:
+                            # Create a new item
+                            cart_line_item = model.objects.create(
+                                id=parsed['id'],
+                                cart_id=parsed['cart_id'],
+                                item_type=parsed['item_type'],
+                                quantity=int(parsed['quantity']),
+                                unit_price_cents=int(parsed['unit_price_cents']),
+                                unit_price_points=int(parsed['unit_price_points']),
+                                bounty_id=parsed['bounty_id'],
+                                created_at=parsed['created_at'],
+                                updated_at=parsed['updated_at'],
+                                metadata={'related_bounty_bid_id': parsed['related_bounty_bid_id']}
+                            )
+                            return cart_line_item, True
+
+                    except ObjectDoesNotExist:
+                        print(f"Warning: Bounty or BountyBid not found for adjustment {parsed['id']}. Skipping.")
+                        return None, False
+                else:
+                    # Handle non-adjustment items as before
+                    cart_line_item, created = model.objects.update_or_create(
+                        id=parsed['id'],
+                        defaults={
+                            'cart_id': parsed['cart_id'],
+                            'item_type': parsed['item_type'],
+                            'quantity': int(parsed['quantity']),
+                            'unit_price_cents': int(parsed['unit_price_cents']),
+                            'unit_price_points': int(parsed['unit_price_points']),
+                            'bounty_id': parsed['bounty_id'] if parsed['bounty_id'] else None,
+                            'created_at': parsed['created_at'],
+                            'updated_at': parsed['updated_at']
+                        }
+                    )
+                    return cart_line_item, created
+
+        except Exception as e:
+            print(f"Error processing row {parsed['id']}: {str(e)}")
+            return None, False
