@@ -23,7 +23,7 @@ class Command(BaseCommand):
     def parse_csv(self, file_path):
         with open(file_path, mode='r', newline='') as file:
             reader = csv.DictReader(file)
-            return list(reader)
+            return [row for row in reader if any(row.values())]  # Skip empty rows
 
     def get_parser(self, model):
         parsers = {
@@ -78,12 +78,13 @@ class ModelParser:
     def parse_row(self, row):
         parsed_row = {}
         for key, value in row.items():
-            if value.lower() in ['true', 'false']:
-                parsed_row[key] = value.lower() == 'true'
-            elif 'deadline' in key.lower() and value:
-                parsed_row[key] = django_timezone.make_aware(datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ"))
-            elif value == '':
-                parsed_row[key] = None  # Convert empty strings to None for all fields
+            if isinstance(value, str):
+                if value.lower() in ['true', 'false']:
+                    parsed_row[key] = value.lower() == 'true'
+                elif value.lower() in ['null', 'none', '']:
+                    parsed_row[key] = None
+                else:
+                    parsed_row[key] = value
             else:
                 parsed_row[key] = value
         return parsed_row
@@ -134,17 +135,65 @@ class BountyParser(ModelParser):
     def parse_row(self, row):
         parsed_row = super().parse_row(row)
         
-        # Convert string 'null' to None for specific fields
-        for field in ['claimed_by_id', 'competition_id']:
-            if parsed_row.get(field) == 'null':
+        # Convert empty strings to None for specific fields
+        for field in ['claimed_by_id', 'competition_id', 'challenge_id', 'skill_id']:
+            if parsed_row.get(field) == '':
                 parsed_row[field] = None
         
-        # Ensure numeric fields are properly typed
-        for field in ['reward_amount']:
-            if parsed_row.get(field):
-                parsed_row[field] = int(parsed_row[field])
+        # Handle reward amount based on reward type
+        if parsed_row.get('reward_type') == 'USD':
+            parsed_row['reward_in_usd_cents'] = int(float(parsed_row.get('reward_amount', 0)) * 100)
+            parsed_row['reward_in_points'] = None
+        elif parsed_row.get('reward_type') == 'Points':
+            parsed_row['reward_in_points'] = int(parsed_row.get('reward_amount', 0))
+            parsed_row['reward_in_usd_cents'] = None
+        
+        # Remove fields that are not in the model
+        parsed_row.pop('reward_amount', None)
         
         return parsed_row
+
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        # Fetch related objects
+        Challenge = apps.get_model('product_management.Challenge')
+        Competition = apps.get_model('product_management.Competition')
+        Skill = apps.get_model('talent.Skill')
+        
+        try:
+            challenge = Challenge.objects.get(id=parsed['challenge_id']) if parsed['challenge_id'] else None
+        except Challenge.DoesNotExist:
+            challenge = None
+        
+        try:
+            competition = Competition.objects.get(id=parsed['competition_id']) if parsed['competition_id'] else None
+        except Competition.DoesNotExist:
+            competition = None
+        
+        try:
+            skill = Skill.objects.get(id=parsed['skill_id']) if parsed['skill_id'] else None
+        except Skill.DoesNotExist:
+            skill = None
+
+        defaults = {
+            'title': parsed['title'],
+            'description': parsed['description'],
+            'status': parsed['status'],
+            'reward_type': parsed['reward_type'],
+            'reward_in_usd_cents': parsed.get('reward_in_usd_cents'),
+            'reward_in_points': parsed.get('reward_in_points'),
+            'challenge': challenge,
+            'competition': competition,
+            'skill': skill,
+        }
+
+        obj, created = model.objects.update_or_create(
+            id=parsed['id'],
+            defaults=defaults
+        )
+
+        return obj, created
 
 class BountyBidParser(ModelParser):
     def create_object(self, model, row):
@@ -420,6 +469,12 @@ class SalesOrderLineItemParser(ModelParser):
         if parsed['item_type'] == 'BOUNTY':
             try:
                 bounty = Bounty.objects.get(id=parsed['bounty_id'])
+                if bounty.final_reward_amount is None:
+                    print(f"Warning: Bounty with id {parsed['bounty_id']} has no final reward amount. Skipping this line item.")
+                    return None, False
+                if int(parsed['unit_price_cents']) != bounty.final_reward_amount * 100:  # Convert to cents
+                    print(f"Warning: Line item amount for Bounty {parsed['bounty_id']} is inconsistent with final reward amount. Updating it.")
+                    parsed['unit_price_cents'] = str(bounty.final_reward_amount * 100)
             except ObjectDoesNotExist:
                 print(f"Warning: Bounty with id {parsed['bounty_id']} does not exist. Skipping this line item.")
                 return None, False

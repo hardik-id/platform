@@ -560,7 +560,7 @@ class SalesOrderLineItem(PolymorphicModel, TimeStampMixin):
     sales_order = models.ForeignKey(SalesOrder, related_name='line_items', on_delete=models.CASCADE)
     item_type = models.CharField(max_length=25, choices=ItemType.choices)
     quantity = models.PositiveIntegerField(default=1)
-    unit_price_cents = models.IntegerField()
+    unit_price_cents = models.IntegerField(help_text="Price in cents for USD items, or number of points for Point items")
     bounty = models.ForeignKey('product_management.Bounty', on_delete=models.SET_NULL, null=True, blank=True)
     fee_rate = models.DecimalField(max_digits=5, decimal_places=4, null=True, blank=True)
     tax_rate = models.DecimalField(max_digits=5, decimal_places=4, null=True, blank=True)
@@ -571,7 +571,11 @@ class SalesOrderLineItem(PolymorphicModel, TimeStampMixin):
         return self.quantity * self.unit_price_cents
 
     def __str__(self):
-        return f"{self.get_item_type_display()} for Order {self.sales_order.id}"
+        if self.item_type == 'BOUNTY':
+            price = f"{self.unit_price_cents/100:.2f} USD" if self.bounty.reward_type == 'USD' else f"{self.unit_price_cents} Points"
+        else:
+            price = f"{self.unit_price_cents/100:.2f} USD"
+        return f"{self.item_type} - {price}"
 
     def clean(self):
         if self.item_type in [self.ItemType.INCREASE_ADJUSTMENT, self.ItemType.DECREASE_ADJUSTMENT]:

@@ -386,10 +386,6 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         COMPLETED = "Completed"
         CANCELLED = "Cancelled"
 
-    class RewardType(models.TextChoices):
-        POINTS = "Points"
-        USD = "USD"
-
     id = Base58UUIDv5Field(primary_key=True)
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, null=True, blank=True)
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE, null=True, blank=True)
@@ -409,14 +405,25 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         choices=BountyStatus.choices,
         default=BountyStatus.DRAFT,
     )
-    reward_type = models.CharField(max_length=10, choices=RewardType.choices, default=RewardType.POINTS)
-    reward_amount = models.PositiveIntegerField(
-        default=0, help_text="Amount in points if reward_type is POINTS, or cents if reward_type is USD"
-    )
-    final_reward_amount = models.PositiveIntegerField(null=True, blank=True)
+    reward_type = models.CharField(max_length=10, choices=[('USD', 'USD'), ('Points', 'Points')])
+    reward_in_usd_cents = models.IntegerField(null=True, blank=True)
+    reward_in_points = models.IntegerField(null=True, blank=True)
+    final_reward_in_usd_cents = models.IntegerField(null=True, blank=True)
+    final_reward_in_points = models.IntegerField(null=True, blank=True)
 
     class Meta:
         ordering = ("-created_at",)
+        verbose_name_plural = "Bounties"
+        
+    def clean(self):
+        if self.reward_type == 'USD' and self.reward_in_points is not None:
+            raise ValidationError("For USD rewards, reward_in_points should be None")
+        if self.reward_type == 'Points' and self.reward_in_usd_cents is not None:
+            raise ValidationError("For Points rewards, reward_in_usd_cents should be None")
+        if self.reward_type == 'USD' and self.final_reward_in_points is not None:
+            raise ValidationError("For USD rewards, final_reward_in_points should be None")
+        if self.reward_type == 'Points' and self.final_reward_in_usd_cents is not None:
+            raise ValidationError("For Points rewards, final_reward_in_usd_cents should be None")
 
     @property
     def has_claimed(self):
@@ -427,18 +434,17 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         ]
 
     def get_reward_display(self):
-        if self.reward_type == self.RewardType.POINTS:
-            return f"{self.reward_amount} Points"
+        if self.reward_type == 'USD':
+            return f"{self.reward_in_usd_cents/100:.2f} USD"
         else:
-            dollars = self.reward_amount // 100
-            cents = self.reward_amount % 100
-            return f"${dollars}.{cents:02d} USD"
+            return f"{self.reward_in_points} Points"
 
     def get_expertise_as_str(self):
         return ", ".join([exp.name.title() for exp in self.expertise.all()])
 
     def __str__(self):
-        return self.title
+        reward = f"{self.reward_in_usd_cents/100:.2f} USD" if self.reward_type == 'USD' else f"{self.reward_in_points} Points"
+        return f"{self.title} - {reward}"
 
     def clean(self):
         super().clean()

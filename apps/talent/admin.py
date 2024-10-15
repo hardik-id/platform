@@ -19,6 +19,30 @@ class BountyClaimAdmin(admin.ModelAdmin):
         "status",
     ]
 
+@admin.register(models.BountyBid)
+class BountyBidAdmin(admin.ModelAdmin):
+    list_display = [
+        "pk",
+        "bounty",
+        "person",
+        "amount_display",
+        "expected_finish_date",
+        "status",
+    ]
+    list_filter = ["status"]
+    search_fields = [
+        "bounty__title",
+        "person__user__username",
+        "status",
+    ]
+
+    def amount_display(self, obj):
+        if obj.bounty.reward_type == 'USD':
+            return f"${obj.amount_in_usd_cents / 100:.2f}"
+        else:
+            return f"{obj.amount_in_points} Points"
+    amount_display.short_description = "Amount"
+
 @admin.register(models.Skill)
 class SkillAdmin(admin.ModelAdmin):
     list_display = ["pk", "name", "parent"]
@@ -42,6 +66,7 @@ class BountyDeliveryAttemptAdmin(admin.ModelAdmin):
 
 # Update the Meta classes in your models to fix pluralization
 models.BountyClaim._meta.verbose_name_plural = "Bounty Claims"
+models.BountyBid._meta.verbose_name_plural = "Bounty Bids"
 models.Skill._meta.verbose_name_plural = "Skills"
 models.Expertise._meta.verbose_name_plural = "Expertise"
 models.PersonSkill._meta.verbose_name_plural = "Person Skills"

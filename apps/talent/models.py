@@ -245,7 +245,8 @@ class BountyBid(TimeStampMixin):
     id = Base58UUIDv5Field(primary_key=True)
     bounty = models.ForeignKey("product_management.Bounty", on_delete=models.CASCADE, related_name="bids")
     person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="bounty_bids")
-    amount = models.PositiveIntegerField()
+    amount_in_usd_cents = models.IntegerField(null=True, blank=True)
+    amount_in_points = models.IntegerField(null=True, blank=True)
     expected_finish_date = models.DateField()
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     message = models.TextField(blank=True, null=True)
@@ -254,8 +255,15 @@ class BountyBid(TimeStampMixin):
         unique_together = ("bounty", "person")
         ordering = ("-created_at",)
 
+    def clean(self):
+        if self.bounty.reward_type == 'USD' and self.amount_in_points is not None:
+            raise ValidationError("For USD bounties, amount_in_points should be None")
+        if self.bounty.reward_type == 'Points' and self.amount_in_usd_cents is not None:
+            raise ValidationError("For Points bounties, amount_in_usd_cents should be None")
+
     def __str__(self):
-        return f"Bid on {self.bounty.title} by {self.person.get_full_name()}"
+        amount = f"{self.amount_in_usd_cents/100:.2f} USD" if self.bounty.reward_type == 'USD' else f"{self.amount_in_points} Points"
+        return f"Bid for {self.bounty.title} - {amount}"
 
     @transaction.atomic
     def accept_bid(self):
@@ -273,7 +281,10 @@ class BountyBid(TimeStampMixin):
         )
         
         # Update the Bounty
-        self.bounty.final_reward_amount = self.amount
+        if self.bounty.reward_type == 'USD':
+            self.bounty.final_reward_in_usd_cents = self.amount_in_usd_cents
+        else:
+            self.bounty.final_reward_in_points = self.amount_in_points
         self.bounty.status = self.bounty.BountyStatus.IN_PROGRESS
         self.bounty.save()
         
@@ -284,7 +295,10 @@ class BountyBid(TimeStampMixin):
         from apps.commerce.models import SalesOrder
         try:
             original_order = SalesOrder.objects.get(cart__items__bounty=self.bounty, adjustment_type="INITIAL")
-            difference = self.amount - self.bounty.reward_amount
+            if self.bounty.reward_type == 'USD':
+                difference = self.amount_in_usd_cents - self.bounty.reward_in_usd_cents
+            else:
+                difference = self.amount_in_points - self.bounty.reward_in_points
             if difference > 0:
                 self._create_increase_adjustment(original_order, difference)
             elif difference < 0:

@@ -98,10 +98,17 @@ class CompetitionAdmin(admin.ModelAdmin):
 
 @admin.register(product.Bounty)
 class BountyAdmin(admin.ModelAdmin):
-    list_display = ["title", "challenge", "competition", "status", "reward_type", "reward_amount"]
+    list_display = ["title", "challenge", "competition", "status", "reward_type", "reward_display"]
     list_filter = ["status", "reward_type"]
     search_fields = ["title", "challenge__title", "competition__title"]
     filter_horizontal = ["expertise", "attachments"]
+
+    def reward_display(self, obj):
+        if obj.reward_type == 'USD':
+            return f"${obj.reward_in_usd_cents / 100:.2f}"
+        else:
+            return f"{obj.reward_in_points} Points"
+    reward_display.short_description = "Reward"
 
 @admin.register(product.CompetitionEntry)
 class CompetitionEntryAdmin(admin.ModelAdmin):
