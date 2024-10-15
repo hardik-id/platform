@@ -142,20 +142,15 @@ class BountyParser(ModelParser):
         parsed_row = super().parse_row(row)
         
         # Convert empty strings to None for specific fields
-        for field in ['competition_id', 'challenge_id', 'product_id']:
+        for field in ['competition_id', 'challenge_id', 'product_id', 'reward_in_usd_cents', 'reward_in_points']:
             if parsed_row.get(field) == '':
                 parsed_row[field] = None
         
-        # Handle reward amount based on reward type
-        if parsed_row.get('reward_type') == 'USD':
-            parsed_row['reward_in_usd_cents'] = int(float(parsed_row.get('reward_amount', 0)) * 100)
-            parsed_row['reward_in_points'] = None
-        elif parsed_row.get('reward_type') == 'Points':
-            parsed_row['reward_in_points'] = int(parsed_row.get('reward_amount', 0))
-            parsed_row['reward_in_usd_cents'] = None
-        
-        # Remove fields that are not in the model
-        parsed_row.pop('reward_amount', None)
+        # Convert reward values to integers
+        if parsed_row.get('reward_in_usd_cents'):
+            parsed_row['reward_in_usd_cents'] = int(parsed_row['reward_in_usd_cents'])
+        if parsed_row.get('reward_in_points'):
+            parsed_row['reward_in_points'] = int(parsed_row['reward_in_points'])
         
         return parsed_row
 
@@ -165,7 +160,6 @@ class BountyParser(ModelParser):
         # Fetch related objects
         Challenge = apps.get_model('product_management.Challenge')
         Competition = apps.get_model('product_management.Competition')
-        Skill = apps.get_model('talent.Skill')
         Product = apps.get_model('product_management.Product')
         
         try:
@@ -178,11 +172,6 @@ class BountyParser(ModelParser):
         except Competition.DoesNotExist:
             competition = None
         
-        try:
-            skill = Skill.objects.get(id=parsed['skill_id']) if parsed['skill_id'] else None
-        except Skill.DoesNotExist:
-            skill = None
-
         try:
             product = Product.objects.get(id=parsed['product_id'])
         except Product.DoesNotExist:
@@ -197,7 +186,6 @@ class BountyParser(ModelParser):
             'reward_in_points': parsed.get('reward_in_points'),
             'challenge': challenge,
             'competition': competition,
-            'skill': skill,
             'product': product,
         }
 
