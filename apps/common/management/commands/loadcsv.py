@@ -84,6 +84,13 @@ class ModelParser:
     def parse_row(self, row):
         parsed_row = {}
         for key, value in row.items():
+            if key is None:
+                # If we encounter a None key, it's likely part of the template
+                # that got split. Append it to the existing template.
+                if 'template' in parsed_row:
+                    parsed_row['template'] += ' ' + ' '.join(value)
+                continue
+            
             if isinstance(value, str):
                 if value.lower() in ['true', 'false']:
                     parsed_row[key] = value.lower() == 'true'
