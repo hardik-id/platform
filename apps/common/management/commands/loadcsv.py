@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from django.utils import timezone as django_timezone
 from django.core.exceptions import ObjectDoesNotExist
 import traceback
+import uuid
 
 
 def debug_print(message):
@@ -39,6 +40,7 @@ class Command(BaseCommand):
             'productpointaccount': ProductPointAccountParser(),
             'bountyclaim': BountyClaimParser(),
             'cartlineitem': CartLineItemParser(),
+            'salesorderlineitem': SalesOrderLineItemParser(),
         }
         return parsers.get(model._meta.model_name.lower(), ModelParser())
 
@@ -208,52 +210,22 @@ class SalesOrderParser(ModelParser):
     def create_object(self, model, row):
         parsed = self.parse_row(row)
         Cart = apps.get_model('commerce.Cart')
-        SalesOrderLineItem = apps.get_model('commerce.SalesOrderLineItem')
 
-        with transaction.atomic():
-            cart = Cart.objects.get(id=parsed['cart_id'])
-            
-            # Calculate totals
-            total_excluding_fees_and_taxes = int(parsed['total_usd_cents_excluding_fees_and_taxes'])
-            platform_fee_cents = int(parsed['platform_fee_cents'])
-            tax_amount_cents = int(parsed['tax_amount_cents'])
-
-            sales_order, created = model.objects.update_or_create(
-                id=parsed['id'],
-                defaults={
-                    'cart': cart,
-                    'status': parsed['status'],
-                    'total_usd_cents_excluding_fees_and_taxes': total_excluding_fees_and_taxes,
-                    'total_fees_usd_cents': platform_fee_cents,
-                    'total_taxes_usd_cents': tax_amount_cents,
-                    # The total including fees and taxes will be calculated in the save method
-                }
-            )
-
-            # Create platform fee line item
-            SalesOrderLineItem.objects.update_or_create(
-                sales_order=sales_order,
-                item_type=SalesOrderLineItem.ItemType.PLATFORM_FEE,
-                defaults={
-                    'quantity': 1,
-                    'unit_price_cents': platform_fee_cents,
-                    'fee_rate': Decimal(parsed['platform_fee_rate']),
-                }
-            )
-
-            # Create sales tax line item
-            SalesOrderLineItem.objects.update_or_create(
-                sales_order=sales_order,
-                item_type=SalesOrderLineItem.ItemType.SALES_TAX,
-                defaults={
-                    'quantity': 1,
-                    'unit_price_cents': tax_amount_cents,
-                    'tax_rate': Decimal(parsed['tax_rate']),
-                }
-            )
+        cart = Cart.objects.get(id=parsed['cart_id'])
+        
+        sales_order, created = model.objects.update_or_create(
+            id=parsed['id'],
+            defaults={
+                'cart': cart,
+                'status': parsed['status'],
+                'total_usd_cents_excluding_fees_and_taxes': int(parsed['total_usd_cents_excluding_fees_and_taxes']),
+                'total_fees_usd_cents': int(parsed['total_fees_usd_cents']),
+                'total_taxes_usd_cents': int(parsed['total_taxes_usd_cents']),
+            }
+        )
 
         return sales_order, created
-
+    
 class OrganisationParser(ModelParser):
     def parse_row(self, row):
         parsed_row = super().parse_row(row)
@@ -432,3 +404,39 @@ class CartLineItemParser(ModelParser):
         except Exception as e:
             print(f"Error processing row {parsed['id']}: {str(e)}")
             return None, False
+
+class SalesOrderLineItemParser(ModelParser):
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        SalesOrder = apps.get_model('commerce.SalesOrder')
+        Bounty = apps.get_model('product_management.Bounty')
+
+        try:
+            sales_order = SalesOrder.objects.get(id=parsed['sales_order_id'])
+        except ObjectDoesNotExist:
+            print(f"Warning: SalesOrder with id {parsed['sales_order_id']} does not exist. Skipping this line item.")
+            return None, False
+
+        if parsed['item_type'] == 'BOUNTY':
+            try:
+                bounty = Bounty.objects.get(id=parsed['bounty_id'])
+            except ObjectDoesNotExist:
+                print(f"Warning: Bounty with id {parsed['bounty_id']} does not exist. Skipping this line item.")
+                return None, False
+        else:
+            bounty = None
+
+        line_item, created = model.objects.update_or_create(
+            id=parsed['id'],
+            defaults={
+                'sales_order': sales_order,
+                'item_type': parsed['item_type'],
+                'quantity': int(parsed['quantity']),
+                'unit_price_cents': int(parsed['unit_price_cents']),
+                'bounty': bounty,
+                'fee_rate': Decimal(parsed['fee_rate']) if parsed['fee_rate'] else None,
+                'tax_rate': Decimal(parsed['tax_rate']) if parsed['tax_rate'] else None,
+            }
+        )
+
+        return line_item, created

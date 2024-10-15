@@ -558,12 +558,13 @@ class SalesOrderLineItem(PolymorphicModel, TimeStampMixin):
 
     id = Base58UUIDv5Field(primary_key=True)
     sales_order = models.ForeignKey(SalesOrder, related_name='line_items', on_delete=models.CASCADE)
-    item_type = models.CharField(max_length=25, choices=CartLineItem.ItemType.choices)
+    item_type = models.CharField(max_length=25, choices=ItemType.choices)
     quantity = models.PositiveIntegerField(default=1)
     unit_price_cents = models.IntegerField()
     bounty = models.ForeignKey('product_management.Bounty', on_delete=models.SET_NULL, null=True, blank=True)
     fee_rate = models.DecimalField(max_digits=5, decimal_places=4, null=True, blank=True)
     tax_rate = models.DecimalField(max_digits=5, decimal_places=4, null=True, blank=True)
+    related_bounty_bid = models.ForeignKey('talent.BountyBid', on_delete=models.SET_NULL, null=True, blank=True)
 
     @property
     def total_price_cents(self):
