@@ -45,6 +45,8 @@ class Command(BaseCommand):
             'cartlineitem': CartLineItemParser(),
             'salesorderlineitem': SalesOrderLineItemParser(),
             'pointorder': PointOrderParser(),
+            'competitionentry': CompetitionEntryParser(),
+            'competitionentryrating': CompetitionEntryRatingParser(),
         }
         return parsers.get(model._meta.model_name.lower(), ModelParser())
 
@@ -588,4 +590,66 @@ class BountySkillParser(ModelParser):
         expertises = Expertise.objects.filter(id__in=parsed['expertise_ids'])
         obj.expertise.set(expertises)
 
+        return obj, created
+
+class CompetitionEntryParser(ModelParser):
+    def parse_row(self, row):
+        parsed = super().parse_row(row)
+        
+        # Convert entry_time to a timezone-aware datetime
+        if 'entry_time' in parsed and parsed['entry_time']:
+            parsed['entry_time'] = make_aware(parse_datetime(parsed['entry_time']))
+        
+        return parsed
+
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        Competition = apps.get_model('product_management.Competition')
+        Person = apps.get_model('talent.Person')
+        
+        try:
+            competition = Competition.objects.get(id=parsed['competition_id'])
+            submitter = Person.objects.get(id=parsed['submitter_id'])
+        except (Competition.DoesNotExist, Person.DoesNotExist) as e:
+            print(f"Warning: {str(e)}. Skipping this entry.")
+            return None, False
+        
+        obj, created = model.objects.update_or_create(
+            id=parsed['id'],
+            defaults={
+                'competition': competition,
+                'submitter': submitter,
+                'content': parsed['content'],
+                'entry_time': parsed['entry_time'],
+                'status': parsed['status'],
+            }
+        )
+        
+        return obj, created
+
+class CompetitionEntryRatingParser(ModelParser):
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        CompetitionEntry = apps.get_model('product_management.CompetitionEntry')
+        Person = apps.get_model('talent.Person')
+        
+        try:
+            entry = CompetitionEntry.objects.get(id=parsed['entry_id'])
+            rater = Person.objects.get(id=parsed['rater_id'])
+        except (CompetitionEntry.DoesNotExist, Person.DoesNotExist) as e:
+            print(f"Warning: {str(e)}. Skipping this rating.")
+            return None, False
+        
+        obj, created = model.objects.update_or_create(
+            id=parsed['id'],
+            defaults={
+                'entry': entry,
+                'rater': rater,
+                'rating': int(parsed['rating']),
+                'comment': parsed['comment'],
+            }
+        )
+        
         return obj, created

@@ -251,7 +251,7 @@ class Challenge(TimeStampMixin, common.AttachmentAbstract):
         return reverse("challenge_detail", kwargs={"product_slug": self.product.slug, "pk": self.pk})
 
     def get_total_reward(self):
-        return self.bounty_set.aggregate(Sum("reward_amount"))["reward_amount__sum"] or 0
+        return sum(bounty.reward_in_usd_cents or 0 for bounty in self.bounties.all())
 
     def can_delete_challenge(self, person):
         from apps.security.models import ProductRoleAssignment
@@ -275,11 +275,11 @@ class Challenge(TimeStampMixin, common.AttachmentAbstract):
         return True
 
     def has_bounty(self):
-        return self.bounty_set.count() > 0
+        return self.bounties.count() > 0
 
     def get_bounty_points(self):
         total = 0
-        queryset = self.bounty_set.all()
+        queryset = self.bounties.all()
         for elem in queryset:
             total += elem.points
 
@@ -332,9 +332,13 @@ class Challenge(TimeStampMixin, common.AttachmentAbstract):
         return self.description
 
     def update_status(self):
-        if all(bounty.status == Bounty.BountyStatus.COMPLETED for bounty in self.bounty_set.all()):
+        if all(bounty.status == Bounty.BountyStatus.COMPLETED for bounty in self.bounties.all()):
             self.status = self.ChallengeStatus.COMPLETED
             self.save()
+
+    @property
+    def total_bounties(self):
+        return self.bounties.count()
 
 
 class Competition(TimeStampMixin, common.AttachmentAbstract):
@@ -378,6 +382,13 @@ class Competition(TimeStampMixin, common.AttachmentAbstract):
             self.status = new_status
             self.save(update_fields=['status'])
 
+    @property
+    def has_bounty(self):
+        return hasattr(self, 'bounty')
+
+    def get_bounty(self):
+        return self.bounty if self.has_bounty else None
+
 
 class Bounty(TimeStampMixin, common.AttachmentAbstract):
     class BountyStatus(models.TextChoices):
@@ -390,8 +401,8 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
 
     id = Base58UUIDv5Field(primary_key=True)
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='bounties')  # Restored association
-    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, null=True, blank=True)
-    competition = models.ForeignKey(Competition, on_delete=models.CASCADE, null=True, blank=True)
+    challenge = models.ForeignKey('Challenge', on_delete=models.SET_NULL, null=True, blank=True, related_name='bounties')
+    competition = models.OneToOneField('Competition', on_delete=models.SET_NULL, null=True, blank=True, related_name='bounty')
     title = models.CharField(max_length=400)
     description = models.TextField()
     status = models.CharField(
@@ -418,6 +429,8 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
             raise ValidationError("For USD rewards, final_reward_in_points should be None")
         if self.reward_type == 'Points' and self.final_reward_in_usd_cents is not None:
             raise ValidationError("For Points rewards, final_reward_in_usd_cents should be None")
+        if self.is_part_of_challenge and self.is_part_of_competition:
+            raise ValidationError("A Bounty cannot be part of both a Challenge and a Competition.")
 
     @property
     def has_claimed(self):
@@ -465,6 +478,14 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
             self.status = new_status
             self.save()
 
+    @property
+    def is_part_of_challenge(self):
+        return self.challenge is not None
+
+    @property
+    def is_part_of_competition(self):
+        return self.competition is not None
+
 
 class BountySkill(models.Model):
     id = Base58UUIDv5Field(primary_key=True)
@@ -490,8 +511,6 @@ class BountySkill(models.Model):
 
 
 class CompetitionEntry(TimeStampMixin):
-    from apps.security.models import ProductRoleAssignment
-
     class EntryStatus(models.TextChoices):
         SUBMITTED = "Submitted"
         FINALIST = "Finalist"
@@ -499,21 +518,21 @@ class CompetitionEntry(TimeStampMixin):
         REJECTED = "Rejected"
 
     id = Base58UUIDv5Field(primary_key=True)
-    bounty = models.ForeignKey(Bounty, on_delete=models.CASCADE, related_name="competition_entries")
+    competition = models.ForeignKey(Competition, on_delete=models.CASCADE, related_name="entries")
     submitter = models.ForeignKey("talent.Person", on_delete=models.CASCADE, related_name="competition_entries")
     content = models.TextField()
     entry_time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=EntryStatus.choices, default=EntryStatus.SUBMITTED)
 
     def __str__(self):
-        return f"Entry for {self.bounty.competition.title} - {self.bounty.title} by {self.submitter.name}"
+        return f"Entry for {self.competition.title} by {self.submitter.full_name}"
 
     def can_user_rate(self, user):
         from apps.security.models import ProductRoleAssignment
 
         is_admin_or_judge = ProductRoleAssignment.objects.filter(
             person=user.person,
-            product=self.bounty.competition.product,
+            product=self.competition.product,
             role__in=[ProductRoleAssignment.ProductRoles.ADMIN, ProductRoleAssignment.ProductRoles.JUDGE],
         ).exists()
         has_rated = self.ratings.filter(rater=user.person).exists()

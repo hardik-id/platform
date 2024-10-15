@@ -128,9 +128,9 @@ class BountySkillAdmin(admin.ModelAdmin):
 
 @admin.register(product.CompetitionEntry)
 class CompetitionEntryAdmin(admin.ModelAdmin):
-    list_display = ["bounty", "submitter", "status", "entry_time"]
+    list_display = ["competition", "submitter", "status", "entry_time"]
     list_filter = ["status"]
-    search_fields = ["bounty__title", "submitter__user__username"]
+    search_fields = ["competition__title", "submitter__user__username"]
 
 @admin.register(product.CompetitionEntryRating)
 class CompetitionEntryRatingAdmin(admin.ModelAdmin):
