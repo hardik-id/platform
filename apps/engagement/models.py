@@ -3,35 +3,29 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.fields import Base58UUIDv5Field
+from apps.common.mixins import TimeStampMixin
 
 
 class Notification(TimeStampMixin):
     id = Base58UUIDv5Field(primary_key=True)
-    class EventType(models.IntegerChoices):
-        BOUNTY_CLAIMED = 0, _("Bounty Claimed")
-        CHALLENGE_COMMENT = 1, _("Challenge Comment")
-        SUBMISSION_APPROVED = 2, _("Submission Approved")
-        SUBMISSION_REJECTED = 3, _("Submission Rejected")
-        BUG_REJECTED = 4, _("Bug Rejected")
-        IDEA_REJECTED = 5, _("Idea Rejected")
-        BUG_CREATED = 6, _("Bug Created")
-        IDEA_CREATED = 7, _("Idea Created")
-        BUG_CREATED_FOR_MEMBERS = 8, _("Bug Created For Members")
-        IDEA_CREATED_FOR_MEMBERS = 9, _("Idea Created For Members")
-        CHALLENGE_STATUS_CHANGED = 10, _("Task Status Changed")
-        BOUNTY_IN_REVIEW = 11, _("Bounty In Review")
-        GENERIC_COMMENT = 12, _("Generic Comment")
-        BOUNTY_SUBMISSION_MADE = 13, _("Bounty Submission Made")
-        BOUNTY_SUBMISSION_READY_TO_REVIEW = 14, _("Task Ready To Review")
-        BOUNTY_DELIVERY_ATTEMPT_CREATED = 15, _("Task Delivery Attempt Created")
-        CONTRIBUTOR_ABANDONED_BOUNTY = 16, _("Contributor Abandoned Bounty")
-        SUBMISSION_REVISION_REQUESTED = 17, _("Submission Revision Requested")
+    class EventType(models.TextChoices):
+        BOUNTY_CREATED = 'BOUNTY_CREATED', _("Bounty Created")
+        BOUNTY_CLAIMED = 'BOUNTY_CLAIMED', _("Bounty Claimed")
+        BOUNTY_COMPLETED = 'BOUNTY_COMPLETED', _("Bounty Completed")
+        BOUNTY_AWARDED = 'BOUNTY_AWARDED', _("Bounty Awarded")
+        CHALLENGE_STARTED = 'CHALLENGE_STARTED', _("Challenge Started")
+        CHALLENGE_COMPLETED = 'CHALLENGE_COMPLETED', _("Challenge Completed")
+        COMPETITION_OPENED = 'COMPETITION_OPENED', _("Competition Opened")
+        COMPETITION_CLOSED = 'COMPETITION_CLOSED', _("Competition Closed")
+        ENTRY_SUBMITTED = 'ENTRY_SUBMITTED', _("Entry Submitted")
+        WINNER_ANNOUNCED = 'WINNER_ANNOUNCED', _("Winner Announced")
+        ORDER_PLACED = 'ORDER_PLACED', _("Order Placed")
+        PAYMENT_RECEIVED = 'PAYMENT_RECEIVED', _("Payment Received")
+        FUNDS_ADDED = 'FUNDS_ADDED', _("Funds Added to Wallet")
+        POINTS_TRANSFERRED = 'POINTS_TRANSFERRED', _("Points Transferred")
+        PRODUCT_MADE_PUBLIC = 'PRODUCT_MADE_PUBLIC', _("Product Made Public")
 
-    class Type(models.IntegerChoices):
-        EMAIL = 0
-        SMS = 1
-
-    event_type = models.IntegerField(choices=EventType.choices, primary_key=True)
+    event_type = models.CharField(max_length=30, choices=EventType.choices)
     permitted_params = models.CharField(max_length=500)
 
     class Meta:

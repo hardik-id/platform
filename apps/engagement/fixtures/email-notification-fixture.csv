@@ -1,11 +1,11 @@
 id,event_type,permitted_params,title,template
-822RNALwFvjqr5B4Mb7Xi6,1,user_name;reset_link,Password Reset,password_reset_template
-U372TbcBLofUaVmueFGk3H,2,user_name;verification_code,Email Verification,email_verification_template
-6nu8Ei3CqAxGvNZByJMMye,3,user_name;bounty_title,New Bounty Available,new_bounty_template
-2vGPAZG5UR5so9rcy839u6,4,user_name;product_name,Product Update,product_update_template
-65J3vf63nRf8sZX6ZQVrhP,5,user_name;challenge_title,Challenge Invitation,challenge_invitation_template
-87RD2hQp2tJm1B7yHpvdkd,6,user_name;competition_title,Competition Announcement,competition_announcement_template
-Y6CYaM1HM8453jmCzKuCgM,7,user_name;agreement_title,New Contributor Agreement,new_agreement_template
-6bqXPWtobi12CaVb3ub6jA,8,user_name;bug_title,Bug Report Update,bug_update_template
-G44zXMNnv9y5sK8QSRiaeR,9,user_name;idea_title,Idea Approval,idea_approval_template
-HNWRr2PsSua6GQGHaG4qPV,10,user_name;payment_amount,Payment Confirmation,payment_confirmation_template
+822RNALwFvjqr5B4Mb7Xi6,BOUNTY_CREATED,user_name;bounty_title,New Bounty Created,A new bounty "{bounty_title}" has been created. Check it out, {user_name}!
+U372TbcBLofUaVmueFGk3H,BOUNTY_CLAIMED,user_name;bounty_title,Bounty Claimed,{user_name}, the bounty "{bounty_title}" has been claimed.
+6nu8Ei3CqAxGvNZByJMMye,BOUNTY_COMPLETED,user_name;bounty_title,Bounty Completed,Great job {user_name}! The bounty "{bounty_title}" has been completed.
+2vGPAZG5UR5so9rcy839u6,BOUNTY_AWARDED,user_name;bounty_title;reward,Bounty Awarded,Congratulations {user_name}! You've been awarded {reward} for completing "{bounty_title}".
+65J3vf63nRf8sZX6ZQVrhP,CHALLENGE_STARTED,user_name;challenge_title,Challenge Started,A new challenge "{challenge_title}" has started. Ready to participate, {user_name}?
+87RD2hQp2tJm1B7yHpvdkd,CHALLENGE_COMPLETED,user_name;challenge_title,Challenge Completed,The challenge "{challenge_title}" has been completed. Well done, {user_name}!
+Y6CYaM1HM8453jmCzKuCgM,COMPETITION_OPENED,user_name;competition_title,New Competition Open,{user_name}, a new competition "{competition_title}" is now open for entries.
+6bqXPWtobi12CaVb3ub6jA,COMPETITION_CLOSED,user_name;competition_title,Competition Closed,The competition "{competition_title}" is now closed for entries. Stay tuned for results, {user_name}!
+G44zXMNnv9y5sK8QSRiaeR,ENTRY_SUBMITTED,user_name;competition_title,Entry Submitted,Your entry for "{competition_title}" has been submitted successfully, {user_name}.
+HNWRr2PsSua6GQGHaG4qPV,WINNER_ANNOUNCED,user_name;competition_title;prize,Competition Winner Announced,Congratulations {user_name}! You've won {prize} in the "{competition_title}" competition.
