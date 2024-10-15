@@ -1,6 +1,6 @@
-id,title,content,effective_date,created_by_id,product_id
-QBXrCQMNKiPopYE2NpfPE4,Standard Contributor Agreement,This agreement outlines the terms and conditions for contributing to our open-source project...,2024-01-01,1,3trKw35JC6kqiiJMGaoET7
-D1gPaqMKhnJTpL94uLpnpY,AI Contributor Guidelines,Specific guidelines and agreements for contributors working on AI-related features...,2024-02-01,2,Qrr881rBrVcXuUPD9rfpAu
-83kwmkr2UByD1aXVEp4rbB,Security Contributor Protocol,Detailed protocol for contributors working on security-related aspects of the product...,2024-03-01,3,QgNWurbk6QANXZ58ZbsiPw
-R94nhjfMFRjdxv92Co9PoC,Performance Optimization Agreement,Agreement for contributors focusing on performance optimization tasks...,2024-04-01,4,V1b3PhSKcjj4FpkUG7oajm
-NProme2fTzXMUKe4GdzcJj,Innovation Contributor Terms,Terms and conditions for contributors proposing and developing innovative features...,2024-05-01,5,NCyQd9sJjzktabhFok9Q2W
+id,title,content,effective_date,product_id
+QBXrCQMNKiPopYE2NpfPE4,Standard Contributor Agreement,This agreement outlines the terms and conditions for contributing to our open-source project...,2024-01-01,3trKw35JC6kqiiJMGaoET7
+D1gPaqMKhnJTpL94uLpnpY,AI Contributor Guidelines,Specific guidelines and agreements for contributors working on AI-related features...,2024-02-01,Qrr881rBrVcXuUPD9rfpAu
+83kwmkr2UByD1aXVEp4rbB,Security Contributor Protocol,Detailed protocol for contributors working on security-related aspects of the product...,2024-03-01,QgNWurbk6QANXZ58ZbsiPw
+R94nhjfMFRjdxv92Co9PoC,Performance Optimization Agreement,Agreement for contributors focusing on performance optimization tasks...,2024-04-01,V1b3PhSKcjj4FpkUG7oajm
+NProme2fTzXMUKe4GdzcJj,Innovation Contributor Terms,Terms and conditions for contributors proposing and developing innovative features...,2024-05-01,NCyQd9sJjzktabhFok9Q2W

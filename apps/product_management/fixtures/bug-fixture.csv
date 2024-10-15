@@ -1,11 +1,11 @@
 id,title,description,person_id,product_id
-C9LLTpUfKK33cLRP48dHne,Login page crash,App crashes when attempting to log in with certain special characters,1,3trKw35JC6kqiiJMGaoET7
-aK8BjXdLExkXNfPezf3St,Incorrect AI predictions,AI model providing inaccurate predictions for certain data sets,K8BimufUsEu2m8aREjA2Uo,Qrr881rBrVcXuUPD9rfpAu
-5CMznti56x7X941Vp4TehC,Security vulnerability in API,Potential XSS vulnerability discovered in API endpoint,5awxzEZRKBCUB2Z6aARJiG,QgNWurbk6QANXZ58ZbsiPw
-KfwaZ1494cKHFQb9g47BsT,Performance degradation,Significant slowdown observed in data processing module,CWz1sDUiS8aLkvCNvJwhMm,V1b3PhSKcjj4FpkUG7oajm
-W92e1C8LFPDdLJswpHGhKd,UI rendering issue,UI elements overlapping on smaller screen sizes,GTWK7A95whVQ4ZwrBo2jci,NCyQd9sJjzktabhFok9Q2W
-V3cWfdAL3VbasCUFqVY9hp,Memory leak,Memory usage steadily increases over time causing slowdowns,7DmBrkXhewLC15ZwcnCUuZ,3trKw35JC6kqiiJMGaoET7
-LJafFDYdwgiqavnCU7PRAz,Inconsistent data sync,Data synchronization issues between mobile and web versions,69pszWq4Dqt9v1owDvuWoS,Qrr881rBrVcXuUPD9rfpAu
-LDfmD2t7EhXKrAwcCuFuv9,Broken file upload,File upload feature fails for files larger than 10MB,Do3MZ7Srkuo1ew3Pp5kK2R,QgNWurbk6QANXZ58ZbsiPw
-9kuWW6YXeL2xm6PKMzkqPk,Incorrect calculation,Tax calculation module producing incorrect results for certain scenarios,2Fg9Fv6QSKCko2TeiYyinB,V1b3PhSKcjj4FpkUG7oajm
-RqaaPaUkFUGWYWA6ooe4gt,Accessibility issue,Screen reader compatibility problems on key pages,J3eUHhn5wY46ysLy1EDwYP,NCyQd9sJjzktabhFok9Q2W
+C9LLTpUfKK33cLRP48dHne,Login page crash,App crashes when attempting to log in with certain special characters,K8BimufUsEu2m8aREjA2Uo,3trKw35JC6kqiiJMGaoET7
+aK8BjXdLExkXNfPezf3St,Incorrect AI predictions,AI model providing inaccurate predictions for certain data sets,5awxzEZRKBCUB2Z6aARJiG,Qrr881rBrVcXuUPD9rfpAu
+5CMznti56x7X941Vp4TehC,Security vulnerability in API,Potential XSS vulnerability discovered in API endpoint,CWz1sDUiS8aLkvCNvJwhMm,QgNWurbk6QANXZ58ZbsiPw
+KfwaZ1494cKHFQb9g47BsT,Performance degradation,Significant slowdown observed in data processing module,GTWK7A95whVQ4ZwrBo2jci,V1b3PhSKcjj4FpkUG7oajm
+W92e1C8LFPDdLJswpHGhKd,UI rendering issue,UI elements overlapping on smaller screen sizes,7DmBrkXhewLC15ZwcnCUuZ,NCyQd9sJjzktabhFok9Q2W
+V3cWfdAL3VbasCUFqVY9hp,Memory leak,Memory usage steadily increases over time causing slowdowns,69pszWq4Dqt9v1owDvuWoS,3trKw35JC6kqiiJMGaoET7
+LJafFDYdwgiqavnCU7PRAz,Inconsistent data sync,Data synchronization issues between mobile and web versions,Do3MZ7Srkuo1ew3Pp5kK2R,Qrr881rBrVcXuUPD9rfpAu
+LDfmD2t7EhXKrAwcCuFuv9,Broken file upload,File upload feature fails for files larger than 10MB,2Fg9Fv6QSKCko2TeiYyinB,QgNWurbk6QANXZ58ZbsiPw
+9kuWW6YXeL2xm6PKMzkqPk,Incorrect calculation,Tax calculation module producing incorrect results for certain scenarios,J3eUHhn5wY46ysLy1EDwYP,V1b3PhSKcjj4FpkUG7oajm
+RqaaPaUkFUGWYWA6ooe4gt,Accessibility issue,Screen reader compatibility problems on key pages,XAfQzF8P4m521PFoZHnfLN,NCyQd9sJjzktabhFok9Q2W
