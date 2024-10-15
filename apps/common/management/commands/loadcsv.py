@@ -34,6 +34,7 @@ class Command(BaseCommand):
             'skill': SkillParser(),
             'expertise': ExpertiseParser(),
             'bounty': BountyParser(),
+            'bountyskill': BountySkillParser(),  # Add this line
             'bountybid': BountyBidParser(),
             'platformfee': PlatformFeeParser(),
             'salesorder': SalesOrderParser(),
@@ -141,7 +142,7 @@ class BountyParser(ModelParser):
         parsed_row = super().parse_row(row)
         
         # Convert empty strings to None for specific fields
-        for field in ['claimed_by_id', 'competition_id', 'challenge_id', 'skill_id', 'product_id']:
+        for field in ['competition_id', 'challenge_id', 'product_id']:
             if parsed_row.get(field) == '':
                 parsed_row[field] = None
         
@@ -555,3 +556,48 @@ class PointOrderParser(ModelParser):
         except (Cart.DoesNotExist, ProductPointAccount.DoesNotExist, ValueError) as e:
             print(f"WARNING: {str(e)}. Skipping this PointOrder.")
             return None, False
+
+class BountySkillParser(ModelParser):
+    def parse_row(self, row):
+        parsed_row = super().parse_row(row)
+        
+        # Convert empty strings to None for specific fields
+        for field in ['bounty_id', 'skill_id']:
+            if parsed_row.get(field) == '':
+                parsed_row[field] = None
+        
+        # Convert expertise_ids from string to list of integers
+        if parsed_row.get('expertise_ids'):
+            parsed_row['expertise_ids'] = [int(id) for id in parsed_row['expertise_ids'].split(',') if id]
+        else:
+            parsed_row['expertise_ids'] = []
+        
+        return parsed_row
+
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        
+        # Fetch related objects
+        Bounty = apps.get_model('product_management.Bounty')
+        Skill = apps.get_model('talent.Skill')
+        Expertise = apps.get_model('talent.Expertise')
+        
+        try:
+            bounty = Bounty.objects.get(id=parsed['bounty_id'])
+            skill = Skill.objects.get(id=parsed['skill_id'])
+        except ObjectDoesNotExist as e:
+            raise ValueError(f"Related object does not exist: {str(e)}")
+
+        obj, created = model.objects.update_or_create(
+            id=parsed['id'],
+            defaults={
+                'bounty': bounty,
+                'skill': skill,
+            }
+        )
+
+        # Set expertises
+        expertises = Expertise.objects.filter(id__in=parsed['expertise_ids'])
+        obj.expertise.set(expertises)
+
+        return obj, created

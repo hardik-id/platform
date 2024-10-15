@@ -20,6 +20,8 @@ from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from apps.common.fields import Base58UUIDv5Field
 
+from apps.talent.models import Skill, Expertise
+
 
 class FileAttachment(TimeStampMixin):
     file = models.FileField(upload_to="attachments")
@@ -387,20 +389,11 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         CANCELLED = "Cancelled"
 
     id = Base58UUIDv5Field(primary_key=True)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='bounties')
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='bounties')  # Restored association
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, null=True, blank=True)
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=400)
     description = models.TextField()
-    skill = models.ForeignKey(
-        "talent.Skill",
-        on_delete=models.CASCADE,
-        related_name="bounty_skill",
-        blank=True,
-        null=True,
-        default=None,
-    )
-    expertise = models.ManyToManyField("talent.Expertise", related_name="bounty_expertise")
     status = models.CharField(
         max_length=20,
         choices=BountyStatus.choices,
@@ -471,6 +464,29 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         if self.status != new_status:
             self.status = new_status
             self.save()
+
+
+class BountySkill(models.Model):
+    id = Base58UUIDv5Field(primary_key=True)
+    bounty = models.ForeignKey(Bounty, related_name="skills", on_delete=models.CASCADE)
+    skill = models.ForeignKey("talent.Skill", on_delete=models.CASCADE)
+    expertise = models.ManyToManyField("talent.Expertise", blank=True)
+
+    def __str__(self):
+        expertises = ", ".join(self.expertise.values_list('name', flat=True))
+        return f"{self.bounty.title} - {self.skill} - Expertises: {expertises or 'None'}"
+
+    def clean(self):
+        super().clean()
+        if self.expertise.exists():
+            valid_expertises = Expertise.objects.filter(skill=self.skill)
+            invalid_expertises = self.expertise.exclude(id__in=valid_expertises)
+            if invalid_expertises.exists():
+                raise ValidationError("Some expertises do not belong to the selected skill.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class CompetitionEntry(TimeStampMixin):

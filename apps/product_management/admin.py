@@ -96,12 +96,18 @@ class CompetitionAdmin(admin.ModelAdmin):
     search_fields = ["title", "product__name"]
     filter_horizontal = ["attachments"]
 
+class BountySkillInline(admin.TabularInline):
+    model = product.BountySkill
+    extra = 1
+    filter_horizontal = ('expertise',)
+
 @admin.register(product.Bounty)
 class BountyAdmin(admin.ModelAdmin):
-    list_display = ["title", "challenge", "competition", "status", "reward_type", "reward_display"]
+    list_display = ["title", "product", "challenge", "competition", "status", "reward_type", "reward_display"]
     list_filter = ["status", "reward_type"]
-    search_fields = ["title", "challenge__title", "competition__title"]
-    filter_horizontal = ["expertise", "attachments"]
+    search_fields = ["title", "product__name", "challenge__title", "competition__title"]
+    filter_horizontal = ["attachments"]
+    inlines = [BountySkillInline]
 
     def reward_display(self, obj):
         if obj.reward_type == 'USD':
@@ -109,6 +115,16 @@ class BountyAdmin(admin.ModelAdmin):
         else:
             return f"{obj.reward_in_points} Points"
     reward_display.short_description = "Reward"
+
+@admin.register(product.BountySkill)
+class BountySkillAdmin(admin.ModelAdmin):
+    list_display = ["bounty", "skill", "expertise_list"]
+    search_fields = ["bounty__title", "skill__name"]
+    filter_horizontal = ["expertise"]
+
+    def expertise_list(self, obj):
+        return ", ".join([e.name for e in obj.expertise.all()])
+    expertise_list.short_description = "Expertises"
 
 @admin.register(product.CompetitionEntry)
 class CompetitionEntryAdmin(admin.ModelAdmin):
@@ -159,5 +175,6 @@ class ProductContributorAgreementAdmin(admin.ModelAdmin):
 
 # Fix pluralization issues
 product.Bounty._meta.verbose_name_plural = "Bounties"
+product.BountySkill._meta.verbose_name_plural = "Bounty Skills"
 product.ChallengeDependency._meta.verbose_name_plural = "Challenge dependencies"
 product.CompetitionEntry._meta.verbose_name_plural = "Competition entries"
