@@ -116,12 +116,28 @@ class OrganisationPointAccount(TimeStampMixin):
         return f"Point Account for {self.organisation.name}"
 
     def add_points(self, amount):
-        self.balance += amount
+        try:
+            amount_int = int(amount)
+        except ValueError:
+            raise ValueError(f"Invalid amount: {amount}. Amount must be a valid integer.")
+        
+        if amount_int < 0:
+            raise ValueError(f"Invalid amount: {amount_int}. Amount must be non-negative.")
+        
+        self.balance += amount_int
         self.save()
 
     def use_points(self, amount):
-        if self.balance >= amount:
-            self.balance -= amount
+        try:
+            amount_int = int(amount)
+        except ValueError:
+            raise ValueError(f"Invalid amount: {amount}. Amount must be a valid integer.")
+        
+        if amount_int < 0:
+            raise ValueError(f"Invalid amount: {amount_int}. Amount must be non-negative.")
+        
+        if self.balance >= amount_int:
+            self.balance -= amount_int
             self.save()
             return True
         return False
@@ -193,7 +209,7 @@ class OrganisationPointGrant(TimeStampMixin):
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name="point_grants")
     amount = models.PositiveIntegerField()
     granted_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="granted_points"
+        "talent.Person", on_delete=models.SET_NULL, null=True, related_name="granted_points"
     )
     rationale = models.TextField()
 
