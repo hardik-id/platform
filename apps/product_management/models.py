@@ -24,6 +24,7 @@ from apps.talent.models import Skill, Expertise
 
 
 class FileAttachment(TimeStampMixin):
+    id = Base58UUIDv5Field(primary_key=True)
     file = models.FileField(upload_to="attachments")
 
     def __str__(self):
