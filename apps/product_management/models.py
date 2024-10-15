@@ -547,7 +547,7 @@ class CompetitionEntryRating(TimeStampMixin):
     comment = models.TextField(blank=True)
 
     def __str__(self):
-        return f"Rating for {self.entry} by {self.rater.name}"
+        return f"Rating for {self.entry} by {self.rater.full_name}"  # Change 'name' to 'full_name'
 
     class Meta:
         unique_together = ("entry", "rater")
