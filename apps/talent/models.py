@@ -262,7 +262,10 @@ class BountyBid(TimeStampMixin):
             raise ValidationError("For Points bounties, amount_in_usd_cents should be None")
 
     def __str__(self):
-        amount = f"{self.amount_in_usd_cents/100:.2f} USD" if self.bounty.reward_type == 'USD' else f"{self.amount_in_points} Points"
+        if self.bounty.reward_type == 'USD':
+            amount = f"{self.amount_in_usd_cents/100:.2f} USD" if self.amount_in_usd_cents is not None else "N/A USD"
+        else:
+            amount = f"{self.amount_in_points} Points" if self.amount_in_points is not None else "N/A Points"
         return f"Bid for {self.bounty.title} - {amount}"
 
     @transaction.atomic

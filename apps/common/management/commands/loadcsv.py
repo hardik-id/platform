@@ -8,6 +8,8 @@ from django.utils import timezone as django_timezone
 from django.core.exceptions import ObjectDoesNotExist
 import traceback
 import uuid
+from django.utils.dateparse import parse_datetime
+from django.utils.timezone import make_aware
 
 
 def debug_print(message):
@@ -83,6 +85,8 @@ class ModelParser:
                     parsed_row[key] = value.lower() == 'true'
                 elif value.lower() in ['null', 'none', '']:
                     parsed_row[key] = None
+                elif key in ['entry_deadline', 'judging_deadline']:
+                    parsed_row[key] = parse_datetime(value)
                 else:
                     parsed_row[key] = value
             else:
@@ -211,11 +215,12 @@ class BountyBidParser(ModelParser):
             except ObjectDoesNotExist as e:
                 raise ValueError(f"Bounty with id {parsed['bounty_id']} or Person with id {parsed['person_id']} does not exist")
             
-            # Convert amount to integer
-            parsed['amount'] = int(parsed['amount'])
+            # Convert amounts to integer
+            amount_in_usd_cents = int(parsed['amount_in_usd_cents']) if parsed['amount_in_usd_cents'] else None
+            amount_in_points = int(parsed['amount_in_points']) if parsed['amount_in_points'] else None
             
             # Convert expected_finish_date to date object
-            parsed['expected_finish_date'] = datetime.strptime(parsed['expected_finish_date'], "%d/%m/%Y").date()
+            parsed['expected_finish_date'] = datetime.strptime(parsed['expected_finish_date'], "%Y-%m-%d").date()
             
             # Convert created_at and updated_at to timezone-aware datetime objects
             parsed['created_at'] = django_timezone.make_aware(datetime.strptime(parsed['created_at'], "%Y-%m-%dT%H:%M:%SZ"))
@@ -227,7 +232,8 @@ class BountyBidParser(ModelParser):
                 defaults={
                     'bounty': bounty,
                     'person': person,
-                    'amount': parsed['amount'],
+                    'amount_in_usd_cents': amount_in_usd_cents,
+                    'amount_in_points': amount_in_points,
                     'expected_finish_date': parsed['expected_finish_date'],
                     'status': parsed['status'],
                     'message': parsed['message'],
@@ -240,7 +246,7 @@ class BountyBidParser(ModelParser):
         
         except Exception as e:
             raise ValueError(f"Error processing row: {str(e)}")
-        
+
 class PlatformFeeParser(ModelParser):
     def parse_row(self, row):
         parsed_row = super().parse_row(row)
@@ -469,12 +475,21 @@ class SalesOrderLineItemParser(ModelParser):
         if parsed['item_type'] == 'BOUNTY':
             try:
                 bounty = Bounty.objects.get(id=parsed['bounty_id'])
-                if bounty.final_reward_amount is None:
-                    print(f"Warning: Bounty with id {parsed['bounty_id']} has no final reward amount. Skipping this line item.")
+                if bounty.reward_type == 'USD':
+                    reward_amount = bounty.reward_in_usd_cents
+                elif bounty.reward_type == 'Points':
+                    reward_amount = bounty.reward_in_points
+                else:
+                    print(f"Warning: Bounty with id {parsed['bounty_id']} has an invalid reward type. Skipping this line item.")
                     return None, False
-                if int(parsed['unit_price_cents']) != bounty.final_reward_amount * 100:  # Convert to cents
-                    print(f"Warning: Line item amount for Bounty {parsed['bounty_id']} is inconsistent with final reward amount. Updating it.")
-                    parsed['unit_price_cents'] = str(bounty.final_reward_amount * 100)
+
+                if reward_amount is None:
+                    print(f"Warning: Bounty with id {parsed['bounty_id']} has no reward amount. Skipping this line item.")
+                    return None, False
+
+                if int(parsed['unit_price_cents']) != reward_amount:
+                    print(f"Warning: Line item amount for Bounty {parsed['bounty_id']} is inconsistent with reward amount. Updating it.")
+                    parsed['unit_price_cents'] = str(reward_amount)
             except ObjectDoesNotExist:
                 print(f"Warning: Bounty with id {parsed['bounty_id']} does not exist. Skipping this line item.")
                 return None, False
