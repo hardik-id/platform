@@ -43,6 +43,7 @@ class Command(BaseCommand):
             'bountyclaim': BountyClaimParser(),
             'cartlineitem': CartLineItemParser(),
             'salesorderlineitem': SalesOrderLineItemParser(),
+            'pointorder': PointOrderParser(),
         }
         return parsers.get(model._meta.model_name.lower(), ModelParser())
 
@@ -140,7 +141,7 @@ class BountyParser(ModelParser):
         parsed_row = super().parse_row(row)
         
         # Convert empty strings to None for specific fields
-        for field in ['claimed_by_id', 'competition_id', 'challenge_id', 'skill_id']:
+        for field in ['claimed_by_id', 'competition_id', 'challenge_id', 'skill_id', 'product_id']:
             if parsed_row.get(field) == '':
                 parsed_row[field] = None
         
@@ -164,6 +165,7 @@ class BountyParser(ModelParser):
         Challenge = apps.get_model('product_management.Challenge')
         Competition = apps.get_model('product_management.Competition')
         Skill = apps.get_model('talent.Skill')
+        Product = apps.get_model('product_management.Product')
         
         try:
             challenge = Challenge.objects.get(id=parsed['challenge_id']) if parsed['challenge_id'] else None
@@ -180,6 +182,11 @@ class BountyParser(ModelParser):
         except Skill.DoesNotExist:
             skill = None
 
+        try:
+            product = Product.objects.get(id=parsed['product_id'])
+        except Product.DoesNotExist:
+            raise ValueError(f"Product with id {parsed['product_id']} does not exist")
+
         defaults = {
             'title': parsed['title'],
             'description': parsed['description'],
@@ -190,6 +197,7 @@ class BountyParser(ModelParser):
             'challenge': challenge,
             'competition': competition,
             'skill': skill,
+            'product': product,
         }
 
         obj, created = model.objects.update_or_create(
@@ -340,18 +348,17 @@ class ProductPointAccountParser(ModelParser):
         
         try:
             product = Product.objects.get(id=parsed['product_id'])
-            point_account = product.product_point_account
-            point_account.balance = int(parsed['balance'])
-            point_account.save()
-            print(f"Updated ProductPointAccount for product {product.id}: balance = {point_account.balance}")
-            return point_account, False
+            point_account, created = model.objects.update_or_create(
+                product=product,
+                defaults={'balance': int(parsed['balance'])}
+            )
+            action = "Created" if created else "Updated"
+            print(f"{action} ProductPointAccount for product {product.id}: id = {point_account.id}, balance = {point_account.balance}")
+            return point_account, created
         except Product.DoesNotExist:
             print(f"WARNING: Product with id {parsed['product_id']} does not exist. Skipping this ProductPointAccount.")
             return None, False
-        except model.DoesNotExist:
-            print(f"WARNING: ProductPointAccount for product {parsed['product_id']} does not exist. This shouldn't happen due to the OneToOne relationship.")
-            return None, False
-        
+    
 class BountyClaimParser(ModelParser):
     def create_object(self, model, row):
         parsed = self.parse_row(row)
@@ -510,3 +517,41 @@ class SalesOrderLineItemParser(ModelParser):
         )
 
         return line_item, created
+
+class PointOrderParser(ModelParser):
+    def create_object(self, model, row):
+        parsed = self.parse_row(row)
+        Cart = apps.get_model('commerce.Cart')
+        ProductPointAccount = apps.get_model('commerce.ProductPointAccount')
+        
+        try:
+            cart = Cart.objects.get(id=parsed['cart_id'])
+            
+            # Find the product associated with the cart
+            product = None
+            for item in cart.items.all():
+                if hasattr(item, 'bounty'):
+                    product = item.bounty.product
+                    break
+            
+            if not product:
+                raise ValueError(f"Unable to find associated product for cart {cart.id}")
+            
+            product_account = ProductPointAccount.objects.get(product=product)
+            
+            point_order, created = model.objects.update_or_create(
+                id=parsed['id'],
+                defaults={
+                    'cart': cart,
+                    'product_account': product_account,
+                    'total_points': int(parsed['total_points']),
+                    'status': parsed['status'],
+                    'parent_order_id': parsed.get('parent_order_id')
+                }
+            )
+            action = "Created" if created else "Updated"
+            print(f"{action} PointOrder: id = {point_order.id}, product_account = {product_account.id}")
+            return point_order, created
+        except (Cart.DoesNotExist, ProductPointAccount.DoesNotExist, ValueError) as e:
+            print(f"WARNING: {str(e)}. Skipping this PointOrder.")
+            return None, False

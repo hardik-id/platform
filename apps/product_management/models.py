@@ -387,6 +387,7 @@ class Bounty(TimeStampMixin, common.AttachmentAbstract):
         CANCELLED = "Cancelled"
 
     id = Base58UUIDv5Field(primary_key=True)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='bounties')
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, null=True, blank=True)
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=400)
