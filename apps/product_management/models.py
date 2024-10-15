@@ -633,7 +633,7 @@ class ProductContributorAgreementTemplate(TimeStampMixin):
 
 class IdeaVote(TimeStampMixin):
     id = Base58UUIDv5Field(primary_key=True)
-    voter = models.ForeignKey("security.User", on_delete=models.CASCADE)
+    voter = models.ForeignKey("talent.Person", on_delete=models.CASCADE)
     idea = models.ForeignKey(Idea, on_delete=models.CASCADE)
 
     class Meta:
