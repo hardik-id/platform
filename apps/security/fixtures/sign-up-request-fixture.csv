@@ -1,11 +1,11 @@
 id,device_identifier,verification_code,successful,user_id
 6ddTkncaZEtqj3qB3XZV9Y,device_11,123456,true,UmpxBYDkZ3h4gFFUG9rTxy
-dTRhADiWsZttg8SGCwDdA,device_12,234567,true,12
+dTRhADiWsZttg8SGCwDdA,device_12,234567,true,JYSBE1vUgDJaPRw24Wwwqg
 FaCzfLZ8pTRsPRehWXk7JB,device_13,345678,false,null
-GLGjzydfKGC6GveoGZDfQr,device_14,456789,true,13
-XUMKPQpkdMHn2uxWWP1nA9,device_15,567890,true,14
+GLGjzydfKGC6GveoGZDfQr,device_14,456789,true,CUiPcEmYGjSH9nNcYuTqRK
+XUMKPQpkdMHn2uxWWP1nA9,device_15,567890,true,null
 UqzWEeiJCjYN2JJR7FEYwY,device_16,678901,false,null
-8QciXZhqP9Guvqr6Mok6jG,device_17,789012,true,15
-CNJfZZr9jKsWRiBLo4XRS8,device_18,890123,true,16
+8QciXZhqP9Guvqr6Mok6jG,device_17,789012,true,null
+CNJfZZr9jKsWRiBLo4XRS8,device_18,890123,true,null
 Toe5rn3L2ziMK2gGq2HyUr,device_19,901234,false,null
-YVJCPoBAuJzbh1BaFgGv1U,device_20,012345,true,17
+YVJCPoBAuJzbh1BaFgGv1U,device_20,012345,true,null

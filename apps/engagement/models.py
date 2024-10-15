@@ -2,9 +2,11 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from apps.common.fields import Base58UUIDv5Field
 
-class Notification(models.Model):
-    #TODO: revise the event types, remove comments etc. 
+
+class Notification(TimeStampMixin):
+    id = Base58UUIDv5Field(primary_key=True)
     class EventType(models.IntegerChoices):
         BOUNTY_CLAIMED = 0, _("Bounty Claimed")
         CHALLENGE_COMMENT = 1, _("Challenge Comment")
